@@ -1,0 +1,19 @@
+# Live Trading Dependencies
+# Additional packages required for paper trading with Alpaca
+
+# Alpaca Trading API
+alpaca-trade-api>=3.0.0
+
+# Environment variables management
+python-dotenv>=1.0.0
+
+# Data manipulation (if not already installed)
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Logging and utilities (if not already installed)
+pytz>=2022.1
+
+# Optional: For advanced analysis
+# ta>=0.10.0  # Technical analysis library
+# plotly>=5.0.0  # For advanced visualizations
