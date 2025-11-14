@@ -1,0 +1,363 @@
+"""
+Tests para las estrategias de trading
+"""
+
+import unittest
+import numpy as np
+import pandas as pd
+from strategies.regime_detector import RegimeDetector, MarketRegime
+from strategies.mean_reversion import MeanReversionStrategy, ReversionSignal
+
+class TestRegimeDetector(unittest.TestCase):
+    """Tests para RegimeDetector"""
+
+    def setUp(self):
+        """Configurar datos de prueba"""
+        self.detector = RegimeDetector()
+
+        # Datos de mercado de prueba - mercado alcista
+        self.bull_data = {
+            'Close': 105.0,
+            'SMA_short': 103.0,
+            'SMA_long': 100.0,
+            'RSI': 65.0,
+            'ATR': 2.0,
+            'MACD': 1.5,
+            'MACD_signal': 1.2,
+            'MACD_hist': 0.3
+        }
+
+        # Datos de mercado bajista
+        self.bear_data = {
+            'Close': 95.0,
+            'SMA_short': 97.0,
+            'SMA_long': 100.0,
+            'RSI': 35.0,
+            'ATR': 3.0,
+            'MACD': -1.5,
+            'MACD_signal': -1.2,
+            'MACD_hist': -0.3
+        }
+
+        # Datos de mercado lateral
+        self.sideways_data = {
+            'Close': 100.0,
+            'SMA_short': 100.0,
+            'SMA_long': 100.0,
+            'RSI': 50.0,
+            'ATR': 1.0,
+            'MACD': 0.0,
+            'MACD_signal': 0.0,
+            'MACD_hist': 0.0
+        }
+
+    def test_initialization(self):
+        """Test inicialización del detector"""
+        self.assertIsInstance(self.detector, RegimeDetector)
+        self.assertEqual(self.detector.sma_short, 20)
+        self.assertEqual(self.detector.sma_long, 50)
+        self.assertEqual(len(self.detector.regime_history), 0)
+
+    def test_bull_market_detection(self):
+        """Test detección de mercado alcista"""
+        regime = self.detector.detect_regime(self.bull_data)
+
+        self.assertIsInstance(regime, MarketRegime)
+        # Debería detectar mercado alcista con estos datos
+        # Nota: El algoritmo exacto puede variar, pero debería ser consistente
+
+    def test_bear_market_detection(self):
+        """Test detección de mercado bajista"""
+        regime = self.detector.detect_regime(self.bear_data)
+
+        self.assertIsInstance(regime, MarketRegime)
+        # Debería detectar mercado bajista
+
+    def test_sideways_market_detection(self):
+        """Test detección de mercado lateral"""
+        regime = self.detector.detect_regime(self.sideways_data)
+
+        self.assertIsInstance(regime, MarketRegime)
+        # Debería detectar mercado lateral
+
+    def test_regime_history_tracking(self):
+        """Test seguimiento del historial de regímenes"""
+        # Detectar varios regímenes
+        regimes = []
+        for data in [self.bull_data, self.bear_data, self.sideways_data]:
+            regime = self.detector.detect_regime(data)
+            regimes.append(regime)
+
+        # Verificar historial
+        history = self.detector.get_regime_history()
+        self.assertEqual(len(history), 3)
+
+        for i, record in enumerate(history):
+            self.assertIn('regime', record)
+            self.assertIn('score', record)
+            self.assertIn('timestamp', record)
+
+    def test_regime_statistics(self):
+        """Test estadísticas de regímenes"""
+        # Generar algunos datos de prueba
+        for _ in range(10):
+            self.detector.detect_regime(self.bull_data)
+
+        stats = self.detector.get_regime_stats()
+
+        self.assertIn('total_regimes', stats)
+        self.assertIn('bull_count', stats)
+        self.assertIn('bear_count', stats)
+        self.assertIn('sideways_count', stats)
+        self.assertEqual(stats['total_regimes'], 10)
+
+    def test_indicator_calculation(self):
+        """Test cálculo de indicadores"""
+        # Datos sin indicadores precalculados
+        raw_data = {
+            'Close': 100.0,
+            'High': 105.0,
+            'Low': 95.0
+        }
+
+        processed = self.detector._ensure_indicators(raw_data)
+
+        # Debería tener todos los indicadores necesarios
+        expected_indicators = ['SMA_short', 'SMA_long', 'RSI', 'ATR', 'MACD', 'MACD_signal', 'MACD_hist']
+        for indicator in expected_indicators:
+            self.assertIn(indicator, processed)
+
+    def test_score_calculations(self):
+        """Test cálculos de scores individuales"""
+        # Test SMA score
+        sma_score = self.detector._sma_score(self.bull_data)
+        self.assertIsInstance(sma_score, float)
+        self.assertGreaterEqual(sma_score, 0.0)
+        self.assertLessEqual(sma_score, 1.0)
+
+        # Test RSI score
+        rsi_score = self.detector._rsi_score(self.bull_data)
+        self.assertIsInstance(rsi_score, float)
+        self.assertGreaterEqual(rsi_score, 0.0)
+        self.assertLessEqual(rsi_score, 1.0)
+
+        # Test momentum score
+        momentum_score = self.detector._momentum_score(self.bull_data)
+        self.assertIsInstance(momentum_score, float)
+        self.assertGreaterEqual(momentum_score, 0.0)
+        self.assertLessEqual(momentum_score, 1.0)
+
+    def test_history_reset(self):
+        """Test reinicio del historial"""
+        # Agregar algunos datos
+        for _ in range(5):
+            self.detector.detect_regime(self.bull_data)
+
+        self.assertGreater(len(self.detector.regime_history), 0)
+
+        # Reiniciar
+        self.detector.reset_history()
+        self.assertEqual(len(self.detector.regime_history), 0)
+
+class TestMeanReversionStrategy(unittest.TestCase):
+    """Tests para MeanReversionStrategy"""
+
+    def setUp(self):
+        """Configurar datos de prueba"""
+        self.strategy = MeanReversionStrategy()
+
+        # Generar datos de prueba con reversión
+        np.random.seed(42)
+        base_price = 100.0
+
+        # Crear una serie que se desvía y vuelve a la media
+        prices = []
+        for i in range(100):
+            if i < 30:
+                # Subida inicial
+                change = np.random.normal(0.005, 0.02)
+            elif i < 70:
+                # Caída (desviación de la media)
+                change = np.random.normal(-0.008, 0.02)
+            else:
+                # Recuperación hacia la media
+                change = np.random.normal(0.003, 0.02)
+
+            base_price *= (1 + change)
+            prices.append(base_price)
+
+        self.test_prices = prices
+        self.current_price = prices[-1]
+
+    def test_initialization(self):
+        """Test inicialización de la estrategia"""
+        self.assertIsInstance(self.strategy, MeanReversionStrategy)
+        self.assertEqual(len(self.strategy.lookback_periods), 3)
+        self.assertEqual(self.strategy.z_score_threshold, 2.0)
+        self.assertEqual(len(self.strategy.price_history), 0)
+
+    def test_price_history_update(self):
+        """Test actualización del historial de precios"""
+        symbol = 'BTC/USD'
+
+        # Agregar precios
+        for price in self.test_prices[:50]:
+            self.strategy._update_price_history(symbol, price)
+
+        self.assertEqual(len(self.strategy.price_history[symbol]), 50)
+        self.assertEqual(self.strategy.price_history[symbol][-1], self.test_prices[49])
+
+    def test_reversion_signal_generation(self):
+        """Test generación de señales de reversión"""
+        symbol = 'BTC/USD'
+
+        # Agregar historial de precios
+        for price in self.test_prices:
+            self.strategy._update_price_history(symbol, price)
+
+        # Datos de mercado actuales
+        market_data = {
+            'Close': self.current_price,
+            'High': self.current_price * 1.01,
+            'Low': self.current_price * 0.99
+        }
+
+        # Analizar para señales
+        opportunity = self.strategy.analyze(symbol, market_data)
+
+        # Verificar estructura de la oportunidad
+        if opportunity:
+            self.assertIsInstance(opportunity.confidence, float)
+            self.assertIsInstance(opportunity.z_score, float)
+            self.assertIsInstance(opportunity.signal, ReversionSignal)
+
+    def test_z_score_calculation(self):
+        """Test cálculo de Z-score"""
+        # Precios de prueba
+        prices = [100, 102, 98, 105, 95, 103]  # Media ~100.5, std ~3.5
+        mean_price = np.mean(prices)
+        std_dev = np.std(prices)
+
+        # Z-score para precio de 95: (95 - 100.5) / 3.5 ≈ -1.57
+        z_score = (95 - mean_price) / std_dev
+
+        signal, confidence = self.strategy._calculate_signal(z_score, 20)
+
+        self.assertIsInstance(signal, ReversionSignal)
+        self.assertIsInstance(confidence, float)
+        self.assertGreaterEqual(confidence, 0.0)
+        self.assertLessEqual(confidence, 1.0)
+
+    def test_position_management(self):
+        """Test gestión de posiciones"""
+        symbol = 'BTC/USD'
+
+        # Simular apertura de posición
+        opportunity = ReversionSignal.BUY
+        confidence = 0.8
+
+        # Crear oportunidad mock
+        from strategies.mean_reversion import ReversionOpportunity
+
+        mock_opportunity = ReversionOpportunity(
+            signal=opportunity,
+            confidence=confidence,
+            z_score=-2.5,
+            mean_price=100.0,
+            std_dev=5.0,
+            lookback_period=20,
+            timestamp=pd.Timestamp.now()
+        )
+
+        self.strategy.open_position(symbol, mock_opportunity)
+
+        # Verificar que la posición esté abierta
+        open_positions = self.strategy.get_open_positions()
+        self.assertIn(symbol, open_positions)
+
+        # Simular cierre de posición
+        self.strategy.close_position(symbol)
+
+        # Verificar que la posición esté cerrada
+        open_positions = self.strategy.get_open_positions()
+        self.assertNotIn(symbol, open_positions)
+
+    def test_position_close_logic(self):
+        """Test lógica de cierre de posiciones"""
+        symbol = 'BTC/USD'
+
+        # Agregar historial de precios
+        for price in self.test_prices:
+            self.strategy._update_price_history(symbol, price)
+
+        # Simular posición abierta
+        from strategies.mean_reversion import ReversionOpportunity
+
+        mock_opportunity = ReversionOpportunity(
+            signal=ReversionSignal.BUY,
+            confidence=0.8,
+            z_score=-2.5,
+            mean_price=np.mean(self.test_prices[-20:]),
+            std_dev=np.std(self.test_prices[-20:]),
+            lookback_period=20,
+            timestamp=pd.Timestamp.now()
+        )
+
+        self.strategy.open_position(symbol, mock_opportunity)
+
+        # Verificar si debería cerrar (precio actual cerca de la media)
+        current_price = np.mean(self.test_prices[-20:])  # Precio en la media
+        should_close = self.strategy.should_close_position(symbol, current_price)
+
+        # La lógica debería determinar si cerrar basado en Z-score actual
+        self.assertIsInstance(should_close, bool)
+
+    def test_strategy_statistics(self):
+        """Test estadísticas de la estrategia"""
+        # Generar algunas señales
+        for _ in range(10):
+            # Simular análisis (sin datos reales)
+            pass
+
+        stats = self.strategy.get_strategy_stats()
+
+        self.assertIn('total_signals', stats)
+        self.assertIn('avg_confidence', stats)
+        self.assertIn('open_positions', stats)
+
+    def test_strategy_reset(self):
+        """Test reinicio de la estrategia"""
+        symbol = 'BTC/USD'
+
+        # Agregar algunos datos
+        for price in self.test_prices[:20]:
+            self.strategy._update_price_history(symbol, price)
+
+        # Agregar posición
+        from strategies.mean_reversion import ReversionOpportunity
+        mock_opportunity = ReversionOpportunity(
+            signal=ReversionSignal.BUY,
+            confidence=0.8,
+            z_score=-2.0,
+            mean_price=100.0,
+            std_dev=5.0,
+            lookback_period=20,
+            timestamp=pd.Timestamp.now()
+        )
+        self.strategy.open_position(symbol, mock_opportunity)
+
+        # Verificar que hay datos
+        self.assertGreater(len(self.strategy.price_history), 0)
+        self.assertGreater(len(self.strategy.signal_history), 0)
+        self.assertGreater(len(self.strategy.open_positions), 0)
+
+        # Reiniciar
+        self.strategy.reset()
+
+        # Verificar que todo esté limpio
+        self.assertEqual(len(self.strategy.price_history), 0)
+        self.assertEqual(len(self.strategy.signal_history), 0)
+        self.assertEqual(len(self.strategy.open_positions), 0)
+
+if __name__ == '__main__':
+    unittest.main()

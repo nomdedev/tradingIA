@@ -1,0 +1,45 @@
+# Adaptive Retraining Configuration
+
+# Schedule
+schedule:
+  daily_update_time: "00:00"          # Hora para actualización diaria
+  weekly_retrain_day: "Sunday"         # Día para GA retrain
+  weekly_retrain_time: "00:00"
+  monthly_retrain_day: 1               # Día del mes para RL retrain
+  monthly_retrain_time: "00:00"
+
+# Emergency thresholds
+emergency:
+  min_win_rate: 0.50                   # Mínimo 50% win rate
+  min_sharpe: 1.0                      # Mínimo Sharpe 1.0
+  max_drawdown: 0.10                   # Máximo 10% drawdown
+  max_losses: 5                        # Máximo 5 pérdidas consecutivas
+  cooldown_hours: 6                    # Esperar 6h entre emergency retrains
+
+# Daily updates
+daily:
+  update_kelly: true
+  update_drawdown: true
+  update_performance: true
+  update_correlation: true
+
+# Weekly GA retrain
+weekly_ga:
+  enabled: true
+  data_lookback_days: 90               # 3 meses
+  population_size: 50
+  generations: 100
+  min_improvement: 0.05                # 5% improvement mínimo
+
+# Monthly RL retrain
+monthly_rl:
+  enabled: true
+  train_data_days: 180                 # 6 meses
+  test_data_days: 30                   # 1 mes
+  timesteps: 100000
+  min_improvement: 0.1                 # 0.1 Sharpe improvement mínimo
+
+# Model versioning
+versioning:
+  keep_backups: 5                      # Mantener últimas 5 versiones
+  backup_dir: "models/versioned"

@@ -1,0 +1,35 @@
+{
+    "strategy": "HFT VMA Momentum Commodities",
+    "asset": "Oil (WTI)",
+    "best_params": {
+        "vma_length": 10,
+        "momentum_lookback": 5,
+        "vol_mult": 1.5,
+        "momentum_threshold": 0.0001
+    },
+    "in_sample": {
+        "sharpe": 0.640750333322111,
+        "win_rate": 51.01832993890021,
+        "total_return": 198.33307736343747,
+        "max_drawdown": -22.986096473318305,
+        "trades": 982
+    },
+    "out_of_sample": {
+        "sharpe": 0.6369973236499447,
+        "win_rate": 53.82165605095541,
+        "total_return": 14.662464662136118,
+        "max_drawdown": -7.52776511889941,
+        "trades": 314
+    },
+    "full_sample": {
+        "sharpe": 0.7082087845213515,
+        "win_rate": 51.40562248995983,
+        "total_return": 295.0831613717679,
+        "max_drawdown": -18.996982415006713,
+        "trades": 1494
+    },
+    "benchmark_comparison": {
+        "vs_mean_reversion_sharpe": NaN,
+        "vs_mean_reversion_win_rate": NaN
+    }
+}

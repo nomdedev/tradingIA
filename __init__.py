@@ -1,0 +1,1 @@
+# Trading IA Project Root

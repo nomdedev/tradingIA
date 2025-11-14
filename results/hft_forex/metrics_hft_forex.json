@@ -1,0 +1,37 @@
+{
+  "asset": "EUR/USD",
+  "strategy": "HFT VMA Momentum",
+  "best_params": {
+    "vma_length": 20,
+    "momentum_lookback": 5,
+    "vol_mult": 1.8,
+    "momentum_threshold": 0.15
+  },
+  "walk_forward": {
+    "oos_sharpe": NaN,
+    "oos_win_rate": NaN,
+    "oos_return": 0.0,
+    "oos_max_dd": 0.0,
+    "total_trades": 0
+  },
+  "full_backtest": {
+    "sharpe": NaN,
+    "win_rate": NaN,
+    "total_return": 0.0,
+    "max_dd": -0.0,
+    "trades": 0
+  },
+  "custom_metrics": {},
+  "ab_test": {
+    "hft_sharpe": NaN,
+    "mr_sharpe": NaN,
+    "hft_win_rate": NaN,
+    "mr_win_rate": NaN,
+    "hft_return": 0.0,
+    "mr_return": 0.0,
+    "t_statistic": NaN,
+    "p_value": NaN,
+    "hft_superior": false,
+    "significant": "False"
+  }
+}

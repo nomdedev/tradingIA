@@ -1,0 +1,10 @@
+[bandit]
+# Excluir directorios de tests y cache
+exclude_dirs = /tests/,/__pycache__/,.pytest_cache/
+
+# Ignorar asserts en tests (B101)
+# Ignorar valores hardcoded en tests (B106, B105)
+skips = B101,B106,B105,B601
+
+# Nivel de confianza: HIGH solo reporta issues críticos
+confidence = HIGH

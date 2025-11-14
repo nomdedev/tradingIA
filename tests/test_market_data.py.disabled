@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""
+Prueba rápida de obtención de datos de mercado
+"""
+
+from trading_live.crypto_live_engine import CryptoLiveTradingEngine
+from dotenv import load_dotenv
+import logging
+
+# Configurar logging básico
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+if __name__ == "__main__":
+    load_dotenv()
+
+    # Crear engine
+    engine = CryptoLiveTradingEngine(symbols=['BTC/USD', 'ETH/USD'])
+
+    print("🧪 PRUEBA DE OBTENCIÓN DE DATOS DE MERCADO")
+    print("=" * 50)
+
+    # Probar obtener datos para cada símbolo
+    for symbol in ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD']:
+        print(f"\n🪙 Probando {symbol}:")
+        try:
+            market_data = engine.get_market_data(symbol)
+            if market_data:
+                print("   ✅ DATOS OBTENIDOS")
+                close_price = market_data.get('close', 'N/A')
+                rsi = market_data.get('RSI_14', 'N/A')
+                sma = market_data.get('SMA_20', 'N/A')
+
+                if isinstance(close_price, (int, float)):
+                    print(f"   💰 Precio: ${close_price:.2f}")
+                else:
+                    print(f"   💰 Precio: {close_price}")
+
+                print(f"   📊 RSI: {rsi}")
+                print(f"   📈 SMA20: {sma}")
+            else:
+                print("   ❌ SIN DATOS")
+        except Exception as e:
+            print(f"   ❌ ERROR: {e}")
+
+    print("\n🎯 PRUEBA COMPLETADA")

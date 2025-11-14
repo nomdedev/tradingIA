@@ -1,0 +1,25 @@
+================================================================================
+REPORTE DE DEMOSTRACIÓN - STRATEGY MANAGER
+================================================================================
+
+Este es un reporte generado automáticamente por el Strategy Manager.
+
+FUNCIONALIDADES DEMOSTRADAS:
+✓ Gestión de configuración
+✓ Ejecución de backtests
+✓ Análisis de sensibilidad
+✓ Sistema de persistencia
+✓ Generación de reportes
+
+MÉTRICAS DE EJEMPLO:
+- Sharpe Ratio: 1.45
+- Win Rate: 66%
+- Total Return: 52%
+- Max Drawdown: 15%
+
+CONFIGURACIÓN UTILIZADA:
+- Risk:Reward Ratio: 2.5
+- Confluence Threshold: 5
+- Max Risk per Trade: 3%
+
+================================================================================

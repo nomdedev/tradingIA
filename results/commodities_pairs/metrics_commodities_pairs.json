@@ -1,0 +1,41 @@
+{
+  "asset": "Oil-Gold",
+  "best_params": {
+    "spread_zscore_threshold": 1.5,
+    "vol_mult": 1.2,
+    "risk_mult": 1.2,
+    "tp_rr": 1.5
+  },
+  "walk_forward": {
+    "oos_sharpe": -0.05264148698808101,
+    "oos_win_rate": 0.3548387096774194,
+    "oos_return": -0.00025346328050873126,
+    "oos_max_dd": -0.002217366882940719,
+    "total_trades": 31
+  },
+  "full_backtest": {
+    "sharpe": -0.3510266658621345,
+    "win_rate": 0.3088235294117647,
+    "total_return": -0.00506169928096424,
+    "max_dd": -0.00532814784958302,
+    "trades": 68
+  },
+  "custom_metrics": {
+    "win_rate": 0.3088235294117647,
+    "total_return": -50.61699280963776,
+    "num_trades": 68,
+    "avg_trade": -0.7443675413182023
+  },
+  "ab_test": {
+    "pairs_sharpe": -0.2666752911227551,
+    "mr_sharpe": NaN,
+    "pairs_win_rate": 0.3088235294117647,
+    "mr_win_rate": NaN,
+    "pairs_return": -0.0041204298763934276,
+    "mr_return": 0.0,
+    "t_statistic": NaN,
+    "p_value": NaN,
+    "pairs_superior": false,
+    "significant": "False"
+  }
+}

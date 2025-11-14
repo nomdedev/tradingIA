@@ -1,0 +1,22 @@
+{
+    "strategy_name": "IFVG_VP_EMAs",
+    "symbol": "BTCUSD",
+    "timeframe": "5min",
+    "start_date": "2024-01-01",
+    "end_date": "2025-11-12",
+    "confluence_threshold": 5,
+    "htf_ema_period": 210,
+    "atr_multiplier": 1.5,
+    "risk_reward_ratio": 2.5,
+    "volume_threshold": 1.5,
+    "max_risk_per_trade": 0.03,
+    "max_open_trades": 3,
+    "stop_loss_atr": 1.5,
+    "take_profit_rr": 2.2,
+    "initial_capital": 10000,
+    "slippage": 0.001,
+    "commission": 0.0005,
+    "walk_forward_periods": 8,
+    "monte_carlo_runs": 500,
+    "bootstrap_iterations": 1000
+}

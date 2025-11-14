@@ -1,0 +1,21 @@
+# Walk-Forward Optimization Config
+walk_forward:
+  train_window_days: 180        # 6 meses para entrenar
+  test_window_days: 30          # 1 mes para validar
+  min_sharpe_improvement: 0.1   # Mínima mejora para actualizar
+  retrain_schedule: "monthly"   # monthly, weekly, etc.
+
+# RL Agent Config
+rl_agent:
+  algorithm: "PPO"
+  total_timesteps: 100000
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+
+# GA Agent Config
+ga_agent:
+  population_size: 50
+  generations: 100
+  mutation_rate: 0.1
+  crossover_rate: 0.7

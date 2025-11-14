@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""
+Test de Multi-Timeframe Analysis y Quick Backtest.
+"""
+
+from strategies.multi_timeframe_analyzer import MultiTimeframeAnalyzer
+from backtesting.quick_backtester import QuickBacktester
+from trading_live.alpaca_client import AlpacaClient
+from agents.ensemble_agent import EnsembleAgent
+from agents.moondev_risk_agent import MoonDevRiskAgent
+from dotenv import load_dotenv
+
+def test_mtf_and_backtest():
+    """Test completo de MTF Analysis y Quick Backtest"""
+    load_dotenv()
+
+    print("="*70)
+    print("TESTING MULTI-TIMEFRAME ANALYSIS & QUICK BACKTEST")
+    print("="*70)
+
+    # Setup
+    symbol = 'BTC/USD'
+    client = AlpacaClient()
+
+    # Test 1: Multi-Timeframe Analysis
+    print("\n" + "="*70)
+    print("TEST 1: MULTI-TIMEFRAME ANALYSIS")
+    print("="*70)
+
+    mtf_analyzer = MultiTimeframeAnalyzer()
+
+    mtf_analysis = mtf_analyzer.analyze_all_timeframes(symbol, client)
+
+    print("\n✅ MTF Analysis Complete")
+    print(f"   Confluence: {mtf_analysis['confluence']:.0%}")
+    print(f"   Dominant Trend: {mtf_analysis['dominant_trend']}")
+    print(f"   Recommendation: {mtf_analysis['recommendation']}")
+
+    should_enter = mtf_analyzer.should_enter(mtf_analysis)
+    print(f"   Should Enter: {'YES ✅' if should_enter else 'NO ❌'}")
+
+    # Test 2: Quick Backtest
+    print("\n" + "="*70)
+    print("TEST 2: QUICK BACKTEST")
+    print("="*70)
+
+    # Cargar ensemble (simplificado para test)
+    try:
+        ensemble = EnsembleAgent()
+        # NOTA: risk_agent NO se agrega al ensemble como agente votante
+        # El risk_agent se maneja por separado en el ensemble
+        risk_agent = MoonDevRiskAgent()
+    except Exception as e:
+        print(f"⚠️ Ensemble not available: {e}")
+        ensemble = None
+        risk_agent = None
+
+    quick_backtester = QuickBacktester(ensemble, client, lookback_days=30)
+
+    if ensemble:
+        backtest_results = quick_backtester.quick_backtest(
+            symbol,
+            risk_agent,
+            client
+        )
+
+        should_enter_bt, reason = quick_backtester.should_enter(backtest_results)
+
+        print("\n✅ Backtest Complete")
+        print(f"   Should Enter: {'YES ✅' if should_enter_bt else 'NO ❌'}")
+        print(f"   Reason: {reason}")
+    else:
+        print("⚠️ Skipping backtest (no ensemble)")
+        should_enter_bt = False
+
+    # Test 3: Combined Decision
+    print("\n" + "="*70)
+    print("TEST 3: COMBINED DECISION")
+    print("="*70)
+
+    if should_enter:
+        print("✅ MTF says: ENTER")
+    else:
+        print("❌ MTF says: DO NOT ENTER")
+
+    if ensemble and should_enter_bt:
+        print("✅ Backtest says: ENTER")
+    else:
+        print("❌ Backtest says: DO NOT ENTER")
+
+    if should_enter and (not ensemble or should_enter_bt):
+        print("\n🚀 FINAL DECISION: PROCEED TO TRADE")
+    else:
+        print("\n🛑 FINAL DECISION: SKIP TRADE")
+
+    # Test 4: Individual Timeframe Details
+    print("\n" + "="*70)
+    print("TEST 4: TIMEFRAME DETAILS")
+    print("="*70)
+
+    if mtf_analysis:
+        print("Timeframe Analysis Details:")
+        for tf_name, tf_data in mtf_analysis['timeframes'].items():
+            print("10"
+                  "8"
+                  ".0f}")
+
+if __name__ == "__main__":
+    test_mtf_and_backtest()

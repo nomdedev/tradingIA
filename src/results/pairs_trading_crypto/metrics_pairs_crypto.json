@@ -1,0 +1,45 @@
+{
+  "asset_pair": "BTC-ETH",
+  "cointegration_test": {
+    "coint_t_stat": -2.0299556971191093,
+    "coint_p_value": 0.5129756181265366,
+    "critical_values": "[-3.89863216 -3.33735254 -3.04529852]",
+    "hedge_ratio": 105.21769494013736,
+    "adf_stat": -2.0299556971191137,
+    "adf_p_value": 0.273594952714074,
+    "half_life": 442.3142555123738,
+    "is_cointegrated": "False"
+  },
+  "walk_forward": {
+    "oos_sharpe": NaN,
+    "oos_win_rate": NaN,
+    "oos_return": 0.0,
+    "oos_max_dd": 0.0
+  },
+  "full_backtest": {
+    "sharpe": NaN,
+    "win_rate": NaN,
+    "return": 0.0,
+    "max_dd": -0.0,
+    "trades": 0
+  },
+  "custom_metrics": {},
+  "ab_test": {
+    "pairs_sharpe": NaN,
+    "single_sharpe": NaN,
+    "pairs_win_rate": NaN,
+    "single_win_rate": NaN,
+    "pairs_return": 0.0,
+    "single_return": 0.0,
+    "t_statistic": NaN,
+    "p_value": NaN,
+    "pairs_superior": false,
+    "significant": "False"
+  },
+  "best_params": {
+    "zscore_threshold": 2.0,
+    "vol_mult": 1.2,
+    "risk_mult": 1.5,
+    "tp_rr": 2.2
+  }
+}

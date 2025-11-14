@@ -1,0 +1,44 @@
+{
+  "microstructure_costs": {
+    "description": "Realistic trading costs for BTC intraday trading",
+    "slippage_model": {
+      "base_slippage_pct": 0.001,
+      "atr_multiplier_min": 0.05,
+      "atr_multiplier_max": 0.5,
+      "volume_impact_threshold": 1000000,
+      "high_volume_multiplier": 1.5
+    },
+    "commission_fees": {
+      "maker_fee_pct": 0.001,
+      "taker_fee_pct": 0.002,
+      "minimum_fee_usd": 0.1,
+      "maximum_fee_pct": 0.005
+    },
+    "funding_rates": {
+      "perpetual_funding_rate_pct": 0.01,
+      "funding_interval_hours": 8,
+      "max_funding_rate_pct": 0.05
+    },
+    "tax_and_regulatory": {
+      "capital_gains_tax_pct": 0.30,
+      "withholding_tax_pct": 0.0,
+      "regulatory_reporting_fee_usd": 0.0
+    },
+    "market_impact": {
+      "order_book_imbalance_threshold": 0.2,
+      "large_order_threshold_usd": 100000,
+      "market_impact_multiplier": 2.0
+    }
+  },
+  "performance_impact": {
+    "expected_sharpe_degradation": 0.3,
+    "live_vs_backtest_ratio": 0.9,
+    "cost_ratio_target": 0.15,
+    "break_even_trades_min": 10
+  },
+  "validation": {
+    "cost_ratio_assertion": "< 15%",
+    "sharpe_impact_range": "-0.3 to -0.5",
+    "live_degradation_max": "10%"
+  }
+}

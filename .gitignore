@@ -1,15 +1,3 @@
-# Environment variables and secrets
-.env
-.env.local
-.env.production
-.env.staging
-
-# API Keys and credentials
-*.key
-*.pem
-*secret*
-*credential*
-
 # Python
 __pycache__/
 *.py[cod]
@@ -31,7 +19,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual environments
 .venv/
@@ -40,59 +27,77 @@ ENV/
 env/
 
 # IDE
-.vscode/settings.json
+.vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
 
-# Logs
-logs/
+# Environment variables
+.env
+
+# Data files (large CSVs)
+data/*.csv
+data/*.parquet
+!data/.gitkeep
+
+# Results and logs
+results/*.csv
+results/*.json
+results/*.png
+results/*.html
+!results/.gitkeep
+logs/*.log
+logs/*.csv
+logs/*.json
+!logs/.gitkeep
 *.log
-paper_trading.log
 
-# Models and data (large files)
-models/
-*.pkl
-*.zip
+# Models
+models/*.pkl
+models/*.h5
+!models/.gitkeep
+
+# Pine Scripts (keep templates)
+scripts_pine/*.txt
+!scripts_pine/template_*.pine
+
+# Streamlit
+.streamlit/
+
+# Model checkpoints
+models/checkpoints/
+*.pth
 *.h5
-*.pb
-data/
-*.csv
-*.json
+*.pkl
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
 
-# Temporary files
-*.tmp
-*.temp
-.cache/
+# Testing
 .pytest_cache/
-
-# Coverage reports
 .coverage
 htmlcov/
-.pytest_cache/
+*.cover
 
-# Documentation
+# Documentation builds
 docs/_build/
+docs/_static/
+docs/_templates/
 
-# Node.js (if any)
-node_modules/
-npm-debug.log*
+# System files
+Thumbs.db
+*.lnk
 
-# Trading results and visualizations
-results/
-*.png
-*.jpg
-*.svg
+# Project specific
+config/best_params.json
+trades_log.csv
+backtest_results.csv
+paper_trades.csv
+
+# Temporary files
+tmp/
+temp/
+*.tmp

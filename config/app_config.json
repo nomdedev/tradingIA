@@ -1,0 +1,187 @@
+{
+  "app": {
+    "version": "1.0.0",
+    "name": "BTC Trading Platform",
+    "theme": "dark",
+    "language": "es",
+    "auto_save": true,
+    "max_threads": 4,
+    "log_level": "INFO"
+  },
+  "api_connections": {
+    "alpaca": {
+      "enabled": true,
+      "is_default": true,
+      "base_url": "https://paper-api.alpaca.markets",
+      "data_url": "https://data.alpaca.markets",
+      "api_key": "",
+      "secret_key": "",
+      "rate_limit": 200,
+      "timeout": 30
+    },
+    "binance": {
+      "enabled": false,
+      "is_default": false,
+      "base_url": "https://api.binance.com",
+      "testnet_url": "https://testnet.binance.vision",
+      "api_key": "",
+      "secret_key": "",
+      "rate_limit": 1200,
+      "timeout": 30
+    },
+    "coinbase": {
+      "enabled": false,
+      "is_default": false,
+      "base_url": "https://api.coinbase.com/v2",
+      "api_key": "",
+      "secret_key": "",
+      "rate_limit": 10000,
+      "timeout": 30
+    },
+    "polygon": {
+      "enabled": false,
+      "is_default": false,
+      "base_url": "https://api.polygon.io",
+      "api_key": "",
+      "rate_limit": 5,
+      "timeout": 30
+    }
+  },
+  "data_settings": {
+    "default_symbol": "BTCUSD",
+    "default_timeframe": "5Min",
+    "cache_enabled": true,
+    "cache_dir": "data/cache",
+    "auto_refresh": false,
+    "refresh_interval_sec": 300,
+    "max_cache_age_days": 7,
+    "data_validation": true
+  },
+  "backtest_settings": {
+    "default_initial_capital": 10000,
+    "default_risk_per_trade": 0.01,
+    "commission_pct": 0.001,
+    "slippage_pct": 0.0005,
+    "default_mode": "simple",
+    "walk_forward_folds": 5,
+    "monte_carlo_simulations": 1000,
+    "parallel_execution": true,
+    "save_trades": true,
+    "save_equity_curve": true
+  },
+  "strategy_settings": {
+    "allow_custom_strategies": true,
+    "custom_strategies_dir": "strategies/custom",
+    "auto_load_strategies": true,
+    "validate_params": true,
+    "save_presets": true,
+    "presets_dir": "config/presets",
+    "max_concurrent_backtests": 3
+  },
+  "analysis_settings": {
+    "enable_hmm_regime_detection": true,
+    "enable_granger_causality": true,
+    "enable_market_impact": true,
+    "enable_stress_testing": true,
+    "enable_monte_carlo": true,
+    "parallel_analysis": true
+  },
+  "reporting_settings": {
+    "auto_export_results": false,
+    "export_formats": ["json", "csv", "pdf"],
+    "export_dir": "results/exports",
+    "include_charts": true,
+    "pine_script_export": true,
+    "email_reports": false
+  },
+  "ai_integration": {
+    "vscode_integration": {
+      "enabled": false,
+      "agent_type": "copilot",
+      "auto_analyze_results": false,
+      "auto_suggest_improvements": false,
+      "analysis_depth": "detailed"
+    },
+    "available_agents": {
+      "copilot": {
+        "name": "GitHub Copilot",
+        "capabilities": ["code_analysis", "strategy_review", "optimization_suggestions"],
+        "enabled": false
+      },
+      "claude": {
+        "name": "Claude AI",
+        "api_key": "",
+        "capabilities": ["deep_analysis", "mathematical_validation", "research"],
+        "enabled": false
+      },
+      "chatgpt": {
+        "name": "ChatGPT",
+        "api_key": "",
+        "capabilities": ["strategy_generation", "parameter_tuning", "market_insights"],
+        "enabled": false
+      },
+      "custom": {
+        "name": "Custom Agent",
+        "endpoint": "",
+        "api_key": "",
+        "capabilities": [],
+        "enabled": false
+      }
+    },
+    "analysis_triggers": {
+      "on_backtest_complete": false,
+      "on_poor_performance": true,
+      "on_strategy_comparison": true,
+      "on_optimization_complete": false
+    },
+    "analysis_options": {
+      "include_mathematical_validation": true,
+      "include_statistical_tests": true,
+      "include_risk_assessment": true,
+      "include_improvement_suggestions": true,
+      "include_code_review": false,
+      "generate_report": true
+    }
+  },
+  "testing_settings": {
+    "enable_unit_tests": true,
+    "enable_integration_tests": true,
+    "auto_run_tests": false,
+    "test_data_dir": "data/test",
+    "mock_api_calls": true,
+    "test_coverage_threshold": 80
+  },
+  "security_settings": {
+    "encrypt_credentials": true,
+    "encryption_key_file": ".encryption_key",
+    "auto_logout_minutes": 60,
+    "require_confirmation_trades": true,
+    "max_position_size_pct": 20,
+    "daily_loss_limit_pct": 5
+  },
+  "performance_settings": {
+    "cache_indicators": true,
+    "use_multiprocessing": true,
+    "max_workers": 4,
+    "memory_limit_mb": 4096,
+    "optimize_dataframes": true
+  },
+  "notification_settings": {
+    "enable_notifications": false,
+    "email_enabled": false,
+    "email_address": "",
+    "slack_webhook": "",
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "notify_on_backtest_complete": true,
+    "notify_on_errors": true,
+    "notify_on_optimization_complete": true
+  },
+  "export_paths": {
+    "results": "results",
+    "logs": "logs",
+    "reports": "reports",
+    "exports": "results/exports",
+    "charts": "results/charts"
+  }
+}
