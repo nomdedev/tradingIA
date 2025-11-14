@@ -7,25 +7,28 @@ from PySide6.QtCore import Qt, QDateTime, QTimer
 from PySide6.QtGui import QIcon, QFont, QPalette, QColor
 
 # Import platform components
-from backend_core import DataManager, StrategyEngine
-from backtester_core import BacktesterCore
-from analysis_engines import AnalysisEngines
-from settings_manager import SettingsManager
-from reporters_engine import ReportersEngine
-from live_monitor_engine import LiveMonitorEngine
+from src.backend_core import DataManager, StrategyEngine
+from src.backtester_core import BacktesterCore
+from src.analysis_engines import AnalysisEngines
+from src.settings_manager import SettingsManager
+from src.reporters_engine import ReportersEngine
+from src.live_monitor_engine import LiveMonitorEngine
+
+# Import configuration and logging
+from src.config.user_config import UserConfigManager
+from src.utils.session_logger import SessionLogger
 
 # Import GUI tabs
-from gui.platform_gui_tab0 import Tab0Dashboard
-from gui.platform_gui_tab1_improved import Tab1DataManagement
-from gui.platform_gui_tab2_improved import Tab2StrategyConfig
-from gui.platform_gui_tab3_improved import Tab3BacktestRunner
-from gui.platform_gui_tab4_improved import Tab4ResultsAnalysis
-from gui.platform_gui_tab5_improved import Tab5ABTesting
-from gui.platform_gui_tab6_improved import Tab6LiveMonitoring
-from gui.platform_gui_tab7_improved import Tab7AdvancedAnalysis
-from gui.platform_gui_tab8 import Tab8SystemSettings
-from gui.platform_gui_tab9_data_download import Tab9DataDownload
-from gui.platform_gui_tab10_help import Tab10Help
+from src.gui.platform_gui_tab0 import Tab0Dashboard
+from src.gui.platform_gui_tab1_improved import Tab1DataManagement
+from src.gui.platform_gui_tab2_improved import Tab2StrategyConfig
+from src.gui.platform_gui_tab3_improved import Tab3BacktestRunner
+from src.gui.platform_gui_tab4_improved import Tab4ResultsAnalysis
+from src.gui.platform_gui_tab5_improved import Tab5ABTesting
+from src.gui.platform_gui_tab6_user_friendly import Tab6LiveMonitoringUserFriendly
+from src.gui.platform_gui_tab7_improved import Tab7AdvancedAnalysis
+from src.gui.platform_gui_tab9_data_download import Tab9DataDownload
+from src.gui.platform_gui_tab10_help import Tab10Help
 
 
 class TradingPlatform(QMainWindow):
@@ -36,9 +39,13 @@ class TradingPlatform(QMainWindow):
         
         # Apply modern dark theme
         self.apply_modern_theme()
-
-        # Apply modern dark theme
-        self.apply_modern_theme()
+        
+        # Initialize configuration manager
+        self.config_manager = UserConfigManager()
+        
+        # Initialize session logger
+        self.session_logger = SessionLogger()
+        self.session_logger.log_action('platform_start', {'version': '2.0.0'})
 
         # Initialize backend engines
         self.data_manager = DataManager()
@@ -73,9 +80,8 @@ class TradingPlatform(QMainWindow):
         self.tabs.addTab(Tab3BacktestRunner(self, self.backtester), "▶️ Backtest")
         self.tabs.addTab(Tab4ResultsAnalysis(self), "📈 Results")
         self.tabs.addTab(Tab5ABTesting(self, self.backtester), "⚖️ A/B Test")
-        self.tabs.addTab(Tab6LiveMonitoring(self), "🔴 Live")
+        self.tabs.addTab(Tab6LiveMonitoringUserFriendly(self), "🔴 Live")
         self.tabs.addTab(Tab7AdvancedAnalysis(self, self.analysis_engines), "🔧 Research")
-        self.tabs.addTab(Tab8SystemSettings(self), "⚙️ Settings")
         self.tabs.addTab(Tab9DataDownload(self), "📥 Data Download")
         self.tabs.addTab(Tab10Help(self), "❓ Help")
 
@@ -85,8 +91,8 @@ class TradingPlatform(QMainWindow):
         # Create modern status bar
         self.create_modern_statusbar()
 
-        # Load configuration
-        self.settings.load_config()
+        # Load saved configuration
+        self.load_saved_config()
 
         # Auto-load default BTC/USD data
         QTimer.singleShot(1000, self.auto_load_default_data)  # Delay to allow UI to show first
@@ -95,6 +101,23 @@ class TradingPlatform(QMainWindow):
         self.tabs.currentChanged.connect(self.on_tab_changed)
 
         self.show()
+    
+    def load_saved_config(self):
+        """Load saved user configuration from previous session"""
+        try:
+            live_config = self.config_manager.get_live_trading_config()
+            if live_config:
+                self.session_logger.log_action('config_loaded', {
+                    'ticker': live_config.get('ticker'),
+                    'strategy': live_config.get('strategy'),
+                    'last_session': self.config_manager.config.get('last_session')
+                })
+                
+                # Apply loaded config (would need to update relevant tabs)
+                self.logger.info(f"Loaded configuration from previous session: {live_config}")
+        except Exception as e:
+            self.session_logger.log_error('config_load_error', str(e))
+            self.logger.warning(f"Could not load previous configuration: {e}")
 
     def apply_modern_theme(self):
         """Apply modern dark theme with professional styling"""
@@ -324,10 +347,33 @@ class TradingPlatform(QMainWindow):
     def on_tab_changed(self, index):
         """Handle tab changes"""
         current_tab = self.tabs.widget(index)
+        tab_name = self.tabs.tabText(index)
+        
+        # Log tab visit
+        self.session_logger.log_tab_visit(tab_name)
 
         # Call tab-specific activation methods
         if hasattr(current_tab, 'on_tab_activated'):
             current_tab.on_tab_activated()
+    
+    def closeEvent(self, event):
+        """Handle application close - save config and generate session report"""
+        try:
+            # Save configuration
+            self.config_manager.save_config()
+            self.session_logger.log_action('config_saved', {'success': True})
+            
+            # End session and generate report
+            self.session_logger.end_session()
+            
+            # Show message to user
+            self.logger.info(f"Session report saved: {self.session_logger.session_file}")
+            self.logger.info("Configuration saved successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error during shutdown: {e}")
+        finally:
+            event.accept()
 
     def update_status(self, msg, status_type="info"):
         """Update status bar with color coding"""

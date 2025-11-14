@@ -1,0 +1,55 @@
+================================================================================
+TRADING PLATFORM - SESSION REPORT
+================================================================================
+
+Session ID: 20251114_162635
+Start Time: 2025-11-14T16:26:35.468024
+End Time: 2025-11-14T16:26:35.471208
+Duration: 0s
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+Total Actions: 3
+Total Errors: 0
+Error Rate: 0.00%
+Backtests Run: 1
+Live Trading Sessions: 0
+Data Downloads: 1
+Most Visited Tab: 🏠 Dashboard
+
+--------------------------------------------------------------------------------
+TAB VISITS
+--------------------------------------------------------------------------------
+  🏠 Dashboard: 1 visits
+  📊 Data: 1 visits
+  ⚙️ Strategy: 1 visits
+  ▶️ Backtest: 1 visits
+  📈 Results: 1 visits
+
+--------------------------------------------------------------------------------
+RECENT ACTIONS (Last 20)
+--------------------------------------------------------------------------------
+
+[2025-11-14T16:26:35.469023] CONFIG_CHANGE
+  Result: success
+  action: set_ticker
+  value: BTC/USD
+
+[2025-11-14T16:26:35.470020] DATA_DOWNLOAD
+  Result: success
+  timeframe: 5min
+  status: success
+  file_path: data/raw/BTCUSD_5Min.csv
+  error: None
+
+[2025-11-14T16:26:35.470020] BACKTEST
+  Result: success
+  strategy: RSI Mean Reversion
+  ticker: BTC/USD
+  timeframe: 5min
+  results: {'total_trades': 25, 'win_rate': 68.0, 'total_pnl': 2100.0, 'final_balance': 12100.0}
+
+================================================================================
+END OF REPORT
+================================================================================

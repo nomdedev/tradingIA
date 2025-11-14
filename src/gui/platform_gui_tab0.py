@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QFont, QColor
 from datetime import datetime
-import random  # For demo metrics
 
 
 class MetricCard(QFrame):
@@ -21,6 +20,7 @@ class MetricCard(QFrame):
     
     def __init__(self, title, value, subtitle="", color="#0e639c"):
         super().__init__()
+        self.color = color
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setStyleSheet(f"""
             MetricCard {{
@@ -49,10 +49,9 @@ class MetricCard(QFrame):
         layout.addWidget(self.value_label)
         
         # Subtitle
-        if subtitle:
-            subtitle_label = QLabel(subtitle)
-            subtitle_label.setStyleSheet("color: #666; font-size: 11px;")
-            layout.addWidget(subtitle_label)
+        self.subtitle_label = QLabel(subtitle)
+        self.subtitle_label.setStyleSheet("color: #666; font-size: 11px;")
+        layout.addWidget(self.subtitle_label)
         
         layout.addStretch()
         self.setLayout(layout)
@@ -60,6 +59,10 @@ class MetricCard(QFrame):
     def update_value(self, value):
         """Update metric value"""
         self.value_label.setText(str(value))
+    
+    def update_subtitle(self, subtitle):
+        """Update subtitle text"""
+        self.subtitle_label.setText(subtitle)
 
 
 class QuickActionButton(QPushButton):
@@ -111,14 +114,16 @@ class Tab0Dashboard(QWidget):
         super().__init__()
         self.parent_platform = parent_platform
         
-        # Demo data
-        self.current_balance = 10000.00
+        # Initial state - no data yet
+        self.current_balance = 0.00
         self.current_pnl = 0.00
         self.win_rate = 0.00
         self.active_trades = 0
+        self.has_data = False
+        self.last_backtest_results = None
         
         self.init_ui()
-        self.start_updates()
+        # Don't start updates automatically - will start when needed
     
     def init_ui(self):
         """Initialize dashboard UI"""
@@ -126,7 +131,8 @@ class Tab0Dashboard(QWidget):
         main_layout.setSpacing(20)
         main_layout.setContentsMargins(20, 20, 20, 20)
         
-        # Header
+        # Header with status
+        header_layout = QHBoxLayout()
         header = QLabel("📊 Trading Dashboard")
         header.setStyleSheet("""
             font-size: 28px;
@@ -134,7 +140,40 @@ class Tab0Dashboard(QWidget):
             color: #fff;
             margin-bottom: 10px;
         """)
-        main_layout.addWidget(header)
+        header_layout.addWidget(header)
+        
+        # Status indicator
+        self.status_label = QLabel("⚪ No Data Loaded")
+        self.status_label.setStyleSheet("""
+            font-size: 14px;
+            color: #888;
+            padding: 8px 16px;
+            background-color: #2d2d2d;
+            border-radius: 6px;
+        """)
+        header_layout.addWidget(self.status_label)
+        header_layout.addStretch()
+        
+        main_layout.addLayout(header_layout)
+        
+        # Info banner
+        info_banner = QLabel(
+            "💡 <b>Getting Started:</b> Use the quick actions below to load data, "
+            "configure a strategy, and run your first backtest. "
+            "Results will appear here once you start trading or backtesting."
+        )
+        info_banner.setWordWrap(True)
+        info_banner.setStyleSheet("""
+            QLabel {
+                background-color: #1e3a5f;
+                color: #a8d8ff;
+                padding: 12px 16px;
+                border-radius: 8px;
+                border-left: 4px solid #569cd6;
+                font-size: 13px;
+            }
+        """)
+        main_layout.addWidget(info_banner)
         
         # Metrics Overview
         metrics_group = self.create_metrics_section()
@@ -144,9 +183,10 @@ class Tab0Dashboard(QWidget):
         actions_group = self.create_quick_actions()
         main_layout.addWidget(actions_group)
         
-        # Recent Activity
-        activity_group = self.create_activity_section()
-        main_layout.addWidget(activity_group)
+        # Recent Activity (will be hidden initially)
+        self.activity_group = self.create_activity_section()
+        self.activity_group.setVisible(False)
+        main_layout.addWidget(self.activity_group)
         
         main_layout.addStretch()
         self.setLayout(main_layout)
@@ -175,33 +215,52 @@ class Tab0Dashboard(QWidget):
         layout.setSpacing(16)
         layout.setContentsMargins(16, 24, 16, 16)
         
-        # Create metric cards
+        # Create metric cards with explanatory tooltips
         self.balance_card = MetricCard(
             "Balance",
-            f"${self.current_balance:,.2f}",
-            "Total Capital",
+            "No Data",
+            "Load backtest or start trading",
             "#4ec9b0"
+        )
+        self.balance_card.setToolTip(
+            "Shows your current capital. Will update when you:\n"
+            "• Run a backtest (shows final backtest balance)\n"
+            "• Start live trading (shows real-time balance)"
         )
         
         self.pnl_card = MetricCard(
-            "P&L Today",
-            f"${self.current_pnl:+,.2f}",
-            f"{(self.current_pnl/self.current_balance*100):+.2f}%",
-            "#569cd6" if self.current_pnl >= 0 else "#f48771"
+            "P&L",
+            "No Data",
+            "Run backtest to see results",
+            "#569cd6"
+        )
+        self.pnl_card.setToolTip(
+            "Profit & Loss tracking. Shows:\n"
+            "• Backtest: Total P&L from simulation\n"
+            "• Live: Real-time P&L from open positions"
         )
         
         self.winrate_card = MetricCard(
             "Win Rate",
-            f"{self.win_rate:.1f}%",
-            "Last 30 days",
+            "No Data",
+            "Execute trades to calculate",
             "#dcdcaa"
+        )
+        self.winrate_card.setToolTip(
+            "Percentage of profitable trades.\n"
+            "Requires at least 10 completed trades to display."
         )
         
         self.trades_card = MetricCard(
-            "Active Trades",
-            str(self.active_trades),
-            "Live Positions",
+            "Trades",
+            "0",
+            "No active positions",
             "#c586c0"
+        )
+        self.trades_card.setToolTip(
+            "Number of active trades:\n"
+            "• Backtest: Total trades executed\n"
+            "• Live: Currently open positions"
         )
         
         # Add cards to grid
@@ -332,25 +391,105 @@ class Tab0Dashboard(QWidget):
         while self.activity_list.count() > 10:
             self.activity_list.takeItem(self.activity_list.count() - 1)
     
-    def start_updates(self):
-        """Start periodic metric updates"""
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self.update_metrics)
-        self.update_timer.start(2000)  # Update every 2 seconds
+    def update_from_backtest(self, results):
+        """Update dashboard with backtest results"""
+        if not results:
+            return
+        
+        self.has_data = True
+        self.last_backtest_results = results
+        
+        # Update status
+        self.status_label.setText("🔵 Backtest Results Loaded")
+        self.status_label.setStyleSheet("""
+            font-size: 14px;
+            color: #4ec9b0;
+            padding: 8px 16px;
+            background-color: #1e3a2d;
+            border-radius: 6px;
+        """)
+        
+        # Update metrics from backtest
+        final_balance = results.get('final_balance', 0)
+        total_pnl = results.get('total_pnl', 0)
+        win_rate = results.get('win_rate', 0)
+        total_trades = results.get('total_trades', 0)
+        
+        self.balance_card.update_value(f"${final_balance:,.2f}")
+        self.balance_card.update_subtitle("From last backtest")
+        
+        pnl_color = "#4ec9b0" if total_pnl >= 0 else "#f48771"
+        self.pnl_card.update_value(f"${total_pnl:+,.2f}")
+        self.pnl_card.update_subtitle(f"{(total_pnl/10000*100):+.2f}% return")
+        self.pnl_card.setStyleSheet(f"QGroupBox {{ border-left: 4px solid {pnl_color}; }}")
+        
+        self.winrate_card.update_value(f"{win_rate:.1f}%")
+        self.winrate_card.update_subtitle(f"Based on {total_trades} trades")
+        
+        self.trades_card.update_value(str(total_trades))
+        self.trades_card.update_subtitle("Total executed")
+        
+        # Show activity section
+        self.activity_group.setVisible(True)
+        self.add_activity("✅", f"Backtest completed: {total_trades} trades, {win_rate:.1f}% win rate", "success")
     
-    def update_metrics(self):
-        """Update dashboard metrics (demo)"""
-        # Simulate metric changes
-        pnl_change = random.uniform(-10, 15)
-        self.current_pnl += pnl_change
+    def update_from_live_trading(self, balance, pnl, open_trades):
+        """Update dashboard with live trading data"""
+        self.has_data = True
         
-        # Update cards
-        self.pnl_card.update_value(f"${self.current_pnl:+,.2f}")
+        # Update status
+        self.status_label.setText("🔴 Live Trading Active")
+        self.status_label.setStyleSheet("""
+            font-size: 14px;
+            color: #f48771;
+            padding: 8px 16px;
+            background-color: #3a1e1e;
+            border-radius: 6px;
+            animation: pulse 2s infinite;
+        """)
         
-        # Update win rate occasionally
-        if random.random() < 0.1:
-            self.win_rate = random.uniform(65, 80)
-            self.winrate_card.update_value(f"{self.win_rate:.1f}%")
+        # Update metrics
+        self.balance_card.update_value(f"${balance:,.2f}")
+        self.balance_card.update_subtitle("Live balance")
+        
+        pnl_color = "#4ec9b0" if pnl >= 0 else "#f48771"
+        self.pnl_card.update_value(f"${pnl:+,.2f}")
+        self.pnl_card.update_subtitle(f"{(pnl/balance*100):+.2f}% today")
+        self.pnl_card.setStyleSheet(f"QGroupBox {{ border-left: 4px solid {pnl_color}; }}")
+        
+        self.trades_card.update_value(str(open_trades))
+        self.trades_card.update_subtitle("Open positions")
+        
+        # Show activity section
+        self.activity_group.setVisible(True)
+    
+    def clear_data(self):
+        """Clear all dashboard data"""
+        self.has_data = False
+        self.last_backtest_results = None
+        
+        self.status_label.setText("⚪ No Data Loaded")
+        self.status_label.setStyleSheet("""
+            font-size: 14px;
+            color: #888;
+            padding: 8px 16px;
+            background-color: #2d2d2d;
+            border-radius: 6px;
+        """)
+        
+        self.balance_card.update_value("No Data")
+        self.balance_card.update_subtitle("Load backtest or start trading")
+        
+        self.pnl_card.update_value("No Data")
+        self.pnl_card.update_subtitle("Run backtest to see results")
+        
+        self.winrate_card.update_value("No Data")
+        self.winrate_card.update_subtitle("Execute trades to calculate")
+        
+        self.trades_card.update_value("0")
+        self.trades_card.update_subtitle("No active positions")
+        
+        self.activity_group.setVisible(False)
     
     # Quick action handlers
     def on_load_data(self):

@@ -25,10 +25,18 @@ class DataDownloadThread(QThread):
         try:
             self.progress_update.emit(f"Starting download of {self.timeframe} data...", 10)
 
+            # Get correct path to script (go up from src/gui to root, then into scripts/)
+            src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            project_root = os.path.dirname(src_dir)
+            script_path = os.path.join(project_root, "scripts", "download_btc_data.py")
+            
+            if not os.path.exists(script_path):
+                raise FileNotFoundError(f"Script not found at: {script_path}")
+
             # Build command
             cmd = [
                 sys.executable,
-                "scripts/download_btc_data.py",
+                script_path,
                 "--start-date", self.start_date,
                 "--end-date", self.end_date,
                 "--timeframe", self.timeframe
@@ -36,13 +44,13 @@ class DataDownloadThread(QThread):
 
             self.progress_update.emit("Executing download command...", 20)
 
-            # Run the download script
+            # Run the download script from project root
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                cwd=project_root
             )
 
             # Read output in real-time
