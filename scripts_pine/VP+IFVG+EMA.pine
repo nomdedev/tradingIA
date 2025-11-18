@@ -9,44 +9,36 @@ docGR = '📚 DOCUMENTACIÓN'
 docText = '═══════════════════════════════════════════════\n' +
           '📊 ESTRATEGIA VOLUME PROFILE + IFVG + EMAs\n' +
           '═══════════════════════════════════════════════\n\n' +
-          
           '🎯 RESUMEN DE LA ESTRATEGIA:\n' +
           'Esta estrategia combina 3 indicadores poderosos:\n' +
           '• IFVG (Huecos de Inversión de Valor Justo)\n' +
           '• Perfil de Volumen (VP)\n' +
           '• Medias Móviles Exponenciales (EMAs)\n\n' +
-          
           '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-          
           '🔺 SEÑALES LONG (COMPRA):\n' +
           '1. Triángulo IFVG ▲: Precio re-entra en FVG bajista\n' +
           '2. Cruce EMA ⬆: EMA rápida cruza sobre EMA lenta\n' +
           '3. VP Demanda 🟦: Precio en zona de demanda (azul)\n' +
           '4. Toque VAL 📉: Precio toca Value Area Low\n' +
           '5. Cruce POC ➕: Precio cruza por encima del POC\n\n' +
-          
           '🔻 SEÑALES SHORT (VENTA):\n' +
           '1. Triángulo IFVG ▼: Precio re-entra en FVG alcista\n' +
           '2. Cruce EMA ⬇: EMA rápida cruza bajo EMA lenta\n' +
           '3. VP Oferta 🟥: Precio en zona de oferta (rojo)\n' +
           '4. Toque VAH 📈: Precio toca Value Area High\n' +
           '5. Cruce POC ➖: Precio cruza por debajo del POC\n\n' +
-          
           '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-          
           '💡 MEJORES PRÁCTICAS:\n' +
           '• Usar múltiples señales para confirmación\n' +
           '• Verificar aumento de volumen en entrada\n' +
           '• Colocar stop loss más allá de la zona FVG\n' +
           '• Tomar ganancia en POC o extremos de VA\n' +
           '• Operar a favor de la tendencia (seguir EMAs)\n\n' +
-          
           '⚠️ GESTIÓN DE RIESGO:\n' +
           '• Nunca arriesgar más del 2% por operación\n' +
           '• Usar tamaño de posición apropiado\n' +
           '• Siempre establecer órdenes stop loss\n' +
           '• Monitorear condiciones del mercado\n\n' +
-          
           '═══════════════════════════════════════════════\n' +
           'Documentación completa: Ver comentarios del script\n' +
           '═══════════════════════════════════════════════'
@@ -390,7 +382,6 @@ f_gTF(_d) =>
         switch
             tfInMs <                 30  =>  '1S'
             tfInMs <          1 * mInMS  =>  '5S'
-
             tfInMs <=        15 * mInMS  =>   '1'
             tfInMs <=        60 * mInMS  =>   '5'
             tfInMs <=       240 * mInMS  =>  '15'
@@ -402,7 +393,6 @@ f_gTF(_d) =>
             tfInMs <                 15  =>  '1S'
             tfInMs <                 30  =>  '5S'
             tfInMs <          1 * mInMS  => '15S'
-
             tfInMs <=         5 * mInMS  =>   '1'
             tfInMs <=        15 * mInMS  =>   '5'
             tfInMs <=        60 * mInMS  =>  '15'
@@ -841,11 +831,8 @@ if barstate.islast
     lastVAL := pLST + (VP.lbP + 0.00) * pSTP
 
 // Señales de Toque del POC
-pocTouchBull = enableVPSignals and vpSignalPOC and not na(lastPOC) and 
-    close > lastPOC and low <= lastPOC and close[1] < lastPOC
-
-pocTouchBear = enableVPSignals and vpSignalPOC and not na(lastPOC) and 
-    close < lastPOC and high >= lastPOC and close[1] > lastPOC
+pocTouchBull = enableVPSignals and vpSignalPOC and not na(lastPOC) and close > lastPOC and low <= lastPOC and close[1] < lastPOC
+pocTouchBear = enableVPSignals and vpSignalPOC and not na(lastPOC) and close < lastPOC and high >= lastPOC and close[1] > lastPOC
 
 if pocTouchBull
     label.new(bar_index, low, "⬆\nPOC", style = label.style_label_up, 
@@ -858,8 +845,7 @@ if pocTouchBear
         tooltip = "Precio cruzó por debajo del POC: " + str.tostring(lastPOC, format.mintick))
 
 // Señales de Toque del VAH
-vahTouchBear = enableVPSignals and vpSignalVAH and not na(lastVAH) and 
-    high >= lastVAH and close < lastVAH and high[1] < lastVAH
+vahTouchBear = enableVPSignals and vpSignalVAH and not na(lastVAH) and high >= lastVAH and close < lastVAH and high[1] < lastVAH
 
 if vahTouchBear
     label.new(bar_index, high, "VAH\n⬇", style = label.style_label_down, 
@@ -867,8 +853,7 @@ if vahTouchBear
         tooltip = "Precio rechazado en VAH: " + str.tostring(lastVAH, format.mintick))
 
 // Señales de Toque del VAL
-valTouchBull = enableVPSignals and vpSignalVAL and not na(lastVAL) and 
-    low <= lastVAL and close > lastVAL and low[1] > lastVAL
+valTouchBull = enableVPSignals and vpSignalVAL and not na(lastVAL) and low <= lastVAL and close > lastVAL and low[1] > lastVAL
 
 if valTouchBull
     label.new(bar_index, low, "⬆\nVAL", style = label.style_label_up, 
