@@ -156,17 +156,19 @@ def calculate_metrics(bt):
     # Win Rate
     win_rate = (returns > 0).mean()
 
-    # Profit Factor
+    # Profit Factor (sin inf)
     winning_trades = returns[returns > 0]
     losing_trades = returns[returns < 0]
-    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 else float('inf')
+    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 and losing_trades.sum() != 0 else 0.0
 
-    # Sortino Ratio
-    downside_returns = daily_returns[daily_returns < 0]
-    if len(downside_returns) > 0:
-        sortino = np.mean(daily_returns) / np.std(downside_returns) * np.sqrt(252)
+    # Sortino Ratio (con risk-free rate, sin inf)
+    rf_daily = 0.04 / 252
+    excess_daily_returns = daily_returns - rf_daily
+    downside_returns = excess_daily_returns[excess_daily_returns < 0]
+    if len(downside_returns) > 0 and downside_returns.std() > 0:
+        sortino = (excess_daily_returns.mean() / downside_returns.std()) * np.sqrt(252)
     else:
-        sortino = float('inf')
+        sortino = 0.0
 
     # VaR 95%
     var_95 = np.percentile(returns, 5)

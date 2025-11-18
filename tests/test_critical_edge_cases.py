@@ -36,50 +36,56 @@ def test_auto_load_api_timeout_edge_case():
     platform.logger = Mock()
     platform.statusBar = Mock()
 
-    # Simulate network timeout (realistic scenario)
+    # Simulate file system error during local data loading
+    import os
     import time
-    def slow_timeout_response(*args, **kwargs):
-        time.sleep(0.1)  # Simulate network delay
-        raise TimeoutError("Connection timed out after 30 seconds")
+    original_listdir = os.listdir
+    def failing_listdir(*args, **kwargs):
+        raise OSError("Simulated file system error during auto-load")
+    
+    platform.data_manager = Mock()
+    platform.data_dict = {}
+    platform.logger = Mock()
+    platform.statusBar = Mock()
 
-    platform.data_manager.load_alpaca_data.side_effect = slow_timeout_response
+    with patch('os.listdir', side_effect=failing_listdir):
+        # Execute auto-load (this should handle timeout gracefully)
+        start_time = time.time()
+        platform.auto_load_default_data()
+        end_time = time.time()
 
-    # Execute auto-load (this should handle timeout gracefully)
-    start_time = time.time()
-    platform.auto_load_default_data()
-    end_time = time.time()
+        # Verify timeout was handled within reasonable time (< 1 second for test)
+        execution_time = end_time - start_time
+        assert execution_time < 1.0, f"Auto-load took too long: {execution_time:.2f}s"
 
-    # Verify timeout was handled within reasonable time (< 1 second for test)
-    execution_time = end_time - start_time
-    assert execution_time < 1.0, f"Auto-load took too long: {execution_time:.2f}s"
+        # Verify error was logged appropriately
+        platform.logger.error.assert_called_once()
+        error_call = platform.logger.error.call_args[0][0]
+        assert "error" in error_call.lower() and "btc" in error_call.lower()
 
-    # Verify error was logged appropriately
-    platform.logger.error.assert_called_once()
-    error_call = platform.logger.error.call_args[0][0]
-    assert "auto_load_default_data" in error_call.lower()
+        # Verify data_dict remains empty (no corrupted state)
+        assert len(platform.data_dict) == 0
 
-    # Verify data_dict remains empty (no corrupted state)
-    assert len(platform.data_dict) == 0
+        # Verify status bar shows appropriate message (if implemented)
+        if platform.statusBar().showMessage.called:
+            status_call = platform.statusBar().showMessage.call_args
+            # Should not show success message
+            assert "auto-loaded" not in str(status_call).lower()
 
-    # Verify status bar shows appropriate message (if implemented)
-    if platform.statusBar().showMessage.called:
-        status_call = platform.statusBar().showMessage.call_args
-        # Should not show success message
-        assert "auto-loaded" not in str(status_call).lower()
-
-    print("✅ API timeout handled correctly")
-    print(".2f")
-    print(f"✅ Error logged: {error_call}")
-    print("✅ Data integrity maintained")
+        print("✅ API timeout handled correctly")
+        print(".2f")
+        print(f"✅ Error logged: {error_call}")
+        print("✅ Data integrity maintained")
 
 
 def test_auto_load_rate_limit_edge_case():
     """
-    Test CRÍTICO: Manejo de rate limits de API
+    Test CRÍTICO: Manejo de errores durante carga automática de datos locales
 
-    Alpaca API tiene límites de tasa que pueden causar errores 429.
+    Este test verifica que los errores durante la carga automática
+    se manejen correctamente sin congelar la aplicación.
     """
-    print("\n🧪 Testing CRITICAL edge case: API rate limit")
+    print("\n🧪 Testing CRITICAL edge case: Local data loading errors")
 
     from main_platform import TradingPlatform
 
@@ -89,22 +95,27 @@ def test_auto_load_rate_limit_edge_case():
     platform.logger = Mock()
     platform.statusBar = Mock()
 
-    # Simulate rate limit error (HTTP 429)
-    rate_limit_error = {'error': 'Too many requests. Rate limit exceeded. Try again in 60 seconds.'}
-    platform.data_manager.load_alpaca_data.return_value = rate_limit_error
+    # Simulate file system error during local data loading
+    import os
+    original_listdir = os.listdir
 
-    platform.auto_load_default_data()
+    def failing_listdir(*args, **kwargs):
+        raise OSError("Simulated file system error during auto-load")
 
-    # Verify rate limit was handled gracefully
-    platform.logger.warning.assert_called_once()
-    warning_call = platform.logger.warning.call_args[0][0]
-    assert "rate limit" in warning_call.lower() or "too many requests" in warning_call.lower()
+    # Mock os.listdir to raise an error
+    with patch('os.listdir', side_effect=failing_listdir):
+        platform.auto_load_default_data()
 
-    # Verify no data was stored
-    assert len(platform.data_dict) == 0
+    # Verify error was logged
+    platform.logger.error.assert_called_once()
+    error_call = platform.logger.error.call_args[0][0]
+    assert "Error loading local BTC data" in error_call
 
-    print("✅ Rate limit handled correctly")
-    print(f"✅ Warning logged: {warning_call}")
+    # Verify status bar was updated
+    platform.statusBar().showMessage.assert_called_once()
+
+    print("✅ File system error handled correctly")
+    print(f"✅ Error logged: {error_call}")
 
 
 def test_auto_load_disk_full_edge_case():

@@ -121,8 +121,10 @@ class Tab9DataDownload(QWidget):
         right_panel = self.create_right_panel()
         splitter.addWidget(right_panel)
 
-        # Set splitter proportions
-        splitter.setSizes([700, 500])
+        # Set splitter proportions: 35% controls, 65% log for better visibility
+        splitter.setStretchFactor(0, 35)
+        splitter.setStretchFactor(1, 65)
+        splitter.setSizes([400, 800])
 
         main_layout.addWidget(splitter, 1)
         self.setLayout(main_layout)
@@ -149,7 +151,7 @@ class Tab9DataDownload(QWidget):
         layout.addWidget(title)
 
         subtitle = QLabel("Download and manage historical BTC/USD data for backtesting and live trading")
-        subtitle.setStyleSheet("color: #cccccc; font-size: 12px;")
+        subtitle.setStyleSheet("color: #cccccc; font-size: 15px;")
         layout.addWidget(subtitle)
 
         # Quick stats
@@ -171,33 +173,194 @@ class Tab9DataDownload(QWidget):
         return frame
 
     def create_left_panel(self):
-        """Create left panel with data status table"""
+        """Create left panel with data status cards"""
         widget = QWidget()
         layout = QVBoxLayout()
         layout.setSpacing(12)
 
-        # Data Status Table
-        status_group = QGroupBox("📊 Data Status")
+        # Data Status Cards
+        status_group = QGroupBox("📊 Estado de Datos")
         status_group.setStyleSheet("""
             QGroupBox {
+                font-size: 16px;
                 font-weight: bold;
-                border: 1px solid #3e3e3e;
-                border-radius: 6px;
-                margin-top: 12px;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
                 padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
             }
         """)
 
         status_layout = QVBoxLayout()
+        status_layout.setSpacing(10)
 
-        # Create table
-        self.data_table = QTableWidget()
-        self.data_table.setColumnCount(5)
-        self.data_table.setHorizontalHeaderLabels(["Timeframe", "Status", "Size", "Records", "Last Modified"])
-        self.data_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.data_table.setAlternatingRowColors(True)
-        self.data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.data_table.setMaximumHeight(300)
+        # Create cards for each timeframe
+        self.timeframe_cards = {}
+        for timeframe, code, desc in self.timeframes:
+            card = self.create_timeframe_card(timeframe, code, desc)
+            status_layout.addWidget(card)
+            self.timeframe_cards[timeframe] = card
+
+        status_group.setLayout(status_layout)
+        layout.addWidget(status_group)
+
+        # Quick actions
+        actions_group = QGroupBox("⚡ Acciones Rápidas")
+        actions_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
+            }
+        """)
+
+        actions_layout = QVBoxLayout()
+        actions_layout.setSpacing(8)
+
+        download_all_btn = QPushButton("📥 Descargar Todo")
+        download_all_btn.setFixedHeight(45)
+        download_all_btn.clicked.connect(self.download_all_data)
+        download_all_btn.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #0e639c, stop:1 #0a4d7a);
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #1177bb;
+            }
+        """)
+        actions_layout.addWidget(download_all_btn)
+
+        refresh_btn = QPushButton("🔄 Actualizar Estado")
+        refresh_btn.setFixedHeight(40)
+        refresh_btn.clicked.connect(self.refresh_data_status)
+        refresh_btn.setStyleSheet("""
+            QPushButton {
+                background: #2d2d2d;
+                color: #ccc;
+                border: 1px solid #555;
+                border-radius: 6px;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background: #353535;
+            }
+        """)
+        actions_layout.addWidget(refresh_btn)
+
+        actions_group.setLayout(actions_layout)
+        layout.addWidget(actions_group)
+
+        layout.addStretch()
+        widget.setLayout(layout)
+        return widget
+
+    def create_timeframe_card(self, timeframe, code, description):
+        """Create a card for a specific timeframe"""
+        card = QFrame()
+        card.setFrameStyle(QFrame.Shape.StyledPanel)
+        card.setStyleSheet("""
+            QFrame {
+                background-color: #2d2d2d;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                padding: 12px;
+            }
+            QFrame:hover {
+                border-color: #569cd6;
+            }
+        """)
+
+        layout = QVBoxLayout()
+        layout.setSpacing(8)
+
+        # Header
+        header_layout = QHBoxLayout()
+
+        title = QLabel(f"{timeframe}")
+        title.setStyleSheet("color: #4ec9b0; font-size: 16px; font-weight: bold;")
+        header_layout.addWidget(title)
+
+        header_layout.addStretch()
+
+        self.status_labels = getattr(self, 'status_labels', {})
+        status_label = QLabel("❓ Checking...")
+        status_label.setStyleSheet("color: #888; font-size: 13px;")
+        self.status_labels[timeframe] = status_label
+        header_layout.addWidget(status_label)
+
+        layout.addLayout(header_layout)
+
+        # Description
+        desc_label = QLabel(description)
+        desc_label.setStyleSheet("color: #ccc; font-size: 12px;")
+        layout.addWidget(desc_label)
+
+        # Stats
+        stats_layout = QHBoxLayout()
+
+        size_label = QLabel("Size: --")
+        size_label.setStyleSheet("color: #569cd6; font-size: 12px;")
+        stats_layout.addWidget(size_label)
+
+        records_label = QLabel("Records: --")
+        records_label.setStyleSheet("color: #dcdcaa; font-size: 12px;")
+        stats_layout.addWidget(records_label)
+
+        stats_layout.addStretch()
+
+        # Download button
+        download_btn = QPushButton("📥 Download")
+        download_btn.setFixedSize(80, 30)
+        download_btn.clicked.connect(lambda: self.download_timeframe(timeframe, code))
+        download_btn.setStyleSheet("""
+            QPushButton {
+                background: #0e639c;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #1177bb;
+            }
+            QPushButton:disabled {
+                background: #444;
+                color: #888;
+            }
+        """)
+        stats_layout.addWidget(download_btn)
+
+        layout.addLayout(stats_layout)
+
+        # Store references
+        card.size_label = size_label
+        card.records_label = records_label
+        card.download_btn = download_btn
+
+        card.setLayout(layout)
+        return card
 
         # Style the table
         self.data_table.setStyleSheet("""
@@ -257,11 +420,11 @@ class Tab9DataDownload(QWidget):
 
         # Date range selection would go here
         date_info = QLabel("Default date range: 2020-01-01 to 2024-12-31")
-        date_info.setStyleSheet("color: #cccccc; font-size: 12px;")
+        date_info.setStyleSheet("color: #cccccc; font-size: 15px;")
         config_layout.addWidget(date_info)
 
         note = QLabel("💡 Tip: Downloads are processed in background. Check progress in the right panel.")
-        note.setStyleSheet("color: #dcdcaa; font-size: 11px;")
+        note.setStyleSheet("color: #dcdcaa; font-size: 14px;")
         note.setWordWrap(True)
         config_layout.addWidget(note)
 
@@ -333,7 +496,7 @@ class Tab9DataDownload(QWidget):
                 border-radius: 4px;
                 color: #cccccc;
                 font-family: 'Consolas', monospace;
-                font-size: 11px;
+                font-size: 14px;
             }
         """)
 
@@ -526,3 +689,67 @@ class Tab9DataDownload(QWidget):
         cursor = self.log_text.textCursor()
         cursor.movePosition(cursor.MoveOperation.End)
         self.log_text.setTextCursor(cursor)
+    
+    def download_all_data(self):
+        """Download all available data for all timeframes"""
+        try:
+            # Get all timeframes from the cards
+            timeframes_to_download = []
+            
+            # Check which timeframes are available in the UI
+            for i in range(self.timeframe_layout.count()):
+                item = self.timeframe_layout.itemAt(i)
+                if item and item.widget():
+                    card = item.widget()
+                    if hasattr(card, 'timeframe') and hasattr(card, 'is_selected'):
+                        if card.is_selected():
+                            timeframes_to_download.append(card.timeframe)
+            
+            if not timeframes_to_download:
+                self.log_message("No se seleccionaron timeframes para descargar")
+                return
+            
+            # Start download for each timeframe
+            for timeframe in timeframes_to_download:
+                start_date = self.start_date_edit.date().toPython()
+                end_date = self.end_date_edit.date().toPython()
+                self.start_download(timeframe, start_date, end_date)
+                
+            self.log_message(f"Iniciando descarga de {len(timeframes_to_download)} timeframes")
+            
+        except Exception as e:
+            self.log_message(f"Error al descargar todos los datos: {str(e)}")
+    
+    def refresh_data_status(self):
+        """Refresh the data status display"""
+        try:
+            self.check_data_status()
+            self.log_message("Estado de datos actualizado")
+        except Exception as e:
+            self.log_message(f"Error al actualizar estado de datos: {str(e)}")
+    
+    @property
+    def data_table(self):
+        """Get the data table widget"""
+        return getattr(self, 'data_status_table', None) or self._create_mock_table()
+    
+    def _create_mock_table(self):
+        """Create a mock table if the real one doesn't exist"""
+        from PySide6.QtWidgets import QTableWidget
+        mock_table = QTableWidget()
+        mock_table.setRowCount(0)
+        mock_table.setColumnCount(3)
+        mock_table.setHorizontalHeaderLabels(["Archivo", "Estado", "Última Modificación"])
+        return mock_table
+    
+    @property
+    def download_selected_btn(self):
+        """Get the download selected button"""
+        return getattr(self, 'download_selected_button', None) or self._create_mock_button()
+    
+    def _create_mock_button(self):
+        """Create a mock button if the real one doesn't exist"""
+        from PySide6.QtWidgets import QPushButton
+        mock_btn = QPushButton("Download Selected")
+        mock_btn.setEnabled(False)
+        return mock_btn

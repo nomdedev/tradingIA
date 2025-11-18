@@ -148,12 +148,17 @@ def calculate_metrics(trades_df: pd.DataFrame, benchmark_returns: pd.Series = No
     win_rate = (returns > 0).mean()
     avg_win = returns[returns > 0].mean()
     avg_loss = returns[returns < 0].mean()
-    profit_factor = abs(avg_win * win_rate / (avg_loss * (1 - win_rate))
-                        ) if avg_loss != 0 else np.inf
+    
+    # Profit Factor (correcto): Gross Profit / Gross Loss
+    winning_trades = returns[returns > 0]
+    losing_trades = returns[returns < 0]
+    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 and losing_trades.sum() != 0 else 0.0
 
-    # Risk metrics
+    # Risk metrics (con risk-free rate)
     volatility = returns.std() * np.sqrt(252 * 24)  # Annualized for 1h data
-    sharpe = returns.mean() / returns.std() * np.sqrt(252 * 24) if returns.std() > 0 else 0
+    rf_per_period = 0.04 / (252 * 24)  # Risk-free rate por hora
+    excess_returns = returns - rf_per_period
+    sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252 * 24) if excess_returns.std() > 0 else 0.0
 
     # Maximum drawdown
     cumulative = (1 + returns).cumprod()
@@ -161,25 +166,27 @@ def calculate_metrics(trades_df: pd.DataFrame, benchmark_returns: pd.Series = No
     drawdown = (cumulative - running_max) / running_max
     max_dd = drawdown.min()
 
-    calmar = total_return / abs(max_dd) if max_dd != 0 else np.inf
+    calmar = total_return / abs(max_dd) if max_dd != 0 else 0.0  # 0 en lugar de inf
 
-    # Sortino ratio (downside deviation)
-    downside_returns = returns[returns < 0]
-    sortino = returns.mean() / downside_returns.std() * np.sqrt(252 * 24) if len(downside_returns) > 0 else 0
+    # Sortino ratio (downside deviation con risk-free rate)
+    rf_per_period = 0.04 / (252 * 24)  # Risk-free rate por hora
+    excess_returns_sortino = returns - rf_per_period
+    downside_returns = excess_returns_sortino[excess_returns_sortino < 0]
+    sortino = (excess_returns_sortino.mean() / downside_returns.std()) * np.sqrt(252 * 24) if len(downside_returns) > 0 and downside_returns.std() > 0 else 0.0
 
-    # VaR 95%
-    var95 = np.percentile(returns, 5)
+    # VaR 95% (debe ser negativo - representa pérdida máxima esperada)
+    var95 = -np.percentile(-returns, 95)  # Siempre negativo
 
     # Ulcer Index
     cum_dd = (cumulative - running_max) / running_max
     ulcer = np.sqrt((cum_dd ** 2).mean())
 
-    # Information Ratio vs benchmark
+    # Information Ratio vs benchmark (NO se anualiza con sqrt)
     if benchmark_returns is not None:
         excess_returns = returns - benchmark_returns
-        ir = excess_returns.mean() / excess_returns.std() * np.sqrt(252 * 24) if excess_returns.std() > 0 else 0
+        ir = excess_returns.mean() / excess_returns.std() if excess_returns.std() > 0 else 0.0
     else:
-        ir = 0
+        ir = 0.0
 
     return {
         'total_return': total_return,
@@ -357,7 +364,7 @@ def run_crypto_momentum_strategy_analysis():
     # Load or generate BTC 1h data (placeholder - would use Alpaca API)
     # For demo, create synthetic data
     np.random.seed(42)
-    dates = pd.date_range('2018-01-01', '2025-11-12', freq='1H')
+    dates = pd.date_range('2018-01-01', '2025-11-12', freq='1h')
     n_points = len(dates)
 
     # Generate realistic BTC price data with momentum characteristics

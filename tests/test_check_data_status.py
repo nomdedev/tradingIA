@@ -32,11 +32,12 @@ class TestCheckDataStatusScript:
                 result = subprocess.run([
                     sys.executable,
                     os.path.join(os.path.dirname(__file__), "..", "scripts", "check_data_status.py")
-                ], capture_output=True, text=True, timeout=10)
+                ], capture_output=True, text=True, encoding='utf-8', timeout=10)
 
                 # Should complete successfully
                 assert result.returncode == 0
                 assert "Estado de Datos BTC/USD" in result.stdout
+                assert "[WARNING]" in result.stdout or "[OK]" in result.stdout
 
             finally:
                 os.chdir(old_cwd)
@@ -282,10 +283,9 @@ class TestCheckDataStatusScript:
 
                 # Verify expected content in output
                 assert "Estado de Datos BTC/USD" in output
-                assert "✅ 5m:" in output
-                assert "📊 Registros: 1" in output
-                assert "Resumen" in output
-                assert "Archivos disponibles: 1/4" in output
+                assert "[OK] Encontrados 1 archivos de datos BTC:" in output
+                assert "btc_usd_5m.csv" in output
+                assert "[OK] Verificación completada exitosamente" in output
 
             finally:
                 os.chdir(old_cwd)

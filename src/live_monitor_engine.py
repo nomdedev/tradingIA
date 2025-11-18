@@ -272,7 +272,12 @@ class LiveMonitorEngine(QObject):
         """Calculate basic live metrics"""
         try:
             returns = df['close'].pct_change().dropna()
-            sharpe = returns.mean() / returns.std() * (252 * 24 * 12) if returns.std() > 0 else 0  # Annualized for 5min
+            
+            # Sharpe con risk-free rate (5-min data)
+            rf_per_period = 0.04 / (252 * 24 * 12)  # Risk-free rate por período 5-min
+            excess_returns = returns - rf_per_period
+            sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252 * 24 * 12) if excess_returns.std() > 0 else 0.0
+            
             win_rate = (returns > 0).mean()
             max_dd = (df['close'] / df['close'].expanding().max() - 1).min()
 

@@ -1,0 +1,176 @@
+{
+  "session_id": "20251117_102055",
+  "start_time": "2025-11-17T10:20:55.170377",
+  "end_time": "2025-11-17T10:24:40.298115",
+  "user_actions": [
+    {
+      "timestamp": "2025-11-17T10:20:55.170377",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:20:57.909038",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-16T17:38:30.223739"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:20:57.911033",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-16T17:38:30.223739"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:21:00.897292",
+      "type": "data_loading",
+      "details": {
+        "event_type": "auto_load_success",
+        "data_info": {
+          "symbol": "BTC-USD",
+          "timeframe": "15Min",
+          "records": 100417,
+          "date_range": "2023-01-01 00:00:00 to 2025-11-12 00:00:00",
+          "file_path": "data\\btc_15Min.csv"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:21:01.043834",
+      "type": "data_loading",
+      "details": {
+        "event_type": "manual_load_success",
+        "data_info": {
+          "timeframes": [
+            "BTC-USD_15Min"
+          ],
+          "total_bars": 100417,
+          "timeframes_count": 1
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:21:01.043834",
+      "type": "ui_data_loaded_notification",
+      "details": {
+        "tab": "Tab1_DataManagement",
+        "data_keys": [
+          "BTC-USD_15Min"
+        ]
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:22:00.439882",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1800x1362",
+          "new_size": "1920x1009",
+          "difference": "120x353"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:22:55.596186",
+      "type": "ui_load_data_button_clicked",
+      "details": {
+        "symbol": "BTC/USD",
+        "timeframe": "15Min",
+        "start_date": "2020-01-01",
+        "end_date": "2025-11-17",
+        "multi_timeframe": true
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:24:10.320244",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1920x1009",
+          "new_size": "1920x1362",
+          "difference": "0x353"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:24:24.599084",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1920x1009",
+          "new_size": "1800x1362",
+          "difference": "120x353"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:24:29.005844",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1800x1362",
+          "new_size": "1920x1009",
+          "difference": "120x353"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-17T10:24:40.298115",
+      "type": "config_saved",
+      "details": {
+        "success": true
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {
+    "\ud83d\udcca Data": 2,
+    "\u2699\ufe0f Strategy": 1,
+    "\u25b6\ufe0f Backtest": 1,
+    "\ud83d\udcc8 Results": 1,
+    "\u2696\ufe0f A/B Test": 1,
+    "\ud83c\udfe0 Dashboard": 1
+  },
+  "duration_seconds": 225.127738,
+  "duration_human": "3m 45s",
+  "summary": {
+    "total_actions": 12,
+    "total_errors": 0,
+    "most_visited_tab": "\ud83d\udcca Data",
+    "most_tested_strategy": "None",
+    "error_rate": 0.0,
+    "backtests_completed": 0,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

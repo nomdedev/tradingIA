@@ -72,11 +72,11 @@ class TestDataFetcher:
     @pytest.fixture
     def mock_data_fetcher(self):
         """Fixture con DataFetcher mockeado"""
-        with patch('src.data_fetcher.tradeapi') as mock_api:
+        with patch('api.data_fetcher.tradeapi') as mock_api:
             mock_api.REST.return_value = MockAlpacaAPI()
             
             # Import después del patch
-            from src.data_fetcher import DataFetcher
+            from api.data_fetcher import DataFetcher
             fetcher = DataFetcher()
             return fetcher
     

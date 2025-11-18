@@ -152,6 +152,46 @@ class VolumeBreakoutStrategy(BaseStrategy):
         for key, value in params.items():
             if key in self.parameters:
                 self.parameters[key] = value
+    
+    def get_description(self) -> str:
+        """Get strategy description"""
+        return (
+            "Estrategia de ruptura confirmada por volumen. "
+            "Opera cuando el precio rompe niveles clave de soporte/resistencia con volumen alto, "
+            "indicando movimientos fuertes y sostenidos."
+        )
+    
+    def get_detailed_info(self) -> Dict:
+        """Get detailed strategy information"""
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': (
+                "📈 COMPRA cuando (Breakout alcista):\n"
+                f"  • Precio rompe por encima de resistencia (+{self.parameters['breakout_threshold']*100}%)\n"
+                f"  • Volumen superior a {self.parameters['volume_multiplier']}x el promedio\n"
+                "  • Opcionalmente: cierre debe estar por encima de resistencia\n"
+                "  • Indica fuerte momentum de compra"
+            ),
+            'sell_signals': (
+                "📉 VENTA cuando (Breakdown bajista):\n"
+                f"  • Precio rompe por debajo de soporte (-{self.parameters['breakout_threshold']*100}%)\n"
+                f"  • Volumen superior a {self.parameters['volume_multiplier']}x el promedio\n"
+                "  • Opcionalmente: cierre debe estar por debajo de soporte\n"
+                "  • Indica fuerte momentum de venta"
+            ),
+            'parameters': {
+                'lookback_period': f"{self.parameters['lookback_period']} - Período para detectar soporte/resistencia",
+                'volume_ma_period': f"{self.parameters['volume_ma_period']} - Período para media de volumen",
+                'volume_multiplier': f"{self.parameters['volume_multiplier']}x - Multiplicador de volumen requerido",
+                'breakout_threshold': f"{self.parameters['breakout_threshold']*100}% - Umbral de ruptura",
+                'require_close_beyond': f"{self.parameters['require_close_beyond']} - Requiere cierre más allá del nivel",
+                'atr_period': f"{self.parameters['atr_period']} - Período ATR para volatilidad"
+            },
+            'risk_level': 'Agresivo',
+            'timeframe': '5min',
+            'indicators': ['Support/Resistance', 'Volume MA', 'ATR']
+        }
 
 
 # Create preset configurations
@@ -193,7 +233,7 @@ if __name__ == "__main__":
     print(f"Parameters: {strategy.get_parameters()}")
     
     # Generate sample data
-    dates = pd.date_range('2024-01-01', periods=150, freq='1H')
+    dates = pd.date_range('2024-01-01', periods=150, freq='1h')
     df = pd.DataFrame({
         'open': np.random.randn(150).cumsum() + 100,
         'high': np.random.randn(150).cumsum() + 102,

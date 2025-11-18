@@ -42,7 +42,7 @@ class HelpDialog(QDialog):
                 border: 1px solid #444;
                 border-radius: 4px;
                 padding: 12px;
-                font-size: 11px;
+                font-size: 14px;
             }
         """)
         
@@ -144,7 +144,7 @@ class MetricCard(QFrame):
         
         # Title
         title_label = QLabel(title)
-        title_label.setStyleSheet("color: #888; font-size: 11px; font-weight: normal;")
+        title_label.setStyleSheet("color: #888; font-size: 14px; font-weight: normal;")
         layout.addWidget(title_label)
         
         # Value container
@@ -188,7 +188,7 @@ class TickerSelector(QGroupBox):
         
         # Info label
         info = QLabel("Selecciona qué activo quieres tradear:")
-        info.setStyleSheet("color: #888; font-size: 10px;")
+        info.setStyleSheet("color: #888; font-size: 13px;")
         info.setWordWrap(True)
         layout.addWidget(info)
         
@@ -209,7 +209,7 @@ class TickerSelector(QGroupBox):
                 border: 1px solid #555;
                 border-radius: 4px;
                 padding: 8px;
-                font-size: 11px;
+                font-size: 14px;
             }
             QComboBox:hover { border: 1px solid #777; }
             QComboBox::drop-down {
@@ -229,7 +229,7 @@ class TickerSelector(QGroupBox):
         
         # Current ticker display
         self.current_ticker = QLabel("Activo actual: BTC/USD")
-        self.current_ticker.setStyleSheet("color: #4ec9b0; font-size: 11px; font-weight: bold; margin-top: 8px;")
+        self.current_ticker.setStyleSheet("color: #4ec9b0; font-size: 14px; font-weight: bold; margin-top: 8px;")
         layout.addWidget(self.current_ticker)
     
     def _on_ticker_changed(self, text):
@@ -259,9 +259,9 @@ class StrategyInfoPanel(QGroupBox):
         # Strategy name
         name_layout = QHBoxLayout()
         name_label = QLabel("Estrategia:")
-        name_label.setStyleSheet("color: #888; font-size: 11px; min-width: 80px;")
+        name_label.setStyleSheet("color: #888; font-size: 14px; min-width: 80px;")
         self.strategy_name = QLabel("No activa")
-        self.strategy_name.setStyleSheet("color: #4ec9b0; font-size: 12px; font-weight: bold;")
+        self.strategy_name.setStyleSheet("color: #4ec9b0; font-size: 15px; font-weight: bold;")
         name_layout.addWidget(name_label)
         name_layout.addWidget(self.strategy_name)
         name_layout.addStretch()
@@ -490,11 +490,6 @@ class StrategySelector(QGroupBox):
         """)
         load_btn.clicked.connect(self.load_selected_strategy)
         layout.addWidget(load_btn)
-    
-    def load_selected_strategy(self):
-        """Load the selected strategy"""
-        strategy_name = self.strategy_combo.currentText()
-        print(f"Loading strategy: {strategy_name}")
 
 
 # ============================================================================
@@ -629,14 +624,19 @@ class Tab6LiveMonitoringUserFriendly(QWidget):
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(16)
         
-        # === HEADER ===
+        # === HEADER - Simplified ===
         header_layout = QHBoxLayout()
         
-        title = QLabel("🔴 LIVE TRADING MONITOR")
-        title.setStyleSheet("color: #ffffff; font-size: 18px; font-weight: bold;")
+        title = QLabel("🔴 Live Trading Monitor")
+        title.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
         header_layout.addWidget(title)
         
         header_layout.addStretch()
+        
+        # Status indicator
+        self.status_indicator = QLabel("🔴 DESCONECTADO")
+        self.status_indicator.setStyleSheet("color: #f48771; font-size: 14px; font-weight: bold; padding: 8px 16px; background-color: #2d2d2d; border-radius: 4px;")
+        header_layout.addWidget(self.status_indicator)
         
         # Help button
         help_btn = QPushButton("❓ Ayuda")
@@ -647,7 +647,7 @@ class Tab6LiveMonitoringUserFriendly(QWidget):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
-                font-size: 11px;
+                font-size: 12px;
                 font-weight: bold;
             }
             QPushButton:hover { background: #6aaae1; }
@@ -655,45 +655,235 @@ class Tab6LiveMonitoringUserFriendly(QWidget):
         help_btn.clicked.connect(self.show_help)
         header_layout.addWidget(help_btn)
         
-        # Mode selector
-        mode_label = QLabel("Modo:")
-        mode_label.setStyleSheet("color: #888; font-size: 11px; margin-left: 16px; margin-right: 8px;")
-        header_layout.addWidget(mode_label)
+        layout.addLayout(header_layout)
+        
+        # === CONFIGURATION SECTION ===
+        config_group = QGroupBox("⚙️ Configuración")
+        config_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
+            }
+        """)
+        
+        config_layout = QHBoxLayout()
+        config_layout.setContentsMargins(12, 12, 12, 12)
+        config_layout.setSpacing(20)
+        
+        # Left: Ticker and Strategy
+        left_config = QVBoxLayout()
+        left_config.setSpacing(12)
+        
+        # Ticker selector
+        ticker_group = QGroupBox("🎯 Activo")
+        ticker_group.setStyleSheet("QGroupBox { border: none; font-weight: bold; color: #4ec9b0; }")
+        ticker_layout = QVBoxLayout()
+        
+        self.ticker_combo = QComboBox()
+        self.ticker_combo.addItems([
+            "BTC/USD - Bitcoin",
+            "ETH/USD - Ethereum", 
+            "AAPL - Apple",
+            "SPY - S&P 500",
+            "QQQ - Nasdaq 100"
+        ])
+        self.ticker_combo.setStyleSheet("""
+            QComboBox {
+                padding: 8px;
+                font-size: 13px;
+                background: #2d2d2d;
+                border: 1px solid #555;
+                border-radius: 4px;
+            }
+        """)
+        self.ticker_combo.currentTextChanged.connect(self.on_ticker_changed)
+        ticker_layout.addWidget(self.ticker_combo)
+        ticker_group.setLayout(ticker_layout)
+        left_config.addWidget(ticker_group)
+        
+        # Strategy selector
+        strategy_group = QGroupBox("🤖 Estrategia")
+        strategy_group.setStyleSheet("QGroupBox { border: none; font-weight: bold; color: #c586c0; }")
+        strategy_layout = QVBoxLayout()
+        
+        self.strategy_combo = QComboBox()
+        self.strategy_combo.addItems([
+            "RSI Mean Reversion",
+            "MACD Momentum", 
+            "Bollinger Bands Breakout",
+            "MA Crossover",
+            "Volume Breakout"
+        ])
+        self.strategy_combo.setStyleSheet("""
+            QComboBox {
+                padding: 8px;
+                font-size: 13px;
+                background: #2d2d2d;
+                border: 1px solid #555;
+                border-radius: 4px;
+            }
+        """)
+        strategy_layout.addWidget(self.strategy_combo)
+        
+        load_btn = QPushButton("📥 Cargar Estrategia")
+        load_btn.setStyleSheet("""
+            QPushButton {
+                background: #569cd6;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 6px;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            QPushButton:hover { background: #6aaae1; }
+        """)
+        load_btn.clicked.connect(self.load_selected_strategy)
+        strategy_layout.addWidget(load_btn)
+        
+        strategy_group.setLayout(strategy_layout)
+        left_config.addWidget(strategy_group)
+        
+        config_layout.addLayout(left_config)
+        
+        # Center: Mode and Strategy Info
+        center_config = QVBoxLayout()
+        
+        # Trading Mode
+        mode_group = QGroupBox("🎭 Modo de Trading")
+        mode_group.setStyleSheet("QGroupBox { border: none; font-weight: bold; color: #f48771; }")
+        mode_layout = QVBoxLayout()
         
         self.mode_combo = QComboBox()
         self.mode_combo.addItems(["Paper Trading (Simulación)", "Live Trading (REAL - No usar)"])
         self.mode_combo.setStyleSheet("""
             QComboBox {
+                padding: 8px;
+                font-size: 13px;
                 background: #2d2d2d;
-                color: #fff;
                 border: 1px solid #555;
                 border-radius: 4px;
-                padding: 6px 12px;
-                font-size: 11px;
-                min-width: 180px;
+                color: #f48771;
+                font-weight: bold;
             }
         """)
-        header_layout.addWidget(self.mode_combo)
+        mode_layout.addWidget(self.mode_combo)
+        mode_group.setLayout(mode_layout)
+        center_config.addWidget(mode_group)
         
-        layout.addLayout(header_layout)
+        # Strategy info
+        strategy_info_group = QGroupBox("📋 Información")
+        strategy_info_group.setStyleSheet("QGroupBox { border: none; font-weight: bold; color: #dcdcaa; }")
         
-        # === MAIN SPLITTER ===
-        main_splitter = QSplitter(Qt.Orientation.Horizontal)
+        info_layout = QVBoxLayout()
+        self.strategy_info_label = QLabel("Selecciona una estrategia para ver detalles...")
+        self.strategy_info_label.setWordWrap(True)
+        self.strategy_info_label.setStyleSheet("color: #ccc; font-size: 12px; padding: 8px; background: #1e1e1e; border-radius: 4px;")
+        info_layout.addWidget(self.strategy_info_label)
         
-        # --- LEFT PANEL ---
-        left_panel = self.create_left_panel()
-        main_splitter.addWidget(left_panel)
+        strategy_info_group.setLayout(info_layout)
+        center_config.addWidget(strategy_info_group)
         
-        # --- CENTER PANEL ---
-        center_panel = self.create_center_panel()
-        main_splitter.addWidget(center_panel)
+        config_layout.addLayout(center_config)
+        config_group.setLayout(config_layout)
+        layout.addWidget(config_group)
         
-        # --- RIGHT PANEL ---
-        right_panel = self.create_right_panel()
-        main_splitter.addWidget(right_panel)
+        # === MONITORING SECTION ===
+        monitoring_splitter = QSplitter(Qt.Orientation.Horizontal)
         
-        main_splitter.setSizes([350, 450, 350])
-        layout.addWidget(main_splitter)
+        # Left: Performance Metrics
+        metrics_group = QGroupBox("📊 Rendimiento")
+        metrics_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
+            }
+        """)
+        
+        metrics_layout = QGridLayout()
+        metrics_layout.setContentsMargins(12, 12, 12, 12)
+        metrics_layout.setSpacing(12)
+        
+        # Performance metrics
+        self.pnl_card = MetricCard("P&L", "$0.00", color="#4ec9b0", tooltip="Ganancia/Pérdida total de la sesión")
+        self.sharpe_card = MetricCard("Sharpe Ratio", "--", color="#569cd6", tooltip="Relación riesgo/retorno (>1.5 es bueno)")
+        self.drawdown_card = MetricCard("Max Drawdown", "--", "%", color="#f48771", tooltip="Peor caída desde el pico")
+        self.winrate_card = MetricCard("Win Rate", "--", "%", color="#dcdcaa", tooltip="Porcentaje de trades ganadores")
+        
+        metrics_layout.addWidget(self.pnl_card, 0, 0)
+        metrics_layout.addWidget(self.sharpe_card, 0, 1)
+        metrics_layout.addWidget(self.drawdown_card, 1, 0)
+        metrics_layout.addWidget(self.winrate_card, 1, 1)
+        
+        metrics_group.setLayout(metrics_layout)
+        monitoring_splitter.addWidget(metrics_group)
+        
+        # Right: Decision Log
+        decisions_group = QGroupBox("🤖 Decisiones del Bot")
+        decisions_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
+            }
+        """)
+        
+        decisions_layout = QVBoxLayout()
+        decisions_layout.setContentsMargins(12, 12, 12, 12)
+        
+        self.decision_log = QTextEdit()
+        self.decision_log.setReadOnly(True)
+        self.decision_log.setStyleSheet("""
+            QTextEdit {
+                background: #1e1e1e;
+                color: #ccc;
+                border: 1px solid #444;
+                border-radius: 4px;
+                padding: 8px;
+                font-family: 'Consolas', monospace;
+                font-size: 11px;
+            }
+        """)
+        self.decision_log.setPlainText("Esperando decisiones del bot...\nSelecciona una estrategia y haz clic en START TRADING.")
+        decisions_layout.addWidget(self.decision_log)
+        
+        decisions_group.setLayout(decisions_layout)
+        monitoring_splitter.addWidget(decisions_group)
+        
+        # Optimize proportions: 35% metrics, 65% decision log for better visibility
+        monitoring_splitter.setStretchFactor(0, 35)
+        monitoring_splitter.setStretchFactor(1, 65)
+        monitoring_splitter.setSizes([350, 650])
+        layout.addWidget(monitoring_splitter)
         
         # === CONTROL BUTTONS ===
         btn_layout = QHBoxLayout()
@@ -1037,6 +1227,52 @@ class Tab6LiveMonitoringUserFriendly(QWidget):
             self.current_strategy['name'] = strategy_name
             self.current_strategy['description'] = strategies_info[strategy_name]['description']
             self.current_strategy['parameters'] = strategies_info[strategy_name]['parameters']
-            self.strategy_info.update_strategy(strategy_name, 
-                                              strategies_info[strategy_name]['description'],
-                                              strategies_info[strategy_name]['parameters'])
+            # Update info label instead of calling non-existent method
+            params_text = '\n'.join([f'{k}: {v}' for k, v in strategies_info[strategy_name]['parameters'].items()])
+            self.strategy_info_label.setText(f"""{strategy_name}
+
+{strategies_info[strategy_name]['description']}
+
+Parámetros:
+{params_text}""")
+    
+    def load_selected_strategy(self):
+        """Load the selected strategy"""
+        strategy_name = self.strategy_combo.currentText()
+        print(f"Loading strategy: {strategy_name}")
+        
+        strategies_info = {
+            'RSI Mean Reversion': {
+                'description': 'Compra cuando RSI < 30 (sobrevendido), vende cuando RSI > 70 (sobrecomprado). Busca reversiones a la media.',
+                'parameters': {'rsi_period': 14, 'rsi_overbought': 70, 'rsi_oversold': 30, 'take_profit': 2.0, 'stop_loss': 1.5}
+            },
+            'MACD Momentum': {
+                'description': 'Compra en cruce alcista de MACD, vende en cruce bajista. Sigue tendencias de momento.',
+                'parameters': {'fast_period': 12, 'slow_period': 26, 'signal_period': 9, 'take_profit': 2.5, 'stop_loss': 1.5}
+            },
+            'Bollinger Bands Breakout': {
+                'description': 'Compra cuando precio rompe banda superior, vende en banda inferior. Captura volatilidad.',
+                'parameters': {'period': 20, 'std_dev': 2.0, 'take_profit': 3.0, 'stop_loss': 1.5}
+            },
+            'MA Crossover': {
+                'description': 'Compra cuando MA rápida cruza arriba de MA lenta, vende en cruce inverso. Estrategia clásica de tendencias.',
+                'parameters': {'fast_ma': 50, 'slow_ma': 200, 'take_profit': 2.0, 'stop_loss': 1.5}
+            },
+            'Volume Breakout': {
+                'description': 'Compra cuando volumen supera promedio + precio rompe resistencia. Captura momentum fuerte.',
+                'parameters': {'volume_threshold': 1.5, 'breakout_period': 20, 'take_profit': 3.0, 'stop_loss': 2.0}
+            }
+        }
+        
+        if strategy_name in strategies_info:
+            self.current_strategy['name'] = strategy_name
+            self.current_strategy['description'] = strategies_info[strategy_name]['description']
+            self.current_strategy['parameters'] = strategies_info[strategy_name]['parameters']
+            # Update info label instead of calling non-existent method
+            params_text = '\n'.join([f'{k}: {v}' for k, v in strategies_info[strategy_name]['parameters'].items()])
+            self.strategy_info_label.setText(f"""{strategy_name}
+
+{strategies_info[strategy_name]['description']}
+
+Parámetros:
+{params_text}""")

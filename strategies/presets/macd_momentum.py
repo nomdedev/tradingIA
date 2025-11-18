@@ -33,8 +33,11 @@ class MACDMomentumStrategy(BaseStrategy):
             'min_histogram_strength': 0.0
         }
     
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def generate_signals(self, df_multi_tf: Dict[str, pd.DataFrame]) -> Dict[str, pd.Series]:
         """Generate MACD-based signals"""
+        # Use 5min data for signals
+        df = df_multi_tf.get('5min', df_multi_tf.get('5m', list(df_multi_tf.values())[0]))
+        
         if not self.validate_data(df):
             raise ValueError("Invalid data format")
         
@@ -88,7 +91,12 @@ class MACDMomentumStrategy(BaseStrategy):
             abs(df.loc[signal_mask, 'histogram']) * 10
         ).clip(1, 5)
         
-        return df
+        # Return signals in expected format
+        return {
+            'entries': (df['signal'] == 1).astype(int),
+            'exits': (df['signal'] == -1).astype(int),
+            'signals': df['signal']
+        }
     
     def _calculate_macd(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate MACD indicator"""
@@ -125,6 +133,44 @@ class MACDMomentumStrategy(BaseStrategy):
         for key, value in params.items():
             if key in self.parameters:
                 self.parameters[key] = value
+    
+    def get_description(self) -> str:
+        """Get strategy description"""
+        return (
+            "Estrategia de momentum basada en MACD (Moving Average Convergence Divergence). "
+            "Sigue la tendencia comprando en cruces alcistas y vendiendo en cruces bajistas."
+        )
+    
+    def get_detailed_info(self) -> Dict:
+        """Get detailed strategy information"""
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': (
+                "📈 COMPRA cuando:\n"
+                "  • Línea MACD cruza por encima de la línea de señal (cruce alcista)\n"
+                "  • Opcionalmente: histograma debe ser positivo\n"
+                "  • Opcionalmente: histograma supera fuerza mínima\n"
+                "  • Indica momentum alcista"
+            ),
+            'sell_signals': (
+                "📉 VENTA cuando:\n"
+                "  • Línea MACD cruza por debajo de la línea de señal (cruce bajista)\n"
+                "  • Opcionalmente: histograma debe ser negativo\n"
+                "  • Opcionalmente: histograma supera fuerza mínima\n"
+                "  • Indica momentum bajista"
+            ),
+            'parameters': {
+                'fast_period': f"{self.parameters['fast_period']} - Período EMA rápida",
+                'slow_period': f"{self.parameters['slow_period']} - Período EMA lenta",
+                'signal_period': f"{self.parameters['signal_period']} - Período línea de señal",
+                'require_histogram_positive': f"{self.parameters['require_histogram_positive']} - Requiere histograma positivo",
+                'min_histogram_strength': f"{self.parameters['min_histogram_strength']} - Fuerza mínima del histograma"
+            },
+            'risk_level': 'Equilibrado',
+            'timeframe': '5min',
+            'indicators': ['MACD', 'Signal Line', 'Histogram']
+        }
 
 
 # Create preset configurations
@@ -163,7 +209,7 @@ if __name__ == "__main__":
     print(f"Parameters: {strategy.get_parameters()}")
     
     # Generate sample data
-    dates = pd.date_range('2024-01-01', periods=200, freq='1H')
+    dates = pd.date_range('2024-01-01', periods=200, freq='1h')
     df = pd.DataFrame({
         'open': np.random.randn(200).cumsum() + 100,
         'high': np.random.randn(200).cumsum() + 102,

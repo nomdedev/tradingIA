@@ -65,13 +65,12 @@ class AdvancedABTesting(ABTestingBase):
                 'information_ratio': 0
             }
 
-        # Sharpe Ratio
-        sharpe = returns.mean() / returns.std() * np.sqrt(252) if returns.std() > 0 else 0
-
-        # Sortino Ratio (downside deviation)
-        risk_free_rate = 0.04 / 252  # Daily risk-free rate
+        # Sharpe Ratio (con risk-free rate)
+        risk_free_rate = 0.04 / 252
         excess_returns = returns - risk_free_rate
+        sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252) if excess_returns.std() > 0 else 0
 
+        # Sortino Ratio (downside deviation) - ya usa excess_returns correctamente
         downside_returns = excess_returns[excess_returns < 0]
         downside_std = downside_returns.std() if len(downside_returns) > 0 else 0
 
@@ -83,11 +82,13 @@ class AdvancedABTesting(ABTestingBase):
         drawdowns = (cumulative_returns - max_returns) / max_returns
         ulcer = np.sqrt((drawdowns ** 2).mean()) if len(drawdowns) > 0 else 0
 
-        # Probabilistic Sharpe Ratio (bootstrap)
+        # Probabilistic Sharpe Ratio (bootstrap con risk-free rate)
         def sharpe_statistic(data):
             if len(data) < 2:
                 return 0
-            return data.mean() / data.std() * np.sqrt(252) if data.std() > 0 else 0
+            rf = 0.04 / 252
+            excess = data - rf
+            return (excess.mean() / excess.std()) * np.sqrt(252) if excess.std() > 0 else 0
 
         try:
             boot_result = bootstrap((returns,), sharpe_statistic,

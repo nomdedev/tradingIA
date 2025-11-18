@@ -130,7 +130,7 @@ class EnsembleModel:
         features['volume_ratio'] = df['Volume'] / df['Volume'].rolling(20).mean()
 
         # Fill NaN
-        features = features.fillna(method='bfill').fillna(0)
+        features = features.bfill().fillna(0)
 
         return features
 
@@ -495,26 +495,28 @@ def calculate_advanced_metrics(bt_result):
     returns = trades['ReturnPct'].values
     equity_curve = (1 + returns).cumprod()
 
-    # Sharpe Ratio
+    # Sharpe Ratio (con risk-free rate correcto)
     daily_returns = np.diff(equity_curve) / equity_curve[:-1]
-    sharpe = np.mean(daily_returns) / np.std(daily_returns) * \
-        np.sqrt(252) if len(daily_returns) > 0 else 0
+    rf_daily = 0.04 / 252
+    excess_daily_returns = daily_returns - rf_daily
+    sharpe = (excess_daily_returns.mean() / excess_daily_returns.std()) * np.sqrt(252) if len(daily_returns) > 0 and excess_daily_returns.std() > 0 else 0.0
 
     # Calmar Ratio
     max_dd = (equity_curve / equity_curve.expanding().max() - 1).min()
-    calmar = -np.mean(daily_returns) / abs(max_dd) * \
-        np.sqrt(252) if max_dd < 0 and len(daily_returns) > 0 else 0
+    calmar = -excess_daily_returns.mean() / abs(max_dd) * np.sqrt(252) if max_dd < 0 and len(daily_returns) > 0 else 0.0
 
     # Win Rate & Profit Factor
     win_rate = (returns > 0).mean()
     winning_trades = returns[returns > 0]
     losing_trades = returns[returns < 0]
-    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 else float('inf')
+    # Profit Factor (sin inf)
+    winning_trades = returns[returns > 0]
+    losing_trades = returns[returns < 0]
+    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 and losing_trades.sum() != 0 else 0.0
 
-    # Sortino & Ulcer
-    downside_returns = daily_returns[daily_returns < 0]
-    sortino = np.mean(daily_returns) / np.std(downside_returns) * \
-        np.sqrt(252) if len(downside_returns) > 0 else float('inf')
+    # Sortino & Ulcer (con risk-free rate)
+    downside_returns = excess_daily_returns[excess_daily_returns < 0]
+    sortino = (excess_daily_returns.mean() / downside_returns.std()) * np.sqrt(252) if len(downside_returns) > 0 and downside_returns.std() > 0 else 0.0
     drawdowns = 1 - equity_curve / equity_curve.expanding().max()
     ulcer = np.sqrt((drawdowns ** 2).mean())
 
@@ -545,7 +547,7 @@ def calculate_advanced_metrics(bt_result):
         'total_trades': len(trades),
         'avg_trade': np.mean(returns),
         'sortino_ratio': sortino,
-        'var_95': np.percentile(returns, 5),
+        'var_95': -np.percentile(-returns, 95),  # VaR siempre negativo
         'ulcer_index': ulcer,
         'avg_holding_period': avg_holding_period,
         'avg_slippage': avg_slippage,

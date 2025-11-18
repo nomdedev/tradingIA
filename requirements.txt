@@ -1,57 +1,67 @@
-# Requirements for BTC IFVG Multi-TF Backtesting System
-# Updated: 2025-11-12
+# TradingIA - Advanced Trading Platform Requirements
+# Consolidated and pinned versions for reproducibility
+# Updated: 2025-11-14
 
-# Core Trading
-alpaca-trade-api==3.0.2
-alpaca-py>=0.9.0
-pandas>=2.1.0
-numpy>=1.25.0
+# Core Data Science
+pandas==2.1.4
+numpy==1.26.2
+scipy==1.11.4
 
-# Backtesting Framework
-backtesting>=0.6.0
+# Machine Learning
+scikit-learn==1.3.2
+scikit-optimize==0.9.0
 
 # Technical Analysis
 ta==0.11.0
-# ta-lib==0.4.28  # Commented out - requires C++ compiler on Windows
 
-# Optimization
-scikit-optimize==0.9.0
-scipy>=1.11.0
-scikit-learn>=1.3.0
+# Backtesting
+backtesting==0.6.0
+vectorbt==0.27.1
+
+# APIs
+alpaca-trade-api==3.0.2
+alpaca-py==0.9.0
+requests==2.31.0
+
+# GUI
+PySide6==6.5.3
+PySide6-Addons==6.5.3
+PySide6-Essentials==6.5.3
 
 # Visualization
-streamlit>=1.28.0
-matplotlib>=3.8.0
-seaborn>=0.13.0
-plotly>=5.17.0
-flask>=2.3.0
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.17.0
 
-# Scheduling & Automation
-schedule==1.2.0
-websocket-client==1.6.0
+# Web Framework (for dashboard)
+streamlit==1.28.1
+flask==2.3.3
+
+# Statistical Analysis
+statsmodels==0.14.0
+arch==6.3.0
+
+# Time Series
+hmmlearn==0.3.0
 
 # Testing
-pytest>=7.4.0
+pytest==7.4.3
 pytest-cov==4.1.0
-pytest-mock==3.11.0
+pytest-mock==3.11.1
 
 # Configuration
 python-dotenv==1.0.0
-pyyaml==6.0
+pyyaml==6.0.1
 
 # Utilities
-requests>=2.31.0
-tqdm>=4.66.0
+tqdm==4.66.1
 python-dateutil==2.8.2
-pytz>=2023.3
+pytz==2023.3.post1
+schedule==1.2.0
+websocket-client==1.6.4
 
-# GUI Framework
-PySide6>=6.5.0
-PySide6-Addons>=6.5.0
+# Database (optional)
+sqlalchemy==2.0.23
 
-# Advanced Analysis
-hmmlearn==0.3.0
-statsmodels==0.14.0
-
-# Optional: Enhanced Performance
-numba==0.58.0  # JIT compilation for indicators
+# Logging
+colorlog==6.7.0

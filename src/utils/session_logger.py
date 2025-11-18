@@ -48,31 +48,63 @@ class SessionLogger:
         self.session_data['user_actions'].append(action_entry)
         self._auto_save()
     
-    def log_error(self, error_type, error_message, context=None):
-        """Log an error with details"""
+    def log_error(self, error_type, error_message, context=None, stack_trace=None):
+        """Log an error with detailed technical information"""
+        import platform
+        import sys
+        
         error_entry = {
             'timestamp': datetime.now().isoformat(),
             'type': error_type,
             'message': error_message,
             'context': context or {},
-            'stack_trace': None  # Could add traceback if needed
+            'stack_trace': stack_trace,
+            'system_info': {
+                'platform': platform.platform(),
+                'python_version': sys.version,
+                'architecture': platform.architecture()
+            },
+            'session_info': {
+                'session_id': self.session_id,
+                'actions_count': len(self.session_data['user_actions']),
+                'errors_count': len(self.session_data['errors'])
+            }
         }
         
         self.session_data['errors'].append(error_entry)
         self._auto_save()
     
     def log_backtest(self, strategy, ticker, timeframe, results):
-        """Log a backtest execution"""
+        """Log a backtest execution with detailed metrics"""
         self.session_data['results']['backtests_run'] += 1
         
         if strategy not in self.session_data['results']['strategies_tested']:
             self.session_data['results']['strategies_tested'].append(strategy)
         
+        # Extract key metrics for summary
+        key_metrics = {}
+        if isinstance(results, dict) and 'metrics' in results:
+            metrics = results['metrics']
+            key_metrics = {
+                'sharpe_ratio': metrics.get('sharpe', 0),
+                'total_return': metrics.get('total_return', 0),
+                'win_rate': metrics.get('win_rate', 0),
+                'max_drawdown': metrics.get('max_dd', 0),
+                'total_trades': metrics.get('num_trades', 0),
+                'profit_factor': metrics.get('profit_factor', 0)
+            }
+        
         self.log_action('backtest', {
             'strategy': strategy,
             'ticker': ticker,
             'timeframe': timeframe,
-            'results': results
+            'key_metrics': key_metrics,
+            'has_strategy_params': 'strategy_parameters' in results if isinstance(results, dict) else False,
+            'results_summary': {
+                'trades_count': len(results.get('trades', [])) if isinstance(results, dict) else 0,
+                'equity_points': len(results.get('equity_curve', [])) if isinstance(results, dict) else 0,
+                'error': 'error' in results if isinstance(results, dict) else False
+            }
         })
     
     def log_live_trading_session(self, ticker, strategy, duration_seconds, pnl, trades_count):
@@ -117,6 +149,33 @@ class SessionLogger:
         
         self.session_data['tab_visits'][tab_name] += 1
         self._auto_save()
+    
+    def log_ui_event(self, event_type, details):
+        """Log any UI event (button clicks, layout changes, etc)"""
+        self.log_action(f'ui_{event_type}', details)
+    
+    def log_window_event(self, event_type, window_info):
+        """Log window geometry or state changes"""
+        self.log_action('window_event', {
+            'event_type': event_type,
+            'window_info': window_info
+        })
+    
+    def log_component_load_failure(self, component_name, error_message, stack_trace=None):
+        """Log when a platform component fails to load"""
+        self.log_error(
+            error_type='component_load_failure',
+            error_message=f"{component_name} failed to load: {error_message}",
+            context={'component': component_name},
+            stack_trace=stack_trace
+        )
+    
+    def log_data_loading_event(self, event_type, data_info):
+        """Log data loading events (start, progress, completion, failure)"""
+        self.log_action('data_loading', {
+            'event_type': event_type,
+            'data_info': data_info
+        })
     
     def end_session(self):
         """Finalize and save session report"""
@@ -227,18 +286,84 @@ class SessionLogger:
                     f.write(f"  {tab}: {count} visits\n")
                 f.write("\n")
                 
-                # Errors
+                # Errors with technical details
                 if self.session_data['errors']:
                     f.write("-" * 80 + "\n")
-                    f.write("ERRORS ENCOUNTERED\n")
+                    f.write("TECHNICAL ERRORS & DIAGNOSTICS\n")
                     f.write("-" * 80 + "\n")
                     for i, error in enumerate(self.session_data['errors'], 1):
-                        f.write(f"\nError #{i}:\n")
-                        f.write(f"  Time: {error['timestamp']}\n")
-                        f.write(f"  Type: {error['type']}\n")
-                        f.write(f"  Message: {error['message']}\n")
+                        f.write(f"\n🚨 ERROR #{i} - {error['type'].upper()}\n")
+                        f.write(f"   Time: {error['timestamp']}\n")
+                        f.write(f"   Message: {error['message']}\n")
+                        
                         if error.get('context'):
-                            f.write(f"  Context: {error['context']}\n")
+                            f.write(f"   Context:\n")
+                            for key, value in error['context'].items():
+                                f.write(f"     {key}: {value}\n")
+                        
+                        if error.get('system_info'):
+                            sys_info = error['system_info']
+                            f.write(f"   System: {sys_info.get('platform', 'Unknown')}\n")
+                            f.write(f"   Python: {sys_info.get('python_version', 'Unknown').split()[0]}\n")
+                        
+                        if error.get('stack_trace'):
+                            f.write(f"   Stack Trace: {error['stack_trace'][:200]}...\n")
+                        
+                        f.write("\n")
+                
+                # Backtest Performance Summary
+                backtests = [action for action in self.session_data['user_actions'] 
+                           if action['type'] == 'backtest']
+                if backtests:
+                    f.write("-" * 80 + "\n")
+                    f.write("BACKTEST PERFORMANCE SUMMARY\n")
+                    f.write("-" * 80 + "\n")
+                    
+                    total_backtests = len(backtests)
+                    successful_backtests = sum(1 for bt in backtests if bt.get('result') == 'success')
+                    avg_sharpe = sum(bt.get('details', {}).get('key_metrics', {}).get('sharpe_ratio', 0) 
+                                   for bt in backtests) / max(1, total_backtests)
+                    
+                    f.write(f"Total Backtests: {total_backtests}\n")
+                    f.write(f"Successful: {successful_backtests} ({successful_backtests/total_backtests*100:.1f}%)\n")
+                    f.write(f"Average Sharpe Ratio: {avg_sharpe:.3f}\n")
+                    
+                    # Best performing strategy
+                    best_bt = max(backtests, 
+                                key=lambda x: x.get('details', {}).get('key_metrics', {}).get('sharpe_ratio', -999))
+                    best_metrics = best_bt.get('details', {}).get('key_metrics', {})
+                    f.write(f"\n🏆 Best Backtest:\n")
+                    f.write(f"   Strategy: {best_bt.get('details', {}).get('strategy', 'Unknown')}\n")
+                    f.write(f"   Sharpe: {best_metrics.get('sharpe_ratio', 0):.3f}\n")
+                    f.write(f"   Win Rate: {best_metrics.get('win_rate', 0):.1%}\n")
+                    f.write(f"   Total Return: {best_metrics.get('total_return', 0):.2%}\n")
+                    f.write("\n")
+                
+                # Data Operations Summary
+                data_actions = [action for action in self.session_data['user_actions'] 
+                              if 'data' in action['type'].lower()]
+                if data_actions:
+                    f.write("-" * 80 + "\n")
+                    f.write("DATA OPERATIONS SUMMARY\n")
+                    f.write("-" * 80 + "\n")
+                    
+                    downloads = sum(1 for action in data_actions if action['type'] == 'data_download')
+                    successful_downloads = sum(1 for action in data_actions 
+                                             if action['type'] == 'data_download' and action.get('result') == 'success')
+                    
+                    f.write(f"Data Downloads Attempted: {downloads}\n")
+                    f.write(f"Successful Downloads: {successful_downloads}")
+                    if downloads > 0:
+                        f.write(f" ({successful_downloads/downloads*100:.1f}%)")
+                    f.write("\n")
+                    
+                    # Check for data-related errors
+                    data_errors = [error for error in self.session_data['errors'] 
+                                 if 'data' in error['type'].lower() or 'alpaca' in error['message'].lower()]
+                    if data_errors:
+                        f.write(f"Data-Related Errors: {len(data_errors)}\n")
+                        for error in data_errors[-3:]:  # Show last 3
+                            f.write(f"  • {error['type']}: {error['message'][:100]}...\n")
                     f.write("\n")
                 
                 # Recent Actions (last 20)
@@ -251,7 +376,12 @@ class SessionLogger:
                     f.write(f"  Result: {action['result']}\n")
                     if action.get('details'):
                         for key, value in action['details'].items():
-                            f.write(f"  {key}: {value}\n")
+                            if key == 'key_metrics' and isinstance(value, dict):
+                                f.write(f"  Key Metrics:\n")
+                                for metric_key, metric_value in value.items():
+                                    f.write(f"    {metric_key}: {metric_value}\n")
+                            else:
+                                f.write(f"  {key}: {value}\n")
                 
                 f.write("\n" + "=" * 80 + "\n")
                 f.write("END OF REPORT\n")

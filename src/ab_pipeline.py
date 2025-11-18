@@ -173,7 +173,7 @@ class ABPipeline:
         missing_pct = df_5m.isnull().sum().sum() / len(df_5m)
         if missing_pct > 0.01:  # More than 1% missing
             logger.warning(f"High missing data percentage: {missing_pct:.2%}")
-            df_5m = df_5m.fillna(method='ffill').fillna(method='bfill')
+            df_5m = df_5m.ffill().bfill()
 
         # Validate date range
         actual_start = df_5m.index.min().strftime('%Y-%m-%d')

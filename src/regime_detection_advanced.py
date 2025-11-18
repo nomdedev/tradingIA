@@ -324,7 +324,7 @@ class RegimeDetectorAdvanced:
 
         # Convertir a períodos diarios si es necesario
         if len(df) > 1000:  # Asumir datos intradía
-            df_daily = df.resample('D').agg({
+            df_daily = df.resample('d').agg({
                 'Open': 'first',
                 'High': 'max',
                 'Low': 'min',
@@ -416,12 +416,18 @@ class RegimeDetectorAdvanced:
 
             if len(regime_data) > 0:
                 returns = regime_data['Close'].pct_change().dropna()
+                
+                # Sharpe con risk-free rate
+                rf_daily = 0.04 / 252
+                excess_returns = returns - rf_daily
+                sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252) if excess_returns.std() > 0 else 0.0
+                
                 stats[regime_name] = {
                     'count': len(regime_data),
                     'percentage': len(regime_data) / len(df) * 100,
                     'avg_return': returns.mean(),
                     'volatility': returns.std(),
-                    'sharpe': returns.mean() / returns.std() * np.sqrt(252) if returns.std() > 0 else 0,
+                    'sharpe': sharpe,
                     'max_dd': (
                         regime_data['Close'] / regime_data['Close'].expanding().max() - 1).min(),
                     'params': self.regime_params[regime_name]}

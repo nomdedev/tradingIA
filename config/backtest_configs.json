@@ -1,0 +1,74 @@
+{
+  "backtest_configs": {
+    "vp_ifvg_ema_optimized": {
+      "description": "VP+IFVG+EMA with optimized EMA15m50 proximity filter (4%)",
+      "strategy": "vp_ifvg_ema_ema15m50",
+      "parameters": {
+        "ema15m50_proximity_pct": 4.0,
+        "use_ema15m50_filter": true,
+        "ema15m50_period": 50,
+        "ema15m50_timeframe": "15T"
+      },
+      "data": {
+        "symbol": "BTCUSD",
+        "timeframe": "5Min",
+        "start_date": "2023-01-01",
+        "end_date": "2024-12-31"
+      }
+    },
+    "squeeze_adx_ttm_optimized": {
+      "description": "Squeeze+ADX+TTM with optimized EMA15m50 proximity filter (4%)",
+      "strategy": "squeeze_adx_ttm_ema15m50",
+      "parameters": {
+        "ema15m50_proximity_pct": 4.0,
+        "use_ema15m50_filter": true,
+        "ema15m50_period": 50,
+        "ema15m50_timeframe": "15T"
+      },
+      "data": {
+        "symbol": "BTCUSD",
+        "timeframe": "5Min",
+        "start_date": "2023-01-01",
+        "end_date": "2024-12-31"
+      }
+    },
+    "vp_ifvg_conservative": {
+      "description": "VP+IFVG+EMA with conservative EMA15m50 proximity filter (2%)",
+      "strategy": "vp_ifvg_ema_ema15m50",
+      "parameters": {
+        "ema15m50_proximity_pct": 2.0,
+        "use_ema15m50_filter": true,
+        "ema15m50_period": 50,
+        "ema15m50_timeframe": "15T"
+      },
+      "data": {
+        "symbol": "BTCUSD",
+        "timeframe": "5Min",
+        "start_date": "2023-01-01",
+        "end_date": "2024-12-31"
+      }
+    },
+    "vp_ifvg_aggressive": {
+      "description": "VP+IFVG+EMA with aggressive EMA15m50 proximity filter (6%)",
+      "strategy": "vp_ifvg_ema_ema15m50",
+      "parameters": {
+        "ema15m50_proximity_pct": 6.0,
+        "use_ema15m50_filter": true,
+        "ema15m50_period": 50,
+        "ema15m50_timeframe": "15T"
+      },
+      "data": {
+        "symbol": "BTCUSD",
+        "timeframe": "5Min",
+        "start_date": "2023-01-01",
+        "end_date": "2024-12-31"
+      }
+    }
+  },
+  "default_settings": {
+    "risk_per_trade": 0.01,
+    "commission": 0.001,
+    "slippage": 0.001,
+    "initial_capital": 10000
+  }
+}

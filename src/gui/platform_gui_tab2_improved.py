@@ -92,8 +92,10 @@ class Tab2StrategyConfig(QWidget):
         right_panel = self.create_preview_panel()
         splitter.addWidget(right_panel)
         
-        # Set initial splitter sizes (60% config, 40% preview)
-        splitter.setSizes([600, 400])
+        # Set splitter sizes: 30% config, 70% preview for better visualization
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 7)
+        splitter.setSizes([300, 900])
         
         main_layout.addWidget(splitter, 1)
         
@@ -114,28 +116,28 @@ class Tab2StrategyConfig(QWidget):
             QFrame#modeFrame {
                 background-color: #2d2d2d;
                 border: 1px solid #3e3e3e;
-                border-radius: 8px;
-                padding: 12px;
+                border-radius: 6px;
+                padding: 10px;
             }
             QRadioButton {
                 font-size: 13px;
                 font-weight: 500;
-                padding: 8px 16px;
-                spacing: 8px;
+                padding: 6px 12px;
+                spacing: 6px;
             }
             QRadioButton::indicator {
-                width: 18px;
-                height: 18px;
+                width: 16px;
+                height: 16px;
             }
             QRadioButton::indicator::checked {
                 background-color: #0e639c;
                 border: 2px solid #0e639c;
-                border-radius: 9px;
+                border-radius: 8px;
             }
             QRadioButton::indicator::unchecked {
                 background-color: #1e1e1e;
                 border: 2px solid #3e3e3e;
-                border-radius: 9px;
+                border-radius: 8px;
             }
         """)
         
@@ -143,7 +145,7 @@ class Tab2StrategyConfig(QWidget):
         
         # Title
         title = QLabel("⚙️ Strategy Mode")
-        title.setStyleSheet("font-size: 16px; font-weight: bold; color: #ffffff;")
+        title.setProperty("class", "title")
         layout.addWidget(title)
         
         # Radio buttons
@@ -167,7 +169,7 @@ class Tab2StrategyConfig(QWidget):
         # Mode description
         self.mode_description = QLabel()
         self.mode_description.setWordWrap(True)
-        self.mode_description.setStyleSheet("color: #cccccc; font-size: 12px; padding: 8px;")
+        self.mode_description.setStyleSheet("color: #cccccc; font-size: 15px; padding: 8px;")
         
         layout.addLayout(radio_layout)
         layout.addWidget(self.mode_description)
@@ -187,6 +189,7 @@ class Tab2StrategyConfig(QWidget):
         
         # Strategy Selection Section
         self.strategy_group = QGroupBox("📊 Strategy Selection")
+        self.strategy_group.setProperty("class", "card")
         self.strategy_group.setStyleSheet("""
             QGroupBox {
                 font-weight: bold;
@@ -203,10 +206,36 @@ class Tab2StrategyConfig(QWidget):
         """)
         strategy_layout = QVBoxLayout()
         
-        # Strategy dropdown
+        # Strategy dropdown with info button
+        strategy_select_layout = QHBoxLayout()
         self.strategy_combo = QComboBox()
         self.strategy_combo.setMinimumHeight(32)
         self.strategy_combo.currentTextChanged.connect(self.on_strategy_selected)
+        strategy_select_layout.addWidget(self.strategy_combo, 1)
+        
+        # View detailed info button
+        self.view_info_btn = QPushButton("📖 View Info")
+        self.view_info_btn.setMaximumWidth(100)
+        self.view_info_btn.clicked.connect(self.show_strategy_info)
+        self.view_info_btn.setEnabled(False)
+        self.view_info_btn.setStyleSheet("""
+            QPushButton {
+                background: #0e639c;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #1177bb;
+            }
+            QPushButton:disabled {
+                background: #555;
+                color: #888;
+            }
+        """)
+        strategy_select_layout.addWidget(self.view_info_btn)
         
         # Strategy description
         self.strategy_desc = QTextEdit()
@@ -215,7 +244,7 @@ class Tab2StrategyConfig(QWidget):
         self.strategy_desc.setPlaceholderText("Select a strategy to view description...")
         
         strategy_layout.addWidget(QLabel("Strategy:"))
-        strategy_layout.addWidget(self.strategy_combo)
+        strategy_layout.addLayout(strategy_select_layout)
         strategy_layout.addWidget(QLabel("Description:"))
         strategy_layout.addWidget(self.strategy_desc)
         self.strategy_group.setLayout(strategy_layout)
@@ -223,6 +252,7 @@ class Tab2StrategyConfig(QWidget):
         
         # Parameters Section (scrollable)
         params_group = QGroupBox("🎛️ Parameters")
+        params_group.setProperty("class", "card")
         params_group.setStyleSheet(self.strategy_group.styleSheet())
         params_outer_layout = QVBoxLayout()
         
@@ -371,7 +401,7 @@ class Tab2StrategyConfig(QWidget):
         
         # Web view for Plotly chart
         self.chart_view = QWebEngineView()
-        self.chart_view.setMinimumHeight(300)
+        self.chart_view.setMinimumHeight(450)  # Increased from 300
         chart_layout.addWidget(self.chart_view, 1)
         
         chart_group.setLayout(chart_layout)
@@ -425,7 +455,7 @@ class Tab2StrategyConfig(QWidget):
         layout.setSpacing(4)
         
         title_label = QLabel(title)
-        title_label.setStyleSheet("color: #cccccc; font-size: 11px;")
+        title_label.setStyleSheet("color: #cccccc; font-size: 14px;")
         
         value_label = QLabel(value)
         value_label.setObjectName("statValue")
@@ -596,6 +626,7 @@ class Tab2StrategyConfig(QWidget):
     def on_strategy_selected(self, strategy_name):
         """Handle strategy selection"""
         if not strategy_name or "Error" in strategy_name or "No strategies" in strategy_name:
+            self.view_info_btn.setEnabled(False)
             return
             
         try:
@@ -603,20 +634,33 @@ class Tab2StrategyConfig(QWidget):
             strategy_class = load_strategy(strategy_name)
             if not strategy_class:
                 self.status_update.emit(f"Failed to load strategy: {strategy_name}", "error")
+                self.view_info_btn.setEnabled(False)
                 return
                 
             self.current_strategy = strategy_class
             
-            # Get strategy description from class docstring or predefined
-            descriptions = {
-                "RSI Mean Reversion": "RSI-based mean reversion strategy. Uses RSI oscillator to identify overbought/oversold conditions for mean reversion signals.",
-                "MACD Momentum": "MACD momentum strategy. Combines MACD indicator with signal line crossovers for momentum-based trading signals.",
-                "Bollinger Bands": "Bollinger Bands breakout strategy. Uses band touches and breakouts for volatility-based trading signals.",
-                "MA Crossover": "Moving Average crossover strategy. Uses dual moving average crossovers for trend-following signals.",
-                "Volume Breakout": "Volume-confirmed breakout strategy. Combines price breakouts with volume confirmation for high-probability signals."
-            }
+            # Get strategy description using the new get_description() method
+            try:
+                temp_strategy = strategy_class()
+                if hasattr(temp_strategy, 'get_description'):
+                    description = temp_strategy.get_description()
+                else:
+                    # Fallback to predefined descriptions
+                    descriptions = {
+                        "RSI Mean Reversion": "RSI-based mean reversion strategy. Uses RSI oscillator to identify overbought/oversold conditions for mean reversion signals.",
+                        "MACD Momentum": "MACD momentum strategy. Combines MACD indicator with signal line crossovers for momentum-based trading signals.",
+                        "Bollinger Bands": "Bollinger Bands breakout strategy. Uses band touches and breakouts for volatility-based trading signals.",
+                        "MA Crossover": "Moving Average crossover strategy. Uses dual moving average crossovers for trend-following signals.",
+                        "Volume Breakout": "Volume-confirmed breakout strategy. Combines price breakouts with volume confirmation for high-probability signals."
+                    }
+                    description = descriptions.get(strategy_name, strategy_class.__doc__ or "No description available.")
+            except Exception as e:
+                description = "No description available."
             
-            self.strategy_desc.setPlainText(descriptions.get(strategy_name, strategy_class.__doc__ or "No description available."))
+            self.strategy_desc.setPlainText(description)
+            
+            # Enable view info button
+            self.view_info_btn.setEnabled(True)
             
             # Clear and rebuild parameter widgets
             self.clear_param_widgets()
@@ -653,6 +697,103 @@ class Tab2StrategyConfig(QWidget):
         except Exception as e:
             self.logger.error(f"Error selecting strategy: {e}")
             self.status_update.emit(f"Error loading strategy: {str(e)}", "error")
+            self.view_info_btn.setEnabled(False)
+    
+    def show_strategy_info(self):
+        """Show detailed strategy information dialog"""
+        if not self.current_strategy:
+            QMessageBox.warning(self, "No Strategy", "Please select a strategy first.")
+            return
+        
+        try:
+            # Create strategy instance
+            strategy_instance = self.current_strategy()
+            
+            # Get detailed info
+            if hasattr(strategy_instance, 'get_detailed_info'):
+                info = strategy_instance.get_detailed_info()
+            else:
+                info = {
+                    'name': strategy_instance.name if hasattr(strategy_instance, 'name') else 'Unknown',
+                    'description': 'No detailed information available.',
+                    'buy_signals': 'Not specified',
+                    'sell_signals': 'Not specified',
+                    'parameters': {},
+                    'risk_level': 'Unknown',
+                    'timeframe': 'Unknown',
+                    'indicators': []
+                }
+            
+            # Create dialog
+            dialog = QMessageBox(self)
+            dialog.setWindowTitle(f"📖 {info['name']} - Detailed Information")
+            dialog.setIcon(QMessageBox.Icon.Information)
+            
+            # Format the detailed information
+            info_text = f"""
+<h2 style='color: #4ec9b0;'>{info['name']}</h2>
+
+<h3 style='color: #dcdcaa;'>📝 Descripción</h3>
+<p style='color: #ccc;'>{info['description']}</p>
+
+<h3 style='color: #dcdcaa;'>📈 Señales de Compra</h3>
+<p style='color: #ccc; white-space: pre-wrap;'>{info['buy_signals']}</p>
+
+<h3 style='color: #dcdcaa;'>📉 Señales de Venta</h3>
+<p style='color: #ccc; white-space: pre-wrap;'>{info['sell_signals']}</p>
+
+<h3 style='color: #dcdcaa;'>🎯 Nivel de Riesgo</h3>
+<p style='color: #ccc;'><strong>{info['risk_level']}</strong></p>
+
+<h3 style='color: #dcdcaa;'>⏰ Timeframe Recomendado</h3>
+<p style='color: #ccc;'>{info['timeframe']}</p>
+
+<h3 style='color: #dcdcaa;'>📊 Indicadores Utilizados</h3>
+<p style='color: #ccc;'>{', '.join(info['indicators']) if info['indicators'] else 'No especificados'}</p>
+
+<h3 style='color: #dcdcaa;'>⚙️ Parámetros Actuales</h3>
+<p style='color: #888; font-size: 11px;'>"""
+            
+            # Add parameters
+            if isinstance(info['parameters'], dict):
+                for param, value in info['parameters'].items():
+                    info_text += f"<br>• <strong>{param}:</strong> {value}"
+            
+            info_text += "</p>"
+            
+            dialog.setText(info_text)
+            dialog.setStyleSheet("""
+                QMessageBox {
+                    background-color: #1e1e1e;
+                    color: #d4d4d4;
+                }
+                QLabel {
+                    color: #d4d4d4;
+                    min-width: 600px;
+                    max-width: 800px;
+                }
+                QPushButton {
+                    background-color: #0e639c;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 16px;
+                    min-width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #1177bb;
+                }
+            """)
+            
+            dialog.exec()
+            
+        except Exception as e:
+            self.logger.error(f"Error showing strategy info: {e}")
+            QMessageBox.warning(
+                self, 
+                "Error", 
+                f"Error al mostrar información de la estrategia:\n{str(e)}"
+            )
             
     def create_param_widgets(self, params):
         """Create parameter input widgets with real-time validation"""
@@ -736,7 +877,7 @@ class Tab2StrategyConfig(QWidget):
             
             # Range label
             range_label = QLabel(f"Range: {min_val} - {max_val}")
-            range_label.setStyleSheet("color: #888888; font-size: 10px;")
+            range_label.setStyleSheet("color: #888888; font-size: 13px;")
             param_layout.addWidget(range_label)
             
             param_frame.setLayout(param_layout)

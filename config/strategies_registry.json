@@ -105,5 +105,287 @@
         "description": "Prediction horizon in bars"
       }
     }
+  },
+  "VP_IFVG_EMA": {
+    "module": "vp_ifvg_ema_strategy",
+    "class": "VPIFVGEmaStrategy",
+    "params": {
+      "disp_num": {
+        "default": 5,
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "description": "Show Last FVGs"
+      },
+      "atr_multi": {
+        "default": 0.25,
+        "min": 0.0,
+        "max": 1.0,
+        "step": 0.05,
+        "description": "ATR Multiplier for FVG filter"
+      },
+      "vp_length": {
+        "default": 360,
+        "min": 10,
+        "max": 5000,
+        "step": 10,
+        "description": "Volume Profile lookback length"
+      },
+      "vp_rows": {
+        "default": 100,
+        "min": 10,
+        "max": 150,
+        "step": 10,
+        "description": "Volume Profile number of rows"
+      },
+      "vp_va": {
+        "default": 68,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "description": "Value Area percentage"
+      },
+      "vma_length": {
+        "default": 21,
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "description": "Volume MA length"
+      },
+      "ema1_length": {
+        "default": 20,
+        "min": 1,
+        "max": 200,
+        "step": 1,
+        "description": "EMA 1 length"
+      },
+      "ema2_length": {
+        "default": 50,
+        "min": 1,
+        "max": 200,
+        "step": 1,
+        "description": "EMA 2 length"
+      },
+      "ema3_length": {
+        "default": 100,
+        "min": 1,
+        "max": 200,
+        "step": 1,
+        "description": "EMA 3 length"
+      },
+      "ema4_length": {
+        "default": 200,
+        "min": 1,
+        "max": 200,
+        "step": 1,
+        "description": "EMA 4 length"
+      }
+    }
+  },
+  "LSTM": {
+    "module": "lstm_strategy",
+    "class": "LSTMStrategy",
+    "params": {
+      "sequence_length": {
+        "default": 60,
+        "min": 30,
+        "max": 120,
+        "step": 10,
+        "description": "LSTM lookback period"
+      },
+      "prediction_horizon": {
+        "default": 5,
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "description": "Steps ahead to predict"
+      },
+      "confidence_threshold": {
+        "default": 0.6,
+        "min": 0.5,
+        "max": 0.8,
+        "step": 0.05,
+        "description": "Minimum confidence for signal"
+      },
+      "lstm_units": {
+        "default": 50,
+        "min": 25,
+        "max": 100,
+        "step": 25,
+        "description": "LSTM units per layer"
+      }
+    }
+  },
+  "HFT": {
+    "module": "hft_strategy",
+    "class": "HFTStrategy",
+    "params": {
+      "min_volume_threshold": {
+        "default": 1000,
+        "min": 100,
+        "max": 10000,
+        "step": 100,
+        "description": "Minimum volume for signal"
+      },
+      "momentum_window": {
+        "default": 5,
+        "min": 3,
+        "max": 15,
+        "step": 1,
+        "description": "Short-term momentum window"
+      },
+      "scalp_profit_pct": {
+        "default": 0.002,
+        "min": 0.001,
+        "max": 0.01,
+        "step": 0.001,
+        "description": "Scalp profit target percentage"
+      },
+      "max_holding_bars": {
+        "default": 3,
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "description": "Maximum bars to hold position"
+      }
+    }
+  },
+  "Squeeze_ADX_TTM": {
+    "module": "squeeze_adx_ttm_strategy",
+    "class": "SqueezeMomentumADXTTMStrategy",
+    "params": {
+      "bb_length": {
+        "default": 20,
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "description": "Bollinger Bands length for Squeeze"
+      },
+      "bb_mult": {
+        "default": 2.0,
+        "min": 1.5,
+        "max": 2.5,
+        "step": 0.1,
+        "description": "Bollinger Bands multiplier"
+      },
+      "kc_length": {
+        "default": 20,
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "description": "Keltner Channels length"
+      },
+      "kc_mult": {
+        "default": 1.5,
+        "min": 1.0,
+        "max": 2.0,
+        "step": 0.1,
+        "description": "Keltner Channels multiplier"
+      },
+      "adx_length": {
+        "default": 14,
+        "min": 7,
+        "max": 28,
+        "step": 1,
+        "description": "ADX calculation period"
+      },
+      "key_level": {
+        "default": 23,
+        "min": 15,
+        "max": 30,
+        "step": 1,
+        "description": "ADX key level for trend strength"
+      },
+      "squeeze_threshold": {
+        "default": 0.5,
+        "min": 0.1,
+        "max": 0.9,
+        "step": 0.1,
+        "description": "Minimum squeeze compression for signals"
+      },
+      "adx_threshold": {
+        "default": 20,
+        "min": 15,
+        "max": 30,
+        "step": 1,
+        "description": "Minimum ADX for trend signals"
+      },
+      "momentum_threshold": {
+        "default": 0.1,
+        "min": 0.05,
+        "max": 0.25,
+        "step": 0.01,
+        "description": "Minimum momentum for signals"
+      },
+      "higher_tf_weight": {
+        "default": 0.3,
+        "min": 0.0,
+        "max": 1.0,
+        "step": 0.1,
+        "description": "Weight for higher timeframe confirmation"
+      },
+      "stop_loss_atr_mult": {
+        "default": 1.5,
+        "min": 1.0,
+        "max": 3.0,
+        "step": 0.1,
+        "description": "Stop loss ATR multiplier"
+      },
+      "take_profit_rr": {
+        "default": 2.0,
+        "min": 1.5,
+        "max": 3.0,
+        "step": 0.1,
+        "description": "Take profit risk-reward ratio"
+      }
+    }
+  },
+  "VP_IFVG_EMA_EMA15m50": {
+    "module": "vp_ifvg_ema_ema15m50",
+    "class": "VPIFVGEmaEMA15m50Preset",
+    "params": {
+      "ema15m50_proximity_pct": {
+        "default": 4.0,
+        "min": 0.5,
+        "max": 10.0,
+        "step": 0.5,
+        "description": "EMA15m50 proximity threshold (%)"
+      },
+      "use_ema15m50_filter": {
+        "default": true,
+        "description": "Enable EMA15m50 proximity filter"
+      },
+      "ema15m50_period": {
+        "default": 50,
+        "min": 20,
+        "max": 200,
+        "step": 10,
+        "description": "EMA period for 15m timeframe"
+      }
+    }
+  },
+  "SQUEEZE_ADX_TTM_EMA15m50": {
+    "module": "squeeze_adx_ttm_ema15m50",
+    "class": "SqueezeMomentumADXTTMEMA15m50Preset",
+    "params": {
+      "ema15m50_proximity_pct": {
+        "default": 4.0,
+        "min": 0.5,
+        "max": 10.0,
+        "step": 0.5,
+        "description": "EMA15m50 proximity threshold (%)"
+      },
+      "use_ema15m50_filter": {
+        "default": true,
+        "description": "Enable EMA15m50 proximity filter"
+      },
+      "ema15m50_period": {
+        "default": 50,
+        "min": 20,
+        "max": 200,
+        "step": 10,
+        "description": "EMA period for 15m timeframe"
+      }
+    }
   }
 }

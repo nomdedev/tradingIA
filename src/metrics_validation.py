@@ -85,12 +85,12 @@ class MetricsValidator:
         else:
             sharpe_ratio = 0.0
 
-        # Calmar Ratio
+        # Calmar Ratio (sin inf)
         max_drawdown = self._calculate_max_drawdown(cumulative)
         total_return = cumulative[-1] if len(cumulative) > 0 else 0.0
-        calmar_ratio = total_return / abs(max_drawdown) if max_drawdown != 0 else float('inf')
+        calmar_ratio = total_return / abs(max_drawdown) if max_drawdown != 0 else 0.0
 
-        # Sortino Ratio (downside deviation only)
+        # Sortino Ratio (downside deviation only, sin inf)
         downside_returns = returns[returns < 0]
         if len(downside_returns) > 0:
             sortino_ratio = (np.mean(returns) / np.std(downside_returns)) * \
@@ -503,8 +503,8 @@ if __name__ == '__main__':
 
     mock_trades = pd.DataFrame({
         'PnL %': returns * 100,  # Convert to percentage
-        'Entry Time': pd.date_range('2024-01-01', periods=n_trades, freq='4H'),
-        'Exit Time': pd.date_range('2024-01-01', periods=n_trades, freq='4H') + pd.Timedelta(hours=4),
+        'Entry Time': pd.date_range('2024-01-01', periods=n_trades, freq='4h'),
+        'Exit Time': pd.date_range('2024-01-01', periods=n_trades, freq='4h') + pd.Timedelta(hours=4),
         'confluence_score': np.random.choice([3, 4, 5], n_trades)
     })
 

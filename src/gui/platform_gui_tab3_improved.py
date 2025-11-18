@@ -189,6 +189,7 @@ class Tab3BacktestRunner(QWidget):
         
         # Title
         title = QLabel("⚙️ Backtest Configuration")
+        title.setProperty("class", "title")
         title.setStyleSheet("font-size: 15px; font-weight: bold; color: #ffffff;")
         layout.addWidget(title)
         
@@ -238,6 +239,69 @@ class Tab3BacktestRunner(QWidget):
         
         layout.addLayout(config_grid)
         
+        # FASE 1: Realistic Execution Section
+        realistic_section = QHBoxLayout()
+        realistic_section.setContentsMargins(0, 12, 0, 0)
+        
+        # Checkbox for enabling realistic execution
+        from PySide6.QtWidgets import QCheckBox
+        self.realistic_exec_checkbox = QCheckBox("Enable Realistic Execution (FASE 1)")
+        self.realistic_exec_checkbox.setStyleSheet("""
+            QCheckBox {
+                color: #4ec9b0;
+                font-weight: bold;
+                font-size: 12px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+            }
+        """)
+        self.realistic_exec_checkbox.setChecked(False)
+        self.realistic_exec_checkbox.stateChanged.connect(self.on_realistic_exec_toggled)
+        realistic_section.addWidget(self.realistic_exec_checkbox)
+        
+        # Latency profile dropdown (initially hidden)
+        self.latency_profile_label = QLabel("Latency Profile:")
+        self.latency_profile_label.setStyleSheet("color: #cccccc; font-weight: 500; margin-left: 20px;")
+        self.latency_profile_combo = QComboBox()
+        self.latency_profile_combo.addItems([
+            "co-located (HFT ~3ms)",
+            "institutional (~20ms)",
+            "retail_fast (~50ms)",
+            "retail_average (~80ms) ⭐",
+            "retail_slow (~120ms)",
+            "mobile (~165ms)"
+        ])
+        self.latency_profile_combo.setCurrentIndex(3)  # Default: retail_average
+        self.latency_profile_combo.setMinimumHeight(32)
+        self.latency_profile_combo.setMinimumWidth(200)
+        
+        # Hide latency controls initially
+        self.latency_profile_label.setVisible(False)
+        self.latency_profile_combo.setVisible(False)
+        
+        realistic_section.addWidget(self.latency_profile_label)
+        realistic_section.addWidget(self.latency_profile_combo)
+        realistic_section.addStretch()
+        
+        layout.addLayout(realistic_section)
+        
+        # Info label for realistic execution
+        self.realistic_info_label = QLabel()
+        self.realistic_info_label.setWordWrap(True)
+        self.realistic_info_label.setStyleSheet("""
+            color: #888888; 
+            font-size: 10px; 
+            margin-top: 4px;
+            padding: 8px;
+            background-color: #1e1e1e;
+            border-left: 3px solid #4ec9b0;
+            border-radius: 3px;
+        """)
+        self.realistic_info_label.setVisible(False)
+        layout.addWidget(self.realistic_info_label)
+        
         # Mode description
         self.mode_description = QLabel()
         self.mode_description.setWordWrap(True)
@@ -278,7 +342,8 @@ class Tab3BacktestRunner(QWidget):
         # Run button
         self.run_btn = QPushButton("▶️ Run Backtest")
         self.run_btn.clicked.connect(self.on_run_backtest_clicked)
-        self.run_btn.setMinimumHeight(40)
+        self.run_btn.setMinimumHeight(32)
+        self.run_btn.setMaximumHeight(36)
         self.run_btn.setMinimumWidth(200)
         self.run_btn.setStyleSheet("""
             QPushButton {
@@ -409,6 +474,7 @@ class Tab3BacktestRunner(QWidget):
         header_layout = QHBoxLayout()
         
         title = QLabel("📈 Backtest Results")
+        title.setProperty("class", "title")
         title.setStyleSheet("font-size: 15px; font-weight: bold; color: #ffffff;")
         header_layout.addWidget(title)
         header_layout.addStretch()
@@ -442,6 +508,7 @@ class Tab3BacktestRunner(QWidget):
         
         # Summary metrics table
         summary_group = QGroupBox("Summary Metrics")
+        summary_group.setProperty("class", "metric-card")
         summary_group.setStyleSheet("""
             QGroupBox {
                 font-weight: bold;
@@ -485,14 +552,17 @@ class Tab3BacktestRunner(QWidget):
         chart_layout = QVBoxLayout()
         
         self.equity_chart = QWebEngineView()
-        self.equity_chart.setMinimumHeight(300)
+        self.equity_chart.setMinimumHeight(450)  # Increased from 300
         chart_layout.addWidget(self.equity_chart)
         
         chart_group.setLayout(chart_layout)
         splitter.addWidget(chart_group)
         
-        # Set splitter sizes
-        splitter.setSizes([200, 150, 300])
+        # Set splitter sizes: compact summary, small WF, LARGE chart
+        splitter.setStretchFactor(0, 15)  # Summary: 15%
+        splitter.setStretchFactor(1, 10)  # Walk-Forward: 10%
+        splitter.setStretchFactor(2, 75)  # Chart: 75%
+        splitter.setSizes([150, 100, 600])
         
         layout.addWidget(splitter, 1)
         
@@ -524,6 +594,24 @@ class Tab3BacktestRunner(QWidget):
                 "Runs multiple randomized simulations to assess strategy robustness. "
                 "Tests resilience to different market conditions."
             )
+    
+    def on_realistic_exec_toggled(self, state):
+        """Handle realistic execution toggle"""
+        is_enabled = (state == 2)  # Qt.CheckState.Checked
+        
+        # Show/hide latency profile controls
+        self.latency_profile_label.setVisible(is_enabled)
+        self.latency_profile_combo.setVisible(is_enabled)
+        self.realistic_info_label.setVisible(is_enabled)
+        
+        if is_enabled:
+            self.realistic_info_label.setText(
+                "🚀 Realistic execution adds market impact costs and latency delays. "
+                "Expect Sharpe to drop 15-30% and returns to drop 20-35%. "
+                "This is REALISTIC and prevents overestimating strategy performance."
+            )
+        
+        self.logger.info(f"Realistic execution {'enabled' if is_enabled else 'disabled'}")
             
     def hide_widget_tree(self, layout):
         """Hide all widgets in a layout"""
@@ -575,6 +663,53 @@ class Tab3BacktestRunner(QWidget):
         # Prepare parameters
         periods = self.periods_spin.value() if mode == "Walk-Forward" else 8
         runs = self.runs_spin.value() if mode == "Monte Carlo" else 500
+        
+        # FASE 1: Apply realistic execution settings to backtester
+        is_realistic = self.realistic_exec_checkbox.isChecked()
+        
+        if is_realistic:
+            # Extract latency profile from combo text
+            latency_text = self.latency_profile_combo.currentText()
+            # Extract profile key (e.g., "retail_average" from "retail_average (~80ms) ⭐")
+            latency_profile = latency_text.split('(')[0].strip().replace(' ', '-').lower()
+            
+            # Map display names to actual profile keys
+            profile_map = {
+                'co-located': 'co-located',
+                'institutional': 'institutional',
+                'retail_fast': 'retail_fast',
+                'retail_average': 'retail_average',
+                'retail_slow': 'retail_slow',
+                'mobile': 'mobile'
+            }
+            latency_profile = profile_map.get(latency_profile, 'retail_average')
+            
+            # Reinitialize backtester with realistic execution
+            self.backtester_core.enable_realistic_execution = True
+            self.backtester_core.latency_profile = latency_profile
+            
+            # Reinitialize realistic execution components
+            try:
+                from src.execution.market_impact import MarketImpactModel, VolumeProfileAnalyzer
+                from src.execution.latency_model import LatencyModel, LatencyProfile
+                
+                self.backtester_core.market_impact_model = MarketImpactModel()
+                self.backtester_core.volume_analyzer = VolumeProfileAnalyzer()
+                self.backtester_core.latency_model = LatencyProfile.get_profile(latency_profile)
+                
+                self.logger.info(f"🚀 Realistic execution enabled with profile: {latency_profile}")
+            except ImportError as e:
+                self.logger.warning(f"Realistic execution components not available: {e}")
+                QMessageBox.warning(
+                    self, 
+                    "Warning", 
+                    "Realistic execution components not found. Running with legacy execution."
+                )
+                is_realistic = False
+        else:
+            # Disable realistic execution
+            self.backtester_core.enable_realistic_execution = False
+            self.logger.info("Simple execution model (legacy)")
 
         # Update UI state
         self.run_btn.setEnabled(False)
@@ -692,6 +827,63 @@ class Tab3BacktestRunner(QWidget):
         self.summary_table.setRowCount(0)
         
         row = 0
+        
+        # Add realistic execution cost breakdown if available
+        if self.realistic_exec_checkbox.isChecked() and 'execution_costs' in result:
+            costs = result['execution_costs']
+            
+            # Section header
+            self.summary_table.insertRow(row)
+            header_item = QTableWidgetItem("📊 REALISTIC EXECUTION COSTS")
+            header_item.setForeground(Qt.GlobalColor.cyan)
+            from PySide6.QtGui import QFont
+            font = QFont()
+            font.setBold(True)
+            header_item.setFont(font)
+            self.summary_table.setItem(row, 0, header_item)
+            self.summary_table.setItem(row, 1, QTableWidgetItem(""))
+            row += 1
+            
+            # Market impact
+            if 'total_market_impact' in costs:
+                self.summary_table.insertRow(row)
+                self.summary_table.setItem(row, 0, QTableWidgetItem("  Market Impact Cost"))
+                self.summary_table.setItem(row, 1, QTableWidgetItem(f"${costs['total_market_impact']:.2f}"))
+                row += 1
+            
+            # Latency cost
+            if 'total_latency_cost' in costs:
+                self.summary_table.insertRow(row)
+                self.summary_table.setItem(row, 0, QTableWidgetItem("  Latency Cost"))
+                self.summary_table.setItem(row, 1, QTableWidgetItem(f"${costs['total_latency_cost']:.2f}"))
+                row += 1
+            
+            # Total execution cost
+            if 'total_execution_cost' in costs:
+                self.summary_table.insertRow(row)
+                cost_item = QTableWidgetItem("  Total Execution Cost")
+                cost_item.setForeground(Qt.GlobalColor.yellow)
+                cost_value = QTableWidgetItem(f"${costs['total_execution_cost']:.2f}")
+                cost_value.setForeground(Qt.GlobalColor.yellow)
+                self.summary_table.setItem(row, 0, cost_item)
+                self.summary_table.setItem(row, 1, cost_value)
+                row += 1
+            
+            # Percentage of capital
+            if 'total_execution_cost' in costs:
+                self.summary_table.insertRow(row)
+                pct = (costs['total_execution_cost'] / self.backtester_core.initial_capital) * 100
+                self.summary_table.setItem(row, 0, QTableWidgetItem("  Cost % of Capital"))
+                self.summary_table.setItem(row, 1, QTableWidgetItem(f"{pct:.3f}%"))
+                row += 1
+            
+            # Separator
+            self.summary_table.insertRow(row)
+            self.summary_table.setItem(row, 0, QTableWidgetItem(""))
+            self.summary_table.setItem(row, 1, QTableWidgetItem(""))
+            row += 1
+        
+        # Add standard metrics
         for metric_name, value in metrics.items():
             self.summary_table.insertRow(row)
             

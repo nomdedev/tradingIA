@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QFrame, QSplitter,
     QGroupBox, QTextEdit, QComboBox, QLineEdit, QTabWidget,
-    QDoubleSpinBox, QSpinBox
+    QDoubleSpinBox, QSpinBox, QCheckBox
 )
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -46,14 +46,14 @@ class ExperimentCard(QFrame):
         header_layout = QHBoxLayout()
         
         name_label = QLabel(name)
-        name_label.setStyleSheet("color: #fff; font-weight: bold; font-size: 13px;")
+        name_label.setStyleSheet("color: #fff; font-weight: bold; font-size: 16px;")
         header_layout.addWidget(name_label)
         
         header_layout.addStretch()
         
         status_label = QLabel(status.upper())
         status_color = "#4ec9b0" if status == "complete" else "#c586c0"
-        status_label.setStyleSheet(f"color: {status_color}; font-size: 10px; font-weight: bold;")
+        status_label.setStyleSheet(f"color: {status_color}; font-size: 13px; font-weight: bold;")
         header_layout.addWidget(status_label)
         
         layout.addLayout(header_layout)
@@ -65,7 +65,7 @@ class ExperimentCard(QFrame):
         
         # ID
         id_label = QLabel(f"ID: {exp_id}")
-        id_label.setStyleSheet("color: #888; font-size: 10px;")
+        id_label.setStyleSheet("color: #888; font-size: 13px;")
         layout.addWidget(id_label)
         
         self.setMaximumHeight(120)
@@ -96,6 +96,8 @@ class ResearchThread(QThread):
                 self.run_correlation_analysis()
             elif self.analysis_type == "regime":
                 self.run_regime_detection()
+            elif self.analysis_type == "pattern_discovery":
+                self.run_pattern_discovery()
                 
         except Exception as e:
             self.result_ready.emit({"error": str(e)})
@@ -234,6 +236,83 @@ class ResearchThread(QThread):
         else:
             return "Usar estrategias de reversión a la media. Stops ajustados."
     
+    def run_pattern_discovery(self):
+        """Run pattern discovery analysis"""
+        import sys
+        import os
+        sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+        
+        try:
+            from scripts.pattern_discovery_analyzer import PatternDiscoveryAnalyzer
+            import pandas as pd
+            
+            self.progress_update.emit(10, "Cargando datos...")
+            self.msleep(500)
+            
+            # Load sample data (try multiple sources)
+            data_paths = [
+                'data/btc_15Min.csv',
+                'D:/martin/Proyectos/tradingIA/data/btc_15Min.csv'
+            ]
+            
+            df = None
+            for path in data_paths:
+                if os.path.exists(path):
+                    df = pd.read_csv(path)
+                    break
+            
+            if df is None:
+                raise FileNotFoundError("No se encontró archivo de datos BTC")
+            
+            self.progress_update.emit(30, "Inicializando analizador...")
+            analyzer = PatternDiscoveryAnalyzer(
+                data=df,
+                min_cases=self.params.get('min_cases', 15)
+            )
+            
+            self.progress_update.emit(50, "Analizando patrones EMA...")
+            ema_patterns = analyzer.analyze_ema_proximity_patterns()
+            
+            self.progress_update.emit(60, "Analizando volumen y POC...")
+            volume_patterns = analyzer.analyze_volume_poc_patterns()
+            
+            self.progress_update.emit(70, "Analizando IFVG...")
+            ifvg_patterns = analyzer.analyze_ifvg_patterns()
+            
+            self.progress_update.emit(80, "Analizando Squeeze Momentum...")
+            squeeze_patterns = analyzer.analyze_squeeze_momentum_patterns()
+            
+            self.progress_update.emit(90, "Analizando multi-timeframe...")
+            mtf_patterns = analyzer.analyze_multitimeframe_patterns()
+            
+            # Combine all patterns
+            all_patterns = (
+                ema_patterns + volume_patterns + ifvg_patterns + 
+                squeeze_patterns + mtf_patterns
+            )
+            
+            # Sort by win rate
+            all_patterns.sort(key=lambda x: x['win_rate'], reverse=True)
+            
+            result = {
+                'type': 'pattern_discovery',
+                'patterns': all_patterns[:15],  # Top 15
+                'total_patterns': len(all_patterns),
+                'categories': {
+                    'EMA': len(ema_patterns),
+                    'Volume/POC': len(volume_patterns),
+                    'IFVG': len(ifvg_patterns),
+                    'Squeeze': len(squeeze_patterns),
+                    'Multi-TF': len(mtf_patterns)
+                }
+            }
+            
+            self.progress_update.emit(100, "Análisis completado")
+            self.result_ready.emit(result)
+            
+        except Exception as e:
+            self.result_ready.emit({"error": f"Error en pattern discovery: {str(e)}"})
+    
     def stop(self):
         """Stop thread"""
         self.running = False
@@ -261,34 +340,92 @@ class Tab7AdvancedAnalysis(QWidget):
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(16)
         
-        # === HEADER ===
+        # === HEADER - Simplified ===
         header_layout = QHBoxLayout()
         
-        title = QLabel("🔬 RESEARCH LAB")
-        title.setStyleSheet("color: #ffffff; font-size: 18px; font-weight: bold;")
+        title = QLabel("🔬 Research Lab")
+        title.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
         header_layout.addWidget(title)
         
         header_layout.addStretch()
         
-        # Quick stats
-        self.exp_count_label = QLabel("Experiments: 0")
-        self.exp_count_label.setStyleSheet("color: #888; font-size: 12px; padding: 6px 12px; background: #2d2d2d; border-radius: 4px;")
-        header_layout.addWidget(self.exp_count_label)
+        # Status
+        self.status_label = QLabel("Listo para análisis")
+        self.status_label.setStyleSheet("color: #4ec9b0; font-size: 14px; padding: 6px 12px; background: #2d2d2d; border-radius: 4px;")
+        header_layout.addWidget(self.status_label)
         
         layout.addLayout(header_layout)
         
-        # === MAIN SPLITTER ===
+        # === QUICK ANALYSIS SECTION ===
+        quick_group = QGroupBox("🚀 Análisis Rápido")
+        quick_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                border: 2px solid #3d3d3d;
+                border-radius: 8px;
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 8px;
+            }
+        """)
+        
+        quick_layout = QHBoxLayout()
+        quick_layout.setContentsMargins(12, 12, 12, 12)
+        quick_layout.setSpacing(15)
+        
+        # Quick analysis buttons
+        analyses = [
+            ("📊", "Correlación", "Analizar relaciones entre indicadores"),
+            ("🎯", "Importancia", "Ver qué features son más importantes"),
+            ("🧪", "Hipótesis", "Probar hipótesis estadísticas"),
+            ("📈", "Regímenes", "Detectar cambios de mercado")
+        ]
+        
+        for icon, name, tooltip in analyses:
+            btn = QPushButton(f"{icon} {name}")
+            btn.setToolTip(tooltip)
+            btn.setFixedHeight(60)
+            btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #0e639c, stop:1 #0a4d7a);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                QPushButton:hover {
+                    background: #1177bb;
+                }
+            """)
+            quick_layout.addWidget(btn)
+        
+        quick_group.setLayout(quick_layout)
+        layout.addWidget(quick_group)
+        
+        # === MAIN ANALYSIS AREA ===
         main_splitter = QSplitter(Qt.Orientation.Horizontal)
         
-        # --- LEFT PANEL: Analysis Tools ---
-        left_panel = self.create_analysis_tools()
-        main_splitter.addWidget(left_panel)
+        # Left: Configuration & Parameters
+        config_panel = self.create_config_panel()
+        main_splitter.addWidget(config_panel)
         
-        # --- RIGHT PANEL: Results & Visualization ---
-        right_panel = self.create_results_panel()
-        main_splitter.addWidget(right_panel)
+        # Right: Results & Charts
+        results_panel = self.create_results_panel()
+        main_splitter.addWidget(results_panel)
         
-        main_splitter.setSizes([450, 650])
+        # Optimize proportions: 25% config, 75% results for maximum visualization
+        main_splitter.setStretchFactor(0, 25)
+        main_splitter.setStretchFactor(1, 75)
+        main_splitter.setSizes([300, 900])
         layout.addWidget(main_splitter)
         
         # === APPLY THEME ===
@@ -435,6 +572,38 @@ class Tab7AdvancedAnalysis(QWidget):
         regime_group.setLayout(regime_layout)
         layout.addWidget(regime_group)
         
+        # --- Pattern Discovery ---
+        pattern_group = QGroupBox("🔍 Pattern Discovery")
+        pattern_layout = QVBoxLayout()
+        
+        pattern_layout.addWidget(QLabel("Descubrir patrones predictivos (EMAs, POC, IFVG, Squeeze, Multi-TF):"))
+        
+        self.pattern_min_cases_spin = QSpinBox()
+        self.pattern_min_cases_spin.setRange(10, 100)
+        self.pattern_min_cases_spin.setValue(15)
+        self.pattern_min_cases_spin.setSuffix(" casos mín")
+        self.pattern_min_cases_spin.setStyleSheet("background: #2d2d2d; color: #fff; padding: 4px;")
+        pattern_layout.addWidget(QLabel("Casos mínimos:"))
+        pattern_layout.addWidget(self.pattern_min_cases_spin)
+        
+        self.pattern_btn = QPushButton("▶ Discover Patterns")
+        self.pattern_btn.setStyleSheet("""
+            QPushButton {
+                background: #569cd6;
+                color: #fff;
+                border: none;
+                padding: 10px;
+                font-weight: bold;
+                border-radius: 4px;
+            }
+            QPushButton:hover { background: #6cacdf; }
+        """)
+        self.pattern_btn.clicked.connect(self.on_run_pattern_discovery)
+        pattern_layout.addWidget(self.pattern_btn)
+        
+        pattern_group.setLayout(pattern_layout)
+        layout.addWidget(pattern_group)
+        
         # --- Experiment History ---
         exp_group = QGroupBox("📝 Recent Experiments")
         exp_layout = QVBoxLayout()
@@ -473,7 +642,7 @@ class Tab7AdvancedAnalysis(QWidget):
         progress_layout.setContentsMargins(0, 0, 0, 0)
         
         self.progress_label = QLabel("Iniciando análisis...")
-        self.progress_label.setStyleSheet("color: #569cd6; font-size: 12px;")
+        self.progress_label.setStyleSheet("color: #569cd6; font-size: 15px;")
         progress_layout.addWidget(self.progress_label)
         
         from PySide6.QtWidgets import QProgressBar
@@ -551,7 +720,7 @@ class Tab7AdvancedAnalysis(QWidget):
                 border: 1px solid #444;
                 padding: 12px;
                 font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 12px;
+                font-size: 15px;
             }
         """)
         self.stats_text.setHtml("<p style='color: #666; text-align: center; padding: 40px;'>Ejecute un análisis para ver estadísticas detalladas</p>")
@@ -572,7 +741,7 @@ class Tab7AdvancedAnalysis(QWidget):
                 color: #fff;
                 border: 1px solid #444;
                 padding: 12px;
-                font-size: 13px;
+                font-size: 16px;
             }
         """)
         self.rec_text.setHtml("<p style='color: #666; text-align: center; padding: 40px;'>Las recomendaciones aparecerán aquí después del análisis</p>")
@@ -609,7 +778,7 @@ class Tab7AdvancedAnalysis(QWidget):
                 background-color: #1e1e1e;
                 color: #ffffff;
                 font-family: 'Segoe UI', Arial, sans-serif;
-                font-size: 13px;
+                font-size: 16px;
             }
             QGroupBox {
                 background-color: #252525;
@@ -625,7 +794,7 @@ class Tab7AdvancedAnalysis(QWidget):
                 left: 12px;
                 padding: 0 8px;
                 color: #ffffff;
-                font-size: 13px;
+                font-size: 16px;
             }
             QLabel {
                 color: #cccccc;
@@ -672,6 +841,14 @@ class Tab7AdvancedAnalysis(QWidget):
         
         self.run_research_analysis('regime', params)
     
+    def on_run_pattern_discovery(self):
+        """Run pattern discovery analysis"""
+        params = {
+            'min_cases': self.pattern_min_cases_spin.value()
+        }
+        
+        self.run_research_analysis('pattern_discovery', params)
+    
     def run_research_analysis(self, analysis_type, params):
         """Execute research analysis in background"""
         # Show progress
@@ -683,6 +860,7 @@ class Tab7AdvancedAnalysis(QWidget):
         self.feature_btn.setEnabled(False)
         self.corr_btn.setEnabled(False)
         self.regime_btn.setEnabled(False)
+        self.pattern_btn.setEnabled(False)
         
         # Start thread
         self.research_thread = ResearchThread(analysis_type, params)
@@ -707,6 +885,7 @@ class Tab7AdvancedAnalysis(QWidget):
         self.feature_btn.setEnabled(True)
         self.corr_btn.setEnabled(True)
         self.regime_btn.setEnabled(True)
+        self.pattern_btn.setEnabled(True)
         
         # Check for errors
         if 'error' in result:
@@ -724,6 +903,8 @@ class Tab7AdvancedAnalysis(QWidget):
             self.display_correlation_results(result)
         elif result_type == 'regime':
             self.display_regime_results(result)
+        elif result_type == 'pattern_discovery':
+            self.display_pattern_discovery_results(result)
         
         # Add to experiment history
         self.add_experiment(result_type, result)
@@ -1008,6 +1189,122 @@ class Tab7AdvancedAnalysis(QWidget):
         """
         self.rec_text.setHtml(rec_html)
     
+    def display_pattern_discovery_results(self, result):
+        """Display pattern discovery results"""
+        patterns = result['patterns']
+        categories = result['categories']
+        
+        # Visualization - Top patterns bar chart
+        top_10 = patterns[:10]
+        
+        fig = go.Figure()
+        
+        # Win rate bars
+        fig.add_trace(go.Bar(
+            name='Win Rate %',
+            x=[p['pattern_name'] for p in top_10],
+            y=[p['win_rate'] * 100 for p in top_10],
+            marker=dict(color='#4ec9b0'),
+            text=[f"{p['win_rate']*100:.1f}%" for p in top_10],
+            textposition='outside'
+        ))
+        
+        fig.update_layout(
+            template='plotly_dark',
+            paper_bgcolor='#1e1e1e',
+            plot_bgcolor='#1e1e1e',
+            font=dict(color='#ffffff', size=10),
+            title="🏆 Top 10 Predictive Patterns by Win Rate",
+            xaxis_title="Pattern",
+            yaxis_title="Win Rate %",
+            margin=dict(l=40, r=40, t=60, b=120),
+            height=400,
+            xaxis=dict(tickangle=-45)
+        )
+        
+        html = fig.to_html(include_plotlyjs='cdn')
+        self.viz_chart.setHtml(html)
+        
+        # Statistics - Pattern table
+        stats_html = f"""
+        <h2 style='color: #dcdcaa;'>🔍 Pattern Discovery Results</h2>
+        <hr style='border-color: #3d3d3d;'>
+        
+        <p><b>Total patterns found:</b> {result['total_patterns']}</p>
+        
+        <h3 style='margin-top: 20px;'>Categorías:</h3>
+        <ul>
+        """
+        
+        for cat, count in categories.items():
+            stats_html += f"<li>{cat}: {count} patterns</li>"
+        
+        stats_html += f"""
+        </ul>
+        
+        <h3 style='margin-top: 30px;'>Top 5 Patterns:</h3>
+        <table style='width: 100%; border-collapse: collapse; margin-top: 10px;'>
+            <thead>
+                <tr style='background: #2d2d2d; border-bottom: 2px solid #0e639c;'>
+                    <th style='padding: 8px; text-align: left;'>Pattern</th>
+                    <th style='padding: 8px; text-align: center;'>Win Rate</th>
+                    <th style='padding: 8px; text-align: center;'>Cases</th>
+                    <th style='padding: 8px; text-align: center;'>PF</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        
+        for i, pattern in enumerate(patterns[:5]):
+            bg_color = '#252525' if i % 2 == 0 else '#2d2d2d'
+            stats_html += f"""
+                <tr style='background: {bg_color};'>
+                    <td style='padding: 8px;'>{pattern['pattern_name'][:40]}</td>
+                    <td style='padding: 8px; text-align: center; color: #4ec9b0; font-weight: bold;'>{pattern['win_rate']*100:.1f}%</td>
+                    <td style='padding: 8px; text-align: center;'>{pattern['n_cases']}</td>
+                    <td style='padding: 8px; text-align: center;'>{pattern.get('profit_factor', 0):.2f}</td>
+                </tr>
+            """
+        
+        stats_html += """
+            </tbody>
+        </table>
+        """
+        self.stats_text.setHtml(stats_html)
+        
+        # Recommendations
+        rec_html = f"""
+        <h2 style='color: #dcdcaa;'>💡 Actionable Insights</h2>
+        <hr style='border-color: #3d3d3d;'>
+        
+        <h3>🎯 Key Findings:</h3>
+        <ul style='line-height: 1.8;'>
+        """
+        
+        # Top 3 recommendations
+        for i, pattern in enumerate(patterns[:3], 1):
+            rec_html += f"""
+            <li><b>#{i}: {pattern['pattern_name']}</b><br>
+                Win Rate: {pattern['win_rate']*100:.1f}% | 
+                Cases: {pattern['n_cases']} | 
+                PF: {pattern.get('profit_factor', 0):.2f}
+            </li>
+            """
+        
+        rec_html += """
+        </ul>
+        
+        <h3 style='margin-top: 30px;'>📊 Trading Strategy:</h3>
+        <ul style='line-height: 1.8;'>
+            <li>🔥 Focus on patterns with >60% win rate and >1.2 PF</li>
+            <li>📈 Multi-timeframe confirmation patterns are most reliable</li>
+            <li>⚡ EMA proximity + IFVG combination shows strong edge</li>
+            <li>🎲 Test patterns in paper trading before live deployment</li>
+            <li>📊 Monitor pattern performance over time for degradation</li>
+        </ul>
+        """
+        self.rec_text.setHtml(rec_html)
+    
     def add_experiment(self, exp_type, result):
         """Add experiment to history"""
         exp_id = f"EXP-{len(self.experiments) + 1:03d}"
@@ -1074,6 +1371,68 @@ class Tab7AdvancedAnalysis(QWidget):
         
         # Mock export
         self.status_update.emit(f"Resultados exportados: {filename}", "success")
+    
+    def create_config_panel(self):
+        """Create configuration panel for research settings"""
+        config_group = QGroupBox("⚙️ Configuración de Investigación")
+        config_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 14px;
+                font-weight: bold;
+                color: #fff;
+                border: 1px solid #3d3d3d;
+                border-radius: 6px;
+                margin-top: 8px;
+                padding-top: 8px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 8px;
+                padding: 0 4px;
+            }
+        """)
+        
+        config_layout = QVBoxLayout()
+        config_layout.setContentsMargins(8, 8, 8, 8)
+        config_layout.setSpacing(8)
+        
+        # Analysis parameters
+        params_layout = QHBoxLayout()
+        
+        # Confidence level
+        confidence_label = QLabel("Nivel de Confianza:")
+        confidence_label.setStyleSheet("color: #cccccc;")
+        self.confidence_spin = QDoubleSpinBox()
+        self.confidence_spin.setRange(0.8, 0.99)
+        self.confidence_spin.setValue(0.95)
+        self.confidence_spin.setSingleStep(0.01)
+        self.confidence_spin.setSuffix(" %")
+        
+        params_layout.addWidget(confidence_label)
+        params_layout.addWidget(self.confidence_spin)
+        params_layout.addStretch()
+        
+        config_layout.addLayout(params_layout)
+        
+        # Advanced options
+        advanced_label = QLabel("Opciones Avanzadas:")
+        advanced_label.setStyleSheet("color: #cccccc; font-weight: bold; margin-top: 8px;")
+        config_layout.addWidget(advanced_label)
+        
+        # Checkboxes for advanced options
+        self.normalize_data_check = QCheckBox("Normalizar datos")
+        self.normalize_data_check.setChecked(True)
+        self.normalize_data_check.setStyleSheet("color: #cccccc;")
+        
+        self.remove_outliers_check = QCheckBox("Remover outliers")
+        self.remove_outliers_check.setChecked(False)
+        self.remove_outliers_check.setStyleSheet("color: #cccccc;")
+        
+        config_layout.addWidget(self.normalize_data_check)
+        config_layout.addWidget(self.remove_outliers_check)
+        
+        config_group.setLayout(config_layout)
+        return config_group
     
     def on_tab_activated(self):
         """Called when tab becomes active"""

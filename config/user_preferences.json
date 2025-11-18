@@ -1,0 +1,27 @@
+{
+    "last_session": "2025-11-17T14:40:40.787236",
+    "live_trading": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "mode": "Paper Trading",
+        "parameters": {
+            "rsi_period": 14,
+            "rsi_overbought": 70,
+            "rsi_oversold": 30,
+            "take_profit": 2.0,
+            "stop_loss": 1.5
+        }
+    },
+    "backtest": {
+        "start_date": "2023-01-01",
+        "end_date": "2024-01-01",
+        "initial_capital": 10000,
+        "timeframe": "5min"
+    },
+    "data_paths": {
+        "5min": "data/raw/BTCUSD_5Min.csv",
+        "15min": "data/raw/BTCUSD_15Min.csv",
+        "1hour": "data/raw/BTCUSD_1Hour.csv",
+        "4hour": "data/raw/BTCUSD_4Hour.csv"
+    }
+}

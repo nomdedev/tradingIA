@@ -33,8 +33,11 @@ class BollingerBandsStrategy(BaseStrategy):
             'volume_ma_period': 20
         }
     
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def generate_signals(self, df_multi_tf: Dict[str, pd.DataFrame]) -> Dict[str, pd.Series]:
         """Generate Bollinger Bands signals"""
+        # Use 5min data for signals
+        df = df_multi_tf.get('5min', df_multi_tf.get('5m', list(df_multi_tf.values())[0]))
+        
         if not self.validate_data(df):
             raise ValueError("Invalid data format")
         
@@ -96,7 +99,12 @@ class BollingerBandsStrategy(BaseStrategy):
                 df.loc[sell_mask, 'bb_width'] * 10
             ).clip(1, 5)
         
-        return df
+        # Return signals in expected format
+        return {
+            'entries': (df['signal'] == 1).astype(int),
+            'exits': (df['signal'] == -1).astype(int),
+            'signals': df['signal']
+        }
     
     def _calculate_bollinger_bands(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate Bollinger Bands"""
@@ -132,6 +140,42 @@ class BollingerBandsStrategy(BaseStrategy):
         for key, value in params.items():
             if key in self.parameters:
                 self.parameters[key] = value
+    
+    def get_description(self) -> str:
+        """Get strategy description"""
+        return (
+            "Estrategia de reversión a la media usando Bandas de Bollinger. "
+            "Opera cuando el precio toca las bandas exteriores, esperando un retorno al centro."
+        )
+    
+    def get_detailed_info(self) -> Dict:
+        """Get detailed strategy information"""
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': (
+                "📈 COMPRA cuando:\n"
+                "  • El precio toca o cruza la banda inferior (sobreventa)\n"
+                "  • El precio bajo (low) está por debajo de la banda inferior\n"
+                "  • Opcionalmente: volumen superior al promedio (si está activado)"
+            ),
+            'sell_signals': (
+                "📉 VENTA cuando:\n"
+                "  • El precio toca o cruza la banda superior (sobrecompra)\n"
+                "  • El precio alto (high) está por encima de la banda superior\n"
+                "  • Opcionalmente: volumen superior al promedio (si está activado)"
+            ),
+            'parameters': {
+                'period': f"{self.parameters['period']} - Período para la media móvil",
+                'num_std': f"{self.parameters['num_std']} - Número de desviaciones estándar",
+                'use_close_for_bands': f"{self.parameters['use_close_for_bands']} - Usar precio de cierre para cálculo",
+                'require_volume_confirmation': f"{self.parameters['require_volume_confirmation']} - Requiere confirmación de volumen",
+                'volume_ma_period': f"{self.parameters['volume_ma_period']} - Período para media de volumen"
+            },
+            'risk_level': 'Conservador',
+            'timeframe': '5min',
+            'indicators': ['Bollinger Bands', 'SMA', 'Volume MA (opcional)']
+        }
 
 
 # Create preset configurations
@@ -170,7 +214,7 @@ if __name__ == "__main__":
     print(f"Parameters: {strategy.get_parameters()}")
     
     # Generate sample data
-    dates = pd.date_range('2024-01-01', periods=150, freq='1H')
+    dates = pd.date_range('2024-01-01', periods=150, freq='1h')
     df = pd.DataFrame({
         'open': np.random.randn(150).cumsum() + 100,
         'high': np.random.randn(150).cumsum() + 102,

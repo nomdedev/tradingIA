@@ -17,40 +17,28 @@ from datetime import datetime
 
 class MetricCard(QFrame):
     """Modern metric display card"""
-    
+
     def __init__(self, title, value, subtitle="", color="#0e639c"):
         super().__init__()
         self.color = color
-        self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setStyleSheet(f"""
-            MetricCard {{
-                background-color: #2d2d2d;
-                border: 2px solid {color};
-                border-radius: 12px;
-                padding: 16px;
-            }}
-        """)
-        
+        self.setProperty("class", "metric-card")
+
         layout = QVBoxLayout()
         layout.setSpacing(8)
-        
+
         # Title
         title_label = QLabel(title)
-        title_label.setStyleSheet("color: #888; font-size: 12px; font-weight: 600;")
+        title_label.setProperty("class", "metric-label")
         layout.addWidget(title_label)
-        
+
         # Value
         self.value_label = QLabel(str(value))
-        self.value_label.setStyleSheet(f"""
-            color: {color};
-            font-size: 32px;
-            font-weight: 700;
-        """)
+        self.value_label.setProperty("class", "metric-value")
         layout.addWidget(self.value_label)
         
         # Subtitle
         self.subtitle_label = QLabel(subtitle)
-        self.subtitle_label.setStyleSheet("color: #666; font-size: 11px;")
+        self.subtitle_label.setStyleSheet("color: #666; font-size: 14px;")
         layout.addWidget(self.subtitle_label)
         
         layout.addStretch()
@@ -70,7 +58,7 @@ class QuickActionButton(QPushButton):
     
     def __init__(self, icon, text, color="#0e639c"):
         super().__init__(f"{icon}  {text}")
-        self.setFixedHeight(60)
+        self.setFixedHeight(70)
         self.setStyleSheet(f"""
             QPushButton {{
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -78,7 +66,7 @@ class QuickActionButton(QPushButton):
                 color: white;
                 border: none;
                 border-radius: 8px;
-                font-size: 14px;
+                font-size: 15px;
                 font-weight: 600;
                 text-align: left;
                 padding: 12px 20px;
@@ -134,46 +122,32 @@ class Tab0Dashboard(QWidget):
         # Header with status
         header_layout = QHBoxLayout()
         header = QLabel("📊 Trading Dashboard")
-        header.setStyleSheet("""
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-        """)
+        header.setProperty("class", "title")
         header_layout.addWidget(header)
-        
-        # Status indicator
+
+        # Compact status indicator
         self.status_label = QLabel("⚪ No Data Loaded")
         self.status_label.setStyleSheet("""
-            font-size: 14px;
             color: #888;
-            padding: 8px 16px;
+            font-size: 13px;
+            padding: 6px 12px;
             background-color: #2d2d2d;
-            border-radius: 6px;
+            border-radius: 4px;
         """)
         header_layout.addWidget(self.status_label)
         header_layout.addStretch()
         
         main_layout.addLayout(header_layout)
         
-        # Info banner
-        info_banner = QLabel(
-            "💡 <b>Getting Started:</b> Use the quick actions below to load data, "
-            "configure a strategy, and run your first backtest. "
-            "Results will appear here once you start trading or backtesting."
-        )
-        info_banner.setWordWrap(True)
-        info_banner.setStyleSheet("""
-            QLabel {
-                background-color: #1e3a5f;
-                color: #a8d8ff;
-                padding: 12px 16px;
-                border-radius: 8px;
-                border-left: 4px solid #569cd6;
-                font-size: 13px;
-            }
+        # Compact getting started hint
+        hint_label = QLabel("💡 Load data → Configure strategy → Run backtest")
+        hint_label.setStyleSheet("""
+            color: #569cd6;
+            font-size: 14px;
+            font-style: italic;
+            padding: 8px 0;
         """)
-        main_layout.addWidget(info_banner)
+        main_layout.addWidget(hint_label)
         
         # Metrics Overview
         metrics_group = self.create_metrics_section()
@@ -196,7 +170,7 @@ class Tab0Dashboard(QWidget):
         group = QGroupBox("Portfolio Overview")
         group.setStyleSheet("""
             QGroupBox {
-                font-size: 16px;
+                font-size: 17px;
                 font-weight: 600;
                 color: #fff;
                 border: 2px solid #3d3d3d;
@@ -263,11 +237,11 @@ class Tab0Dashboard(QWidget):
             "• Live: Currently open positions"
         )
         
-        # Add cards to grid
+        # Organize metrics in 2x2 grid for better readability
         layout.addWidget(self.balance_card, 0, 0)
         layout.addWidget(self.pnl_card, 0, 1)
-        layout.addWidget(self.winrate_card, 0, 2)
-        layout.addWidget(self.trades_card, 0, 3)
+        layout.addWidget(self.winrate_card, 1, 0)
+        layout.addWidget(self.trades_card, 1, 1)
         
         group.setLayout(layout)
         return group
@@ -277,7 +251,7 @@ class Tab0Dashboard(QWidget):
         group = QGroupBox("Quick Actions")
         group.setStyleSheet("""
             QGroupBox {
-                font-size: 16px;
+                font-size: 17px;
                 font-weight: 600;
                 color: #fff;
                 border: 2px solid #3d3d3d;
@@ -322,7 +296,7 @@ class Tab0Dashboard(QWidget):
         group = QGroupBox("Recent Activity")
         group.setStyleSheet("""
             QGroupBox {
-                font-size: 16px;
+                font-size: 17px;
                 font-weight: 600;
                 color: #fff;
                 border: 2px solid #3d3d3d;

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 import pytz
 from unittest.mock import Mock, patch
 
-from src.backend_core import DataManager
+from core.backend_core import DataManager
 
 
 class TestOHLCValidation:
@@ -179,7 +179,7 @@ class TestTimezoneHandling:
         """Convierte timestamps a UTC correctamente"""
         # Datos en EST
         dates_est = pd.date_range(
-            '2024-01-01', periods=10, freq='1H',
+            '2024-01-01', periods=10, freq='1h',
             tz='America/New_York'
         )
 
@@ -203,8 +203,8 @@ class TestTimezoneHandling:
 
     def test_detect_timezone_mismatch(self):
         """Detecta cuando hay timestamps con timezones mezcladas"""
-        utc_dates = pd.date_range('2024-01-01', periods=5, freq='1H', tz='UTC')
-        est_dates = pd.date_range('2024-01-01 06:00', periods=5, freq='1H', tz='America/New_York')
+        utc_dates = pd.date_range('2024-01-01', periods=5, freq='1h', tz='UTC')
+        est_dates = pd.date_range('2024-01-01 06:00', periods=5, freq='1h', tz='America/New_York')
 
         # Mezclar timezones (problema común)
         mixed_dates = pd.Index(list(utc_dates) + list(est_dates))
@@ -220,7 +220,7 @@ class TestTimezoneHandling:
 
     def test_naive_datetime_warning(self):
         """Advierte cuando timestamps no tienen timezone"""
-        naive_dates = pd.date_range('2024-01-01', periods=10, freq='1H')  # Sin tz
+        naive_dates = pd.date_range('2024-01-01', periods=10, freq='1h')  # Sin tz
 
         data = pd.DataFrame({
             'Date': naive_dates,

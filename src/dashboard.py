@@ -113,6 +113,7 @@ def load_paper_trading_history():
 def load_market_data(symbol='BTCUSD', timeframe='5Min', days_back=30):
     """Carga datos de mercado con indicadores"""
     try:
+        from api.data_fetcher import DataFetcher
         fetcher = DataFetcher()
         end_date = pd.Timestamp.now()
         start_date = end_date - pd.Timedelta(days=days_back)

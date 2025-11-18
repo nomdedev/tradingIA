@@ -196,8 +196,14 @@ class ABTestingBase:
         if trades:
             pnl_series = pd.Series([t['pnl_pct'] for t in trades])
             total_return = (capital - self.capital) / self.capital
-            sharpe_ratio = pnl_series.mean() / pnl_series.std() * np.sqrt(252 *
-                                                                          12) if pnl_series.std() > 0 else 0 # Annualized
+            
+            # Sharpe Ratio (con risk-free rate correcto)
+            # Asumiendo timeframe de 5 min: 252 * 24 * 12 períodos por año
+            periods_per_year = 252 * 12  # Aproximado para timeframe 1H
+            rf_per_period = 0.04 / periods_per_year
+            excess_pnl = pnl_series - rf_per_period
+            sharpe_ratio = (excess_pnl.mean() / excess_pnl.std()) * np.sqrt(periods_per_year) if excess_pnl.std() > 0 else 0.0
+            
             win_rate = (pnl_series > 0).mean()
             total_trades = len(trades)
             max_drawdown = 0.15  # Simplified assumption

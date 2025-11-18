@@ -31,7 +31,7 @@ for directory in [DATA_DIR, RESULTS_DIR, LOGS_DIR, MODELS_DIR, DOCS_DIR, PINE_DI
 ALPACA_CONFIG = {
     'api_key': os.getenv('ALPACA_API_KEY', ''),
     'secret_key': os.getenv('ALPACA_SECRET_KEY', ''),
-    'base_url': 'https://paper-api.alpaca.markets',
+    'base_url': os.getenv('ALPACA_BASE_URL', 'https://paper-api.alpaca.markets'),
     'data_url': 'https://data.alpaca.markets'
 }
 

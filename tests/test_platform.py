@@ -118,12 +118,12 @@ def test_basic_functionality():
         print("   ✅ SettingsManager initialization")
 
         # Test data manager (without API call)
-        from backend_core import DataManager
+        from core.backend_core import DataManager
         data_mgr = DataManager()
         print("   ✅ DataManager initialization")
 
         # Test strategy engine
-        from backend_core import StrategyEngine
+        from core.backend_core import StrategyEngine
         strategy_engine = StrategyEngine()
         print("   ✅ StrategyEngine initialization")
 

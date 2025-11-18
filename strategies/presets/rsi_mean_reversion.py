@@ -33,8 +33,11 @@ class RSIMeanReversionStrategy(BaseStrategy):
             'smooth_period': 3
         }
     
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def generate_signals(self, df_multi_tf: Dict[str, pd.DataFrame]) -> Dict[str, pd.Series]:
         """Generate RSI-based signals"""
+        # Use 5min data for signals
+        df = df_multi_tf.get('5min', df_multi_tf.get('5m', list(df_multi_tf.values())[0]))
+        
         if not self.validate_data(df):
             raise ValueError("Invalid data format")
         
@@ -81,11 +84,16 @@ class RSIMeanReversionStrategy(BaseStrategy):
             (df.loc[sell_mask, 'rsi'] - self.parameters['overbought']) / 10
         ).clip(1, 5)
         
-        return df
+        # Return signals in expected format
+        return {
+            'entries': (df['signal'] == 1).astype(int),
+            'exits': (df['signal'] == -1).astype(int),
+            'signals': df['signal']
+        }
     
     def _calculate_rsi(self, df: pd.DataFrame, period: int) -> pd.DataFrame:
         """Calculate RSI indicator"""
-        delta = df['close'].diff()
+        delta = df['Close'].diff()
         
         gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
@@ -104,6 +112,42 @@ class RSIMeanReversionStrategy(BaseStrategy):
         for key, value in params.items():
             if key in self.parameters:
                 self.parameters[key] = value
+    
+    def get_description(self) -> str:
+        """Get strategy description"""
+        return (
+            "Estrategia de reversión a la media basada en RSI (Relative Strength Index). "
+            "Compra en sobreventa y vende en sobrecompra."
+        )
+    
+    def get_detailed_info(self) -> Dict:
+        """Get detailed strategy information"""
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': (
+                "📈 COMPRA cuando:\n"
+                f"  • RSI cruza por debajo de {self.parameters['oversold']} (sobreventa)\n"
+                "  • RSI anterior estaba por encima del nivel de sobreventa\n"
+                "  • Indica posible reversión alcista"
+            ),
+            'sell_signals': (
+                "📉 VENTA cuando:\n"
+                f"  • RSI cruza por encima de {self.parameters['overbought']} (sobrecompra)\n"
+                "  • RSI anterior estaba por debajo del nivel de sobrecompra\n"
+                "  • Indica posible reversión bajista"
+            ),
+            'parameters': {
+                'rsi_period': f"{self.parameters['rsi_period']} - Período para cálculo del RSI",
+                'oversold': f"{self.parameters['oversold']} - Nivel de sobreventa",
+                'overbought': f"{self.parameters['overbought']} - Nivel de sobrecompra",
+                'use_smoothing': f"{self.parameters['use_smoothing']} - Aplicar suavizado al RSI",
+                'smooth_period': f"{self.parameters['smooth_period']} - Período de suavizado"
+            },
+            'risk_level': 'Equilibrado',
+            'timeframe': '5min',
+            'indicators': ['RSI (Relative Strength Index)']
+        }
 
 
 # Create preset configurations
@@ -142,7 +186,7 @@ if __name__ == "__main__":
     print(f"Parameters: {strategy.get_parameters()}")
     
     # Generate sample data
-    dates = pd.date_range('2024-01-01', periods=100, freq='1H')
+    dates = pd.date_range('2024-01-01', periods=100, freq='1h')
     df = pd.DataFrame({
         'open': np.random.randn(100).cumsum() + 100,
         'high': np.random.randn(100).cumsum() + 102,

@@ -454,10 +454,13 @@ class ParameterOptimizer:
 
             # Sharpe (daily returns)
             returns = np.diff(equity) / equity[:-1]
-            if len(returns) > 0 and returns.std() > 0:
-                sharpe = returns.mean() / returns.std() * np.sqrt(252)
+            if len(returns) > 1 and returns.std() > 0:
+                # Sharpe con risk-free rate
+                rf_per_period = 0.04 / 252
+                excess_returns = returns - rf_per_period
+                sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252)
             else:
-                sharpe = 0
+                sharpe = 0.0
             sharpe_ratios.append(sharpe)
 
         # Calculate statistics

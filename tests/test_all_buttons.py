@@ -10,9 +10,12 @@ from PySide6.QtCore import QTimer, Qt
 from PySide6.QtTest import QTest
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from main_platform import TradingPlatform
+try:
+    from main_platform import TradingPlatform
+except ImportError:
+    from src.main_platform import TradingPlatform
 
 class ButtonTester:
     def __init__(self, app):

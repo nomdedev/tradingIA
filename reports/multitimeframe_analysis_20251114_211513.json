@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-11-14T21:15:13.046659",
+  "weight_analysis": {
+    "weights_1": {
+      "weights": {
+        "higher_tf_weight": 0.0,
+        "lower_tf_weight": 0.0
+      },
+      "metrics": {
+        "total_return": 0.33612238616745027,
+        "win_rate": 0.6153846153846154,
+        "total_trades": 13,
+        "avg_trade": 0.025855568166726944,
+        "sharpe_ratio": 0.4787935626643791
+      },
+      "signal_count": 770
+    },
+    "weights_2": {
+      "weights": {
+        "higher_tf_weight": 0.2,
+        "lower_tf_weight": 0.1
+      },
+      "metrics": {
+        "total_return": 0.33612238616745027,
+        "win_rate": 0.6153846153846154,
+        "total_trades": 13,
+        "avg_trade": 0.025855568166726944,
+        "sharpe_ratio": 0.4787935626643791
+      },
+      "signal_count": 770
+    },
+    "weights_3": {
+      "weights": {
+        "higher_tf_weight": 0.4,
+        "lower_tf_weight": 0.2
+      },
+      "metrics": {
+        "total_return": 0.33612238616745027,
+        "win_rate": 0.6153846153846154,
+        "total_trades": 13,
+        "avg_trade": 0.025855568166726944,
+        "sharpe_ratio": 0.4787935626643791
+      },
+      "signal_count": 770
+    },
+    "weights_4": {
+      "weights": {
+        "higher_tf_weight": 0.6,
+        "lower_tf_weight": 0.3
+      },
+      "metrics": {
+        "total_return": 0.33612238616745027,
+        "win_rate": 0.6153846153846154,
+        "total_trades": 13,
+        "avg_trade": 0.025855568166726944,
+        "sharpe_ratio": 0.4787935626643791
+      },
+      "signal_count": 770
+    },
+    "weights_5": {
+      "weights": {
+        "higher_tf_weight": 0.8,
+        "lower_tf_weight": 0.4
+      },
+      "metrics": {
+        "total_return": 0.33612238616745027,
+        "win_rate": 0.6153846153846154,
+        "total_trades": 13,
+        "avg_trade": 0.025855568166726944,
+        "sharpe_ratio": 0.4787935626643791
+      },
+      "signal_count": 770
+    }
+  },
+  "regime_analysis": {
+    "sideways": {
+      "metrics": {
+        "total_return": 0.3915155063073546,
+        "win_rate": 0.5555555555555556,
+        "total_trades": 9,
+        "avg_trade": 0.0435017229230394,
+        "sharpe_ratio": 0.4262772515604248
+      },
+      "data_points": 1128,
+      "signal_count": 431
+    },
+    "trending": {
+      "metrics": {
+        "total_return": 0.24318319595804108,
+        "win_rate": 0.6666666666666666,
+        "total_trades": 6,
+        "avg_trade": 0.04053053265967351,
+        "sharpe_ratio": 0.6607116133920009
+      },
+      "data_points": 536,
+      "signal_count": 318
+    },
+    "strong_trend": {
+      "metrics": {
+        "total_return": 0.14442078362942176,
+        "win_rate": 1.0,
+        "total_trades": 4,
+        "avg_trade": 0.03610519590735544,
+        "sharpe_ratio": 1.2715899384446343
+      },
+      "data_points": 336,
+      "signal_count": 175
+    }
+  }
+}

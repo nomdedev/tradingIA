@@ -68,7 +68,7 @@ class PairsTradingStrategy(Strategy):
 
     def _rolling_std(self, data, window):
         """Calcular rolling standard deviation"""
-        return pd.Series(data).rolling(window=window).std().fillna(method='bfill').values
+        return pd.Series(data).rolling(window=window).std().bfill().values
 
     def next(self):
         """Lógica de trading"""
@@ -233,12 +233,14 @@ def calculate_metrics(bt):
     returns = trades['ReturnPct'].values
     equity_curve = (1 + returns).cumprod()
 
-    # Sharpe Ratio (anualizado)
+    # Sharpe Ratio (anualizado con risk-free rate)
     daily_returns = np.diff(equity_curve) / equity_curve[:-1]
-    if len(daily_returns) > 0 and np.std(daily_returns) > 0:
-        sharpe = np.mean(daily_returns) / np.std(daily_returns) * np.sqrt(252)
+    rf_daily = 0.04 / 252  # Risk-free rate diario
+    excess_daily = daily_returns - rf_daily
+    if len(excess_daily) > 0 and np.std(excess_daily) > 0:
+        sharpe = (np.mean(excess_daily) / np.std(excess_daily)) * np.sqrt(252)
     else:
-        sharpe = 0
+        sharpe = 0.0
 
     # Calmar Ratio
     max_dd = (equity_curve / equity_curve.expanding().max() - 1).min()
@@ -251,20 +253,23 @@ def calculate_metrics(bt):
     # Win Rate
     win_rate = (returns > 0).mean()
 
-    # Profit Factor
+    # Profit Factor (correcto sin inf)
     winning_trades = returns[returns > 0]
     losing_trades = returns[returns < 0]
-    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 else float('inf')
+    profit_factor = winning_trades.sum() / abs(losing_trades.sum()) if len(losing_trades) > 0 and losing_trades.sum() != 0 else 0.0
 
     # Sortino Ratio
-    downside_returns = daily_returns[daily_returns < 0]
-    if len(downside_returns) > 0:
-        sortino = np.mean(daily_returns) / np.std(downside_returns) * np.sqrt(252)
+    # Sortino Ratio (con risk-free rate correcto)
+    rf_daily = 0.04 / 252  # Risk-free rate diario
+    excess_daily_returns = daily_returns - rf_daily
+    downside_returns = excess_daily_returns[excess_daily_returns < 0]
+    if len(downside_returns) > 0 and np.std(downside_returns) > 0:
+        sortino = (excess_daily_returns.mean() / np.std(downside_returns)) * np.sqrt(252)
     else:
-        sortino = float('inf')
+        sortino = 0.0  # 0 si no hay downside
 
-    # VaR 95%
-    var_95 = np.percentile(returns, 5)
+    # VaR 95% (debe ser negativo - representa pérdida máxima esperada)
+    var_95 = -np.percentile(-returns, 95)  # Siempre negativo
 
     # Ulcer Index
     drawdowns = 1 - equity_curve / equity_curve.expanding().max()

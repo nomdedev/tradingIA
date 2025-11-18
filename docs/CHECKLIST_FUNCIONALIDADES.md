@@ -14,18 +14,19 @@
 
 ### Validaciones Implementadas
 - [x] Validación de credenciales API
-- [ ] ⚠️ Validación OHLC relationships
-- [ ] ⚠️ Detección de gaps temporales
-- [ ] ⚠️ Manejo de duplicados en timestamp
-- [ ] ⚠️ Normalización de timezone
-- [ ] ⚠️ Detección de look-ahead bias
-- [ ] ⚠️ Validación de volumen (>0)
-- [ ] ⚠️ Manejo de datasets grandes (>100K bars)
+- [x] ✅ Validación OHLC relationships (DataValidator)
+- [x] ✅ Detección de gaps temporales (DataValidator)
+- [x] ✅ Manejo de duplicados en timestamp (DataValidator)
+- [x] ✅ Normalización de timezone (DataValidator)
+- [x] ✅ Detección de look-ahead bias (DataValidator)
+- [x] ✅ Validación de volumen (>0) (DataValidator)
+- [x] ✅ Manejo de datasets grandes (>100K bars) (DataValidator)
 
 ### Tests
 - [x] `test_backend_core.py::TestDataManager`
 - [x] `test_gui_tab1.py::TestTab1DataManagement`
 - [x] `test_data_validation_comprehensive.py` (nuevo)
+- [x] `test_data_validator.py` (nuevo - DataValidator completo)
 
 ---
 

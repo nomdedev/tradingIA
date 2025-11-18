@@ -1,0 +1,1 @@
+# TradingIA Core Module

@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 
 # Import backtester components
-from src.backtester_core import BacktesterCore
+from core.execution.backtester_core import BacktesterCore
 
 
 class TestBacktesterCore:
@@ -46,6 +46,13 @@ class TestBacktesterCore:
                 self.name = "SimpleTestStrategy"
                 self.param1 = param1
                 self.param2 = param2
+            
+            def get_parameters(self):
+                """Return strategy parameters"""
+                return {
+                    'param1': self.param1,
+                    'param2': self.param2
+                }
             
             def generate_signals(self, data):
                 # data is a dict with timeframes, extract 5min data
@@ -232,6 +239,10 @@ class TestBacktesterCore:
             def __init__(self):
                 self.name = "NoSignalStrategy"
             
+            def get_parameters(self):
+                """Return strategy parameters"""
+                return {}
+            
             def generate_signals(self, data):
                 df = data['5min']
                 return {
@@ -278,6 +289,10 @@ class TestBacktesterCore:
         class RealisticStrategy:
             def __init__(self):
                 self.name = "RealisticStrategy"
+            
+            def get_parameters(self):
+                """Return strategy parameters"""
+                return {}
             
             def generate_signals(self, data):
                 df = data['5min']

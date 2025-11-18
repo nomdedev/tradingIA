@@ -177,7 +177,7 @@ class MultiTFDataHandler:
         # Check for nulls
         if df[required].isnull().any().any():
             logger.warning(f"Null values found in {timeframe}, forward filling...")
-            df.fillna(method='ffill', inplace=True)
+            df = df.ffill()
 
         # Validate OHLC
         invalid = (df['High'] < df['Low']) | (df['Close'] > df['High']) | (df['Close'] < df['Low'])
@@ -228,7 +228,7 @@ class MultiTFDataHandler:
 
         # Merge to 5min
         df_5m = df_5m.join(df_1h_resampled, how='left')
-        df_5m['EMA200_1h'].fillna(method='ffill', inplace=True)
+        df_5m['EMA200_1h'] = df_5m['EMA200_1h'].ffill()
 
         # Define uptrend (CRITICAL FILTER)
         df_5m['uptrend_1h'] = df_5m['Close'] > df_5m['EMA200_1h']
@@ -253,7 +253,7 @@ class MultiTFDataHandler:
 
         # Merge to 5min
         df_5m = df_5m.join(df_15m_resampled, how='left')
-        df_5m['EMA50_15m'].fillna(method='ffill', inplace=True)
+        df_5m['EMA50_15m'] = df_5m['EMA50_15m'].ffill()
 
         # Define momentum
         df_5m['momentum_15m'] = df_5m['EMA20'] > df_5m['EMA50_15m']
@@ -278,7 +278,7 @@ class MultiTFDataHandler:
 
         # Merge to 5min
         df_5m = df_5m.join(df_1h_vol_resampled, how='left')
-        df_5m['SMA_vol_1h'].fillna(method='ffill', inplace=True)
+        df_5m['SMA_vol_1h'] = df_5m['SMA_vol_1h'].ffill()
 
         # Vol cross filter
         vol_thresh = 1.2

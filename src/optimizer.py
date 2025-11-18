@@ -62,64 +62,71 @@ class StrategyOptimizer:
         self,
         returns: pd.Series,
         rf_annual: float = 0.04,
-        periods_per_year: int = 105120  # 5-min bars in a year (365*24*60/5)
+        periods_per_year: int = 72576  # 5-min bars in a trading year (252*24*12)
     ) -> float:
         """
-        Calcula Sharpe Ratio
+        Calcula Sharpe Ratio con fórmula correcta
 
         Args:
             returns: Serie de returns por trade
             rf_annual: Risk-free rate anual (default 4%)
-            periods_per_year: Períodos por año para anualizar
+            periods_per_year: Períodos por año para anualizar (252 días trading)
 
         Returns:
-            Sharpe ratio
+            Sharpe ratio anualizado
         """
         if len(returns) == 0 or returns.std() == 0:
             return 0.0
 
-        # Anualizar returns
-        mean_return = returns.mean() * periods_per_year
-        std_return = returns.std() * np.sqrt(periods_per_year)
+        # Calcular excess returns (restar risk-free rate por período)
+        rf_per_period = rf_annual / periods_per_year
+        excess_returns = returns - rf_per_period
 
-        # Sharpe = (return - rf) / std
-        sharpe = (mean_return - rf_annual) / std_return
+        # Sharpe = E[R - Rf] / σ[R - Rf] * sqrt(periods_per_year)
+        # Fórmula correcta: anualizar ratio, no componentes por separado
+        sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(periods_per_year)
 
         return sharpe
 
     def _calculate_calmar(
         self,
         equity_curve: pd.Series,
-        periods_per_year: int = 105120
+        periods_per_year: int = 72576  # Correcto: 252 días trading
     ) -> float:
         """
-        Calcula Calmar Ratio
+        Calcula Calmar Ratio con anualización correcta
 
         Args:
             equity_curve: Curva de equity
+            periods_per_year: Períodos por año (252 días trading)
             periods_per_year: Períodos por año
 
         Returns:
-            Calmar ratio
+            Calmar ratio (CAGR / Max Drawdown)
         """
         if len(equity_curve) < 2:
             return 0.0
 
-        # Annual return
+        # CAGR (Compound Annual Growth Rate) correcto
         total_return = (equity_curve.iloc[-1] / equity_curve.iloc[0]) - 1
         periods = len(equity_curve)
         years = periods / periods_per_year
-        annual_return = (1 + total_return) ** (1 / years) - 1 if years > 0 else 0
+        
+        if years > 0 and equity_curve.iloc[0] > 0:
+            # CAGR = (Final / Initial)^(1/years) - 1
+            annual_return = (equity_curve.iloc[-1] / equity_curve.iloc[0]) ** (1 / years) - 1
+        else:
+            annual_return = 0.0
 
-        # Max Drawdown
+        # Max Drawdown (ya es negativo de drawdowns.min())
         rolling_max = equity_curve.expanding().max()
         drawdowns = (equity_curve - rolling_max) / rolling_max
-        max_dd = abs(drawdowns.min())
+        max_dd = abs(drawdowns.min())  # Convertir a positivo para división
 
         if max_dd == 0:
             return 0.0
 
-        # Calmar = annual_return / max_dd
+        # Calmar = CAGR / Max Drawdown
         calmar = annual_return / max_dd
 
         return calmar

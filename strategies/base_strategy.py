@@ -23,15 +23,15 @@ class BaseStrategy(ABC):
         self.parameters = {}
         
     @abstractmethod
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def generate_signals(self, df_multi_tf: Dict[str, pd.DataFrame]) -> Dict[str, pd.Series]:
         """
         Generate trading signals based on market data
         
         Args:
-            df: DataFrame with OHLCV data
+            df_multi_tf: Dictionary with timeframe keys and OHLCV DataFrames
             
         Returns:
-            DataFrame with 'signal' column: 1 (BUY), -1 (SELL), 0 (HOLD)
+            Dict with 'entries', 'exits', 'signals' Series
         """
         pass
     
@@ -55,6 +55,41 @@ class BaseStrategy(ABC):
         """
         pass
     
+    def get_description(self) -> str:
+        """
+        Get strategy description for users
+        
+        Returns:
+            Human-readable description of the strategy
+        """
+        return "Trading strategy - no description available"
+    
+    def get_detailed_info(self) -> Dict:
+        """
+        Get detailed strategy information for display
+        
+        Returns:
+            Dict with:
+                - name: Strategy name
+                - description: Brief description
+                - buy_signals: How buy signals are generated
+                - sell_signals: How sell signals are generated
+                - parameters: Current parameters with descriptions
+                - risk_level: Conservative/Balanced/Aggressive
+                - timeframe: Recommended timeframe
+                - indicators: List of indicators used
+        """
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': 'Not specified',
+            'sell_signals': 'Not specified',
+            'parameters': self.get_parameters(),
+            'risk_level': 'Balanced',
+            'timeframe': '5min',
+            'indicators': []
+        }
+    
     def validate_data(self, df: pd.DataFrame) -> bool:
         """
         Validate that DataFrame has required columns
@@ -65,8 +100,15 @@ class BaseStrategy(ABC):
         Returns:
             True if valid, False otherwise
         """
-        required_cols = ['open', 'high', 'low', 'close', 'volume']
-        return all(col in df.columns for col in required_cols)
+        required_cols_lower = ['open', 'high', 'low', 'close', 'volume']
+        required_cols_upper = ['Open', 'High', 'Low', 'Close', 'Volume']
+        
+        # Check for lowercase columns
+        has_lower = all(col in df.columns for col in required_cols_lower)
+        # Check for uppercase columns  
+        has_upper = all(col in df.columns for col in required_cols_upper)
+        
+        return has_lower or has_upper
     
     def calculate_signal_strength(self, df: pd.DataFrame) -> pd.DataFrame:
         """

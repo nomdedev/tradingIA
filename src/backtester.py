@@ -10,7 +10,7 @@ Features:
 - Comprehensive metrics (Sharpe, Calmar, DD, HTF alignment)
 """
 
-from .indicators import generate_filtered_signals
+from core.data.indicators import generate_filtered_signals
 from .mtf_data_handler import MultiTFDataHandler
 from config.mtf_config import (
     BACKTEST_CONFIG, OPTIMIZATION_CONFIG, TRADING_CONFIG,
@@ -411,7 +411,8 @@ class AdvancedBacktester:
         gross_profit = winning_trades['pnl'].sum() if not winning_trades.empty else 0.0
         gross_loss = abs(losing_trades['pnl'].sum()) if not losing_trades.empty else 0.0
 
-        profit_factor = gross_profit / gross_loss if gross_loss > 0 else float('inf')
+        # Profit Factor (sin inf)
+        profit_factor = gross_profit / gross_loss if gross_loss > 0 else 0.0
 
         avg_win = winning_trades['pnl_pct'].mean() if not winning_trades.empty else 0.0
         avg_loss = losing_trades['pnl_pct'].mean() if not losing_trades.empty else 0.0

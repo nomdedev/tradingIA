@@ -34,8 +34,11 @@ class MovingAverageCrossoverStrategy(BaseStrategy):
             'trend_period': 100
         }
     
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def generate_signals(self, df_multi_tf: Dict[str, pd.DataFrame]) -> Dict[str, pd.Series]:
         """Generate MA crossover signals"""
+        # Use 5min data for signals
+        df = df_multi_tf.get('5min', df_multi_tf.get('5m', list(df_multi_tf.values())[0]))
+        
         if not self.validate_data(df):
             raise ValueError("Invalid data format")
         
@@ -98,7 +101,12 @@ class MovingAverageCrossoverStrategy(BaseStrategy):
                 ma_separation * 100
             ).clip(1, 5)
         
-        return df
+        # Return signals in expected format
+        return {
+            'entries': (df['signal'] == 1).astype(int),
+            'exits': (df['signal'] == -1).astype(int),
+            'signals': df['signal']
+        }
     
     def _calculate_moving_averages(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate fast and slow moving averages"""
@@ -122,6 +130,47 @@ class MovingAverageCrossoverStrategy(BaseStrategy):
         for key, value in params.items():
             if key in self.parameters:
                 self.parameters[key] = value
+    
+    def get_description(self) -> str:
+        """Get strategy description"""
+        return (
+            "Estrategia clásica de cruce de medias móviles. "
+            "Compra cuando la MA rápida cruza por encima de la MA lenta (golden cross) "
+            "y vende cuando cruza por debajo (death cross)."
+        )
+    
+    def get_detailed_info(self) -> Dict:
+        """Get detailed strategy information"""
+        ma_type = 'SMA (Simple)' if self.parameters['ma_type'] == 'SMA' else 'EMA (Exponencial)'
+        return {
+            'name': self.name,
+            'description': self.get_description(),
+            'buy_signals': (
+                "📈 COMPRA cuando (Golden Cross):\n"
+                f"  • MA rápida ({self.parameters['fast_period']}) cruza por encima de MA lenta ({self.parameters['slow_period']})\n"
+                "  • Opcionalmente: precio debe estar por encima de MA lenta\n"
+                "  • Opcionalmente: filtro de tendencia alcista\n"
+                "  • Indica inicio de tendencia alcista"
+            ),
+            'sell_signals': (
+                "📉 VENTA cuando (Death Cross):\n"
+                f"  • MA rápida ({self.parameters['fast_period']}) cruza por debajo de MA lenta ({self.parameters['slow_period']})\n"
+                "  • Opcionalmente: precio debe estar por debajo de MA lenta\n"
+                "  • Opcionalmente: filtro de tendencia bajista\n"
+                "  • Indica inicio de tendencia bajista"
+            ),
+            'parameters': {
+                'fast_period': f"{self.parameters['fast_period']} - Período MA rápida",
+                'slow_period': f"{self.parameters['slow_period']} - Período MA lenta",
+                'ma_type': f"{ma_type} - Tipo de media móvil",
+                'require_price_above': f"{self.parameters['require_price_above']} - Requiere precio sobre MA",
+                'filter_by_trend': f"{self.parameters['filter_by_trend']} - Filtro de tendencia",
+                'trend_period': f"{self.parameters['trend_period']} - Período filtro tendencia"
+            },
+            'risk_level': 'Conservador',
+            'timeframe': '5min',
+            'indicators': [f'{ma_type} Rápida', f'{ma_type} Lenta', 'Trend MA (opcional)']
+        }
 
 
 # Create preset configurations
@@ -171,7 +220,7 @@ if __name__ == "__main__":
     print(f"Parameters: {strategy.get_parameters()}")
     
     # Generate sample data
-    dates = pd.date_range('2024-01-01', periods=300, freq='1H')
+    dates = pd.date_range('2024-01-01', periods=300, freq='1h')
     df = pd.DataFrame({
         'open': np.random.randn(300).cumsum() + 100,
         'high': np.random.randn(300).cumsum() + 102,

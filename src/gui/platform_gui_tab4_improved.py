@@ -67,11 +67,15 @@ class Tab4ResultsAnalysis(QWidget):
         # Right panel: Charts and analysis
         right_panel = self.create_right_panel()
         
-        # Splitter
+        # Splitter with better proportions for visualization
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_panel)
         splitter.addWidget(right_panel)
-        splitter.setSizes([250, 750])
+        
+        # 15% history, 85% charts for maximum visualization
+        splitter.setStretchFactor(0, 15)
+        splitter.setStretchFactor(1, 85)
+        splitter.setSizes([180, 1020])
         
         main_layout.addWidget(splitter)
         self.setLayout(main_layout)
@@ -84,7 +88,7 @@ class Tab4ResultsAnalysis(QWidget):
         
         # Title
         title = QLabel("📊 Backtest History")
-        title.setStyleSheet("font-size: 15px; font-weight: bold; color: #ffffff;")
+        title.setProperty("class", "title")
         layout.addWidget(title)
         
         # Current result section

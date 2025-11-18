@@ -355,7 +355,8 @@ class Tab5ABTesting(QWidget):
         
         self.run_btn = QPushButton("⚔️ Start Battle")
         self.run_btn.clicked.connect(self.on_run_ab_test)
-        self.run_btn.setMinimumHeight(40)
+        self.run_btn.setMinimumHeight(32)
+        self.run_btn.setMaximumHeight(36)
         self.run_btn.setMinimumWidth(200)
         self.run_btn.setStyleSheet("""
             QPushButton {

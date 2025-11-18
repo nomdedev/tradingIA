@@ -75,7 +75,7 @@ class RobustnessAnalyzer:
             downside_deviation = np.std(downside_returns, ddof=1)
             sortino_ratio = np.mean(returns) / downside_deviation * np.sqrt(self.trading_days)
         else:
-            sortino_ratio = float('inf')
+            sortino_ratio = 0.0
 
         # Value at Risk 95%
         var_95 = np.percentile(returns, 5)
@@ -84,7 +84,7 @@ class RobustnessAnalyzer:
         cumulative_returns = np.cumprod(1 + returns) - 1
         max_drawdown = self._calculate_max_drawdown(cumulative_returns)
         total_return = cumulative_returns[-1] if len(cumulative_returns) > 0 else 0.0
-        calmar_ratio = total_return / abs(max_drawdown) if max_drawdown != 0 else float('inf')
+        calmar_ratio = total_return / abs(max_drawdown) if max_drawdown != 0 else 0.0
 
         # Ulcer Index
         ulcer_index = self._calculate_ulcer_index(cumulative_returns)

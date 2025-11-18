@@ -269,10 +269,13 @@ class MicrostructureCosts:
         total_return_before = trades_df['PnL_pct'].sum()
         total_return_after = trades_costs['PnL_pct'].sum()
 
-        # Sharpe ratio aproximado
+        # Sharpe ratio aproximado (con risk-free rate)
         if len(trades_df) > 1:
-            sharpe_before = avg_pnl_before / trades_df['PnL_pct'].std() * np.sqrt(252)
-            sharpe_after = avg_pnl_after / trades_costs['PnL_pct'].std() * np.sqrt(252)
+            rf_daily = 0.04 / 252
+            excess_before = trades_df['PnL_pct'] - rf_daily
+            excess_after = trades_costs['PnL_pct'] - rf_daily
+            sharpe_before = (excess_before.mean() / excess_before.std()) * np.sqrt(252) if excess_before.std() > 0 else 0.0
+            sharpe_after = (excess_after.mean() / excess_after.std()) * np.sqrt(252) if excess_after.std() > 0 else 0.0
         else:
             sharpe_before = sharpe_after = 0
 

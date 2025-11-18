@@ -13,7 +13,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.indicators import (
+from core.data.indicators import (
     calculate_ifvg_enhanced,
     volume_profile_advanced,
     generate_filtered_signals,
