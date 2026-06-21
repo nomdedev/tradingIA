@@ -1,0 +1,149 @@
+"""
+Test del Quick Backtester
+
+Prueba la funcionalidad del backtester rápido con datos simulados.
+"""
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from backtesting.quick_backtester import QuickBacktester
+
+
+def test_quick_backtester_validation():
+    """Test de las funciones de validación del Quick Backtester"""
+    print("="*70)
+    print("TESTING QUICK BACKTESTER VALIDATION")
+    print("="*70)
+
+    backtester = QuickBacktester(lookback_days=30)
+
+    # Test 1: Resultados buenos
+    print(f"\n{'='*70}")
+    print("TEST 1: GOOD RESULTS")
+    print(f"{'='*70}")
+
+    good_results = {
+        'total_trades': 8,
+        'win_rate': 0.75,  # 75%
+        'avg_return': 0.0234,  # 2.34%
+        'total_return': 0.1872,  # 18.72%
+        'avg_r': 1.8,
+        'sharpe': 2.1,
+        'trades': []  # Lista vacía para simplificar
+    }
+
+    should_enter, reason = backtester.should_enter(good_results)
+
+    print("Good results (8 trades, 75% win rate, 1.8R avg):")
+    if should_enter:
+        print("✅ SHOULD ENTER: YES")
+        print(f"   Reason: {reason}")
+    else:
+        print("⚠️ SHOULD ENTER: NO")
+        print(f"   Reason: {reason}")
+
+    # Test 2: Resultados malos - bajo win rate
+    print(f"\n{'='*70}")
+    print("TEST 2: BAD RESULTS - LOW WIN RATE")
+    print(f"{'='*70}")
+
+    bad_results_low_win = {
+        'total_trades': 10,
+        'win_rate': 0.40,  # 40% - por debajo del mínimo 55%
+        'avg_return': 0.01,
+        'total_return': 0.05,
+        'avg_r': 0.8,
+        'sharpe': 1.2,
+        'trades': []
+    }
+
+    should_enter_bad, reason_bad = backtester.should_enter(bad_results_low_win)
+
+    print("Bad results (40% win rate):")
+    if should_enter_bad:
+        print("✅ SHOULD ENTER: YES")
+        print(f"   Reason: {reason_bad}")
+    else:
+        print("⚠️ SHOULD ENTER: NO")
+        print(f"   Reason: {reason_bad}")
+
+    # Test 3: Pocos trades
+    print(f"\n{'='*70}")
+    print("TEST 3: FEW TRADES")
+    print(f"{'='*70}")
+
+    few_trades_results = {
+        'total_trades': 2,  # Solo 2 trades, mínimo es 3
+        'win_rate': 0.80,
+        'avg_return': 0.03,
+        'total_return': 0.06,
+        'avg_r': 2.0,
+        'sharpe': 2.5,
+        'trades': []
+    }
+
+    should_enter_few, reason_few = backtester.should_enter(few_trades_results)
+
+    print("Few trades (2 trades):")
+    if should_enter_few:
+        print("✅ SHOULD ENTER: YES")
+        print(f"   Reason: {reason_few}")
+    else:
+        print("⚠️ SHOULD ENTER: NO")
+        print(f"   Reason: {reason_few}")
+
+    # Test 4: Return negativo
+    print(f"\n{'='*70}")
+    print("TEST 4: NEGATIVE RETURN")
+    print(f"{'='*70}")
+
+    negative_results = {
+        'total_trades': 5,
+        'win_rate': 0.60,
+        'avg_return': -0.015,
+        'total_return': -0.075,  # -7.5%
+        'avg_r': -0.5,
+        'sharpe': -0.8,
+        'trades': []
+    }
+
+    should_enter_neg, reason_neg = backtester.should_enter(negative_results)
+
+    print("Negative return (-7.5%):")
+    if should_enter_neg:
+        print("✅ SHOULD ENTER: YES")
+        print(f"   Reason: {reason_neg}")
+    else:
+        print("⚠️ SHOULD ENTER: NO")
+        print(f"   Reason: {reason_neg}")
+
+    # Test 5: Umbrales custom
+    print(f"\n{'='*70}")
+    print("TEST 5: CUSTOM THRESHOLDS")
+    print(f"{'='*70}")
+
+    # Thresholds más relajados
+    should_enter_relaxed, reason_relaxed = backtester.should_enter(
+        bad_results_low_win,  # 40% win rate
+        min_win_rate=0.35,   # Más bajo que el default 55%
+        min_avg_r=0.5,       # Más bajo que el default 1.0
+        min_trades=8         # Más alto que el default 3
+    )
+
+    print("Relaxed thresholds (35% win rate, 0.5R avg, 8 trades min):")
+    if should_enter_relaxed:
+        print("✅ PASSED")
+        print(f"   Reason: {reason_relaxed}")
+    else:
+        print("⚠️ FAILED")
+        print(f"   Reason: {reason_relaxed}")
+
+    print(f"\n{'='*70}")
+    print("VALIDATION TESTS COMPLETED")
+    print(f"{'='*70}")
+
+
+if __name__ == "__main__":
+    test_quick_backtester_validation()

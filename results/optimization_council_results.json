@@ -1,0 +1,97 @@
+{
+    "periods": [
+        {
+            "period": 1,
+            "train_start": "2024-01-01T00:01:44.684859",
+            "train_end": "2024-02-05T11:06:54.855583",
+            "test_start": "2024-02-05T11:11:54.856579",
+            "test_end": "2024-02-20T15:56:59.215461",
+            "best_params": {
+                "atr_multi": 0.4186171947440932,
+                "va_percent": 0.6683434789866164,
+                "vp_rows": 139,
+                "vol_thresh": 1.217795110562541,
+                "tp_rr": 2.112082926997514,
+                "min_confidence": 0.5299924747454009
+            },
+            "test_metrics": {
+                "total_return": 0.0,
+                "sharpe_ratio": 0.0,
+                "calmar_ratio": 0.0,
+                "max_drawdown": 0.0,
+                "win_rate": 0.0,
+                "profit_factor": 0.0,
+                "total_trades": 0,
+                "avg_win": 0.0,
+                "avg_loss": 0.0,
+                "htf_alignment": 0.0
+            }
+        },
+        {
+            "period": 2,
+            "train_start": "2024-02-20T16:01:59.216456",
+            "train_end": "2024-03-27T03:07:09.387180",
+            "test_start": "2024-03-27T03:12:09.388176",
+            "test_end": "2024-04-11T07:57:13.747058",
+            "best_params": {
+                "atr_multi": 0.4186171947440932,
+                "va_percent": 0.6683434789866164,
+                "vp_rows": 139,
+                "vol_thresh": 1.217795110562541,
+                "tp_rr": 2.112082926997514,
+                "min_confidence": 0.5299924747454009
+            },
+            "test_metrics": {
+                "total_return": 0.0,
+                "sharpe_ratio": 0.0,
+                "calmar_ratio": 0.0,
+                "max_drawdown": 0.0,
+                "win_rate": 0.0,
+                "profit_factor": 0.0,
+                "total_trades": 0,
+                "avg_win": 0.0,
+                "avg_loss": 0.0,
+                "htf_alignment": 0.0
+            }
+        },
+        {
+            "period": 3,
+            "train_start": "2024-04-11T08:02:13.748053",
+            "train_end": "2024-05-16T19:07:23.918777",
+            "test_start": "2024-05-16T19:12:23.919773",
+            "test_end": "2024-05-31T23:57:28.278655",
+            "best_params": {
+                "atr_multi": 0.4186171947440932,
+                "va_percent": 0.6683434789866164,
+                "vp_rows": 139,
+                "vol_thresh": 1.217795110562541,
+                "tp_rr": 2.112082926997514,
+                "min_confidence": 0.5299924747454009
+            },
+            "test_metrics": {
+                "total_return": 0.0,
+                "sharpe_ratio": 0.0,
+                "calmar_ratio": 0.0,
+                "max_drawdown": 0.0,
+                "win_rate": 0.0,
+                "profit_factor": 0.0,
+                "total_trades": 0,
+                "avg_win": 0.0,
+                "avg_loss": 0.0,
+                "htf_alignment": 0.0
+            }
+        }
+    ],
+    "best_params_overall": {
+        "atr_multi": 0.4186171947440932,
+        "va_percent": 0.6683434789866164,
+        "vp_rows": 139,
+        "vol_thresh": 1.217795110562541,
+        "tp_rr": 2.112082926997514,
+        "min_confidence": 0.5299924747454009
+    },
+    "avg_test_calmar": 0.0,
+    "std_test_calmar": 0.0,
+    "degradation": 0.0,
+    "robustness_score": 1.0
+}

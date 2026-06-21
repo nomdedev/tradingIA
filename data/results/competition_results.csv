@@ -1,0 +1,3 @@
+Agent,Total Return (%),Sharpe Ratio,Max Drawdown (%),Win Rate (%),Total Trades,Calmar Ratio,Final Value ($)
+RL (PPO),0.0,0.0,0.0,0.0,64,0.0,10000.0
+GA (Genetic),7.250865550439813,3.0643004186251326,-1.926363838802294,54.94505494505495,1,3.764016643370963,10725.086555043981

@@ -1,0 +1,103 @@
+# Docker Compose configuration for Trading IA Platform
+# Usage: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # Main trading application
+  trading-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-ia
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./config:/app/config:ro
+    ports:
+      - "8050:8050"  # Dashboard port
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - trading-network
+
+  # Backtesting service (run on demand)
+  backtester:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-backtester
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./config:/app/config:ro
+    command: ["python", "-m", "backtesting.advanced_backtest"]
+    profiles:
+      - backtest  # Only starts with --profile backtest
+    networks:
+      - trading-network
+
+  # Production monitor (optional)
+  monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading-monitor
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MONITORING_INTERVAL=60
+    volumes:
+      - ./data:/app/data
+      - ./data/logs:/app/data/logs
+    command: ["python", "-c", "from src.production_monitoring import ProductionMonitor; m = ProductionMonitor(); m.start_monitoring()"]
+    profiles:
+      - production
+    networks:
+      - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
+
+# Volume definitions (optional, for persistent data)
+volumes:
+  trading-data:
+    driver: local
+  trading-logs:
+    driver: local
+
+# Usage examples:
+# 
+# Start main dashboard:
+#   docker-compose up -d trading-app
+#
+# Run backtesting:
+#   docker-compose --profile backtest up backtester
+#
+# Start with monitoring:
+#   docker-compose --profile production up -d
+#
+# View logs:
+#   docker-compose logs -f trading-app
+#
+# Stop all:
+#   docker-compose down
+#
+# Rebuild after code changes:
+#   docker-compose build --no-cache

@@ -1,0 +1,182 @@
+[
+    {
+        "id": "20251112_224208",
+        "timestamp": "2025-11-12T22:42:08.062947",
+        "config": {
+            "strategy_name": "IFVG_VP_EMAs",
+            "symbol": "BTCUSD",
+            "timeframe": "5min",
+            "start_date": "2024-01-01",
+            "end_date": "2025-11-12",
+            "confluence_threshold": 4,
+            "htf_ema_period": 210,
+            "atr_multiplier": 1.5,
+            "risk_reward_ratio": 2.2,
+            "volume_threshold": 1.5,
+            "max_risk_per_trade": 0.02,
+            "max_open_trades": 3,
+            "stop_loss_atr": 1.5,
+            "take_profit_rr": 2.2,
+            "initial_capital": 10000,
+            "slippage": 0.001,
+            "commission": 0.0005,
+            "walk_forward_periods": 8,
+            "monte_carlo_runs": 500,
+            "bootstrap_iterations": 1000
+        },
+        "metrics": {
+            "total_return": 0.52,
+            "sharpe_ratio": 1.45,
+            "win_rate": 0.66,
+            "total_trades": 142,
+            "max_drawdown": 0.15,
+            "calmar_ratio": 3.47,
+            "sortino_ratio": 2.1,
+            "avg_trade_duration": 4.8,
+            "false_positive_rate": 0.34
+        },
+        "metadata": {
+            "execution_time": "2025-11-12T15:30:00",
+            "duration_seconds": 3.2,
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224208",
+        "timestamp": "2025-11-12T22:42:08.114891",
+        "config": {
+            "strategy_name": "Conservative",
+            "risk_reward_ratio": 2.0
+        },
+        "metrics": {
+            "sharpe_ratio": 1.2,
+            "win_rate": 0.58,
+            "total_return": 0.35
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224208",
+        "timestamp": "2025-11-12T22:42:08.115892",
+        "config": {
+            "strategy_name": "Aggressive",
+            "risk_reward_ratio": 2.5
+        },
+        "metrics": {
+            "sharpe_ratio": 1.6,
+            "win_rate": 0.62,
+            "total_return": 0.48
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224208",
+        "timestamp": "2025-11-12T22:42:08.116890",
+        "config": {
+            "strategy_name": "Balanced",
+            "risk_reward_ratio": 2.2
+        },
+        "metrics": {
+            "sharpe_ratio": 1.4,
+            "win_rate": 0.6,
+            "total_return": 0.42
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224226",
+        "timestamp": "2025-11-12T22:42:26.579927",
+        "config": {
+            "strategy_name": "IFVG_VP_EMAs",
+            "symbol": "BTCUSD",
+            "timeframe": "5min",
+            "start_date": "2024-01-01",
+            "end_date": "2025-11-12",
+            "confluence_threshold": 4,
+            "htf_ema_period": 210,
+            "atr_multiplier": 1.5,
+            "risk_reward_ratio": 2.2,
+            "volume_threshold": 1.5,
+            "max_risk_per_trade": 0.02,
+            "max_open_trades": 3,
+            "stop_loss_atr": 1.5,
+            "take_profit_rr": 2.2,
+            "initial_capital": 10000,
+            "slippage": 0.001,
+            "commission": 0.0005,
+            "walk_forward_periods": 8,
+            "monte_carlo_runs": 500,
+            "bootstrap_iterations": 1000
+        },
+        "metrics": {
+            "total_return": 0.52,
+            "sharpe_ratio": 1.45,
+            "win_rate": 0.66,
+            "total_trades": 142,
+            "max_drawdown": 0.15,
+            "calmar_ratio": 3.47,
+            "sortino_ratio": 2.1,
+            "avg_trade_duration": 4.8,
+            "false_positive_rate": 0.34
+        },
+        "metadata": {
+            "execution_time": "2025-11-12T15:30:00",
+            "duration_seconds": 3.2,
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224226",
+        "timestamp": "2025-11-12T22:42:26.614113",
+        "config": {
+            "strategy_name": "Conservative",
+            "risk_reward_ratio": 2.0
+        },
+        "metrics": {
+            "sharpe_ratio": 1.2,
+            "win_rate": 0.58,
+            "total_return": 0.35
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224226",
+        "timestamp": "2025-11-12T22:42:26.617265",
+        "config": {
+            "strategy_name": "Aggressive",
+            "risk_reward_ratio": 2.5
+        },
+        "metrics": {
+            "sharpe_ratio": 1.6,
+            "win_rate": 0.62,
+            "total_return": 0.48
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    },
+    {
+        "id": "20251112_224226",
+        "timestamp": "2025-11-12T22:42:26.619979",
+        "config": {
+            "strategy_name": "Balanced",
+            "risk_reward_ratio": 2.2
+        },
+        "metrics": {
+            "sharpe_ratio": 1.4,
+            "win_rate": 0.6,
+            "total_return": 0.42
+        },
+        "metadata": {
+            "demo_mode": true
+        }
+    }
+]

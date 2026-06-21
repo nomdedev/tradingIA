@@ -1,0 +1,11 @@
+{
+  "strategy": "MACD_ADX",
+  "preset_name": "Aggressive_Momentum",
+  "params": {
+    "macd_fast": 8,
+    "macd_slow": 21,
+    "adx_period": 10
+  },
+  "created": "2025-11-13T16:22:24.903801",
+  "modified": "2025-11-13T16:22:24.903801"
+}

@@ -1,0 +1,139 @@
+{
+  "session_id": "20251216_111948",
+  "start_time": "2025-12-16T11:19:48.527115",
+  "end_time": null,
+  "user_actions": [
+    {
+      "timestamp": "2025-12-16T11:19:48.527115",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:19:49.379113",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-12-16T11:18:20.975723"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:19:49.380598",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-12-16T11:18:20.975723"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:12.591488",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1800x1380",
+          "new_size": "1920x1009",
+          "difference": "120x371"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:12.927957",
+      "type": "data_loading",
+      "details": {
+        "event_type": "auto_load_success",
+        "data_info": {
+          "symbol": "BTC-USD",
+          "timeframe": "15Min",
+          "records": 100417,
+          "date_range": "2023-01-01 00:00:00 to 2025-11-12 00:00:00",
+          "file_path": "data\\btc_15Min.csv"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:12.985419",
+      "type": "data_loading",
+      "details": {
+        "event_type": "manual_load_success",
+        "data_info": {
+          "timeframes": [
+            "BTC-USD_15Min"
+          ],
+          "total_bars": 100417,
+          "timeframes_count": 1
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:12.985419",
+      "type": "ui_data_loaded_notification",
+      "details": {
+        "tab": "Tab1_DataManagement",
+        "data_keys": [
+          "BTC-USD_15Min"
+        ]
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:16.639203",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1920x1009",
+          "new_size": "1800x1380",
+          "difference": "120x371"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:44.693016",
+      "type": "window_event",
+      "details": {
+        "event_type": "move",
+        "window_info": {
+          "old_pos": "50,50",
+          "new_pos": "50,369",
+          "difference": "0,319"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:21:44.707675",
+      "type": "window_event",
+      "details": {
+        "event_type": "move",
+        "window_info": {
+          "old_pos": "50,369",
+          "new_pos": "50,50",
+          "difference": "0,319"
+        }
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {
+    "\ud83d\udcca Data": 1
+  }
+}

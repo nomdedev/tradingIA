@@ -1,0 +1,33 @@
+# Reglas de Calidad de Datos
+# El Council verifica esto antes de permitir que una estrategia procese datos.
+
+rules:
+  - id: "min_data_points"
+    type: "threshold"
+    description: "Verifica que haya suficientes puntos de datos para calcular indicadores"
+    metric: "data_length"
+    operator: ">="
+    value: 200
+    severity: "critical"
+    action: "reject"
+    expert: "Data Oracle"
+
+  - id: "max_missing_data"
+    type: "threshold"
+    description: "Verifica que no haya demasiados datos faltantes (NaN)"
+    metric: "missing_pct"
+    operator: "<="
+    value: 0.05
+    severity: "warning"
+    action: "log"
+    expert: "Data Oracle"
+
+  - id: "freshness_check"
+    type: "condition"
+    description: "Verifica que el último dato no sea demasiado antiguo"
+    metric: "last_timestamp_age_seconds"
+    operator: "<="
+    value: 3600  # 1 hora
+    severity: "critical"
+    action: "reject"
+    expert: "Data Oracle"

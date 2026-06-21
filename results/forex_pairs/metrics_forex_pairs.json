@@ -1,0 +1,41 @@
+{
+  "asset": "EUR/USD-GBP/USD",
+  "best_params": {
+    "spread_zscore_threshold": 2.0,
+    "vol_mult": 1.2,
+    "risk_mult": 1.5,
+    "tp_rr": 2.0
+  },
+  "walk_forward": {
+    "oos_sharpe": -5.158473628101002,
+    "oos_win_rate": 0.3310344827586207,
+    "oos_return": -0.017531481528337462,
+    "oos_max_dd": -0.017627315601316362,
+    "total_trades": 435
+  },
+  "full_backtest": {
+    "sharpe": -4.021401284856747,
+    "win_rate": 0.31754256106587714,
+    "total_return": -0.056386242423458126,
+    "max_dd": -0.056693103720107496,
+    "trades": 1351
+  },
+  "custom_metrics": {
+    "win_rate": 0.31754256106587714,
+    "total_return": -563.8624242345769,
+    "num_trades": 1351,
+    "avg_trade": -0.4173667092779992
+  },
+  "ab_test": {
+    "pairs_sharpe": -4.021401284856747,
+    "mr_sharpe": NaN,
+    "pairs_win_rate": 0.31754256106587714,
+    "mr_win_rate": NaN,
+    "pairs_return": -0.056386242423458126,
+    "mr_return": 0.0,
+    "t_statistic": NaN,
+    "p_value": NaN,
+    "pairs_superior": false,
+    "significant": "False"
+  }
+}

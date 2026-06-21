@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "*.pine": "pine"
+    }
+    ,
+    // Excluir indicaor Pine del análisis/linters de la IDE
+    "files.exclude": {
+        "scripts_pine/VP+IFVG+EMA.pine": true
+    },
+    "sonar.exclusions": "scripts_pine/VP+IFVG+EMA.pine",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
+}

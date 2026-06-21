@@ -1,0 +1,6 @@
+timestamp,symbol,decision,confidence,reason,regime,model_version,features_used
+2025-10-21 16:04:52.975597,NVDA,BUY,0.6362026483882336,Market condition change,trending,v1.4,43
+2025-10-21 15:34:52.975597,AAPL,BUY,0.5867910534778827,Stop loss triggered,trending,v1.3,23
+2025-10-21 15:04:52.975597,AAPL,BUY,0.6639657373969132,Risk management adjustment,bear,v1.4,45
+2025-10-21 14:34:52.975597,AAPL,HOLD,0.6778599681023181,Strong momentum signal,trending,v1.4,22
+2025-10-21 14:04:52.975597,TSLA,SELL,0.7729413293672407,Technical indicator crossover,bull,v1.1,43

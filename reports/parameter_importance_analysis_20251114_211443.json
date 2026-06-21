@@ -1,0 +1,474 @@
+{
+  "timestamp": "2025-11-14T21:14:43.429055",
+  "parameter_importance": {
+    "bb_length": [
+      {
+        "value": 10,
+        "metrics": {
+          "total_return": -0.06391594316851859,
+          "win_rate": 0.3333333333333333,
+          "total_trades": 6,
+          "avg_trade": -0.010652657194753098,
+          "sharpe_ratio": -0.1814150942753421
+        }
+      },
+      {
+        "value": 15,
+        "metrics": {
+          "total_return": 0.20405515207359082,
+          "win_rate": 0.35714285714285715,
+          "total_trades": 14,
+          "avg_trade": 0.014575368005256486,
+          "sharpe_ratio": 0.2669371689471697
+        }
+      },
+      {
+        "value": 20,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 25,
+        "metrics": {
+          "total_return": 0.36715094639641965,
+          "win_rate": 0.5384615384615384,
+          "total_trades": 13,
+          "avg_trade": 0.02824238049203228,
+          "sharpe_ratio": 0.4991962757311469
+        }
+      },
+      {
+        "value": 30,
+        "metrics": {
+          "total_return": 0.2785519409033741,
+          "win_rate": 0.42857142857142855,
+          "total_trades": 14,
+          "avg_trade": 0.019896567207383864,
+          "sharpe_ratio": 0.3553890967221648
+        }
+      }
+    ],
+    "bb_mult": [
+      {
+        "value": 1.5,
+        "metrics": {
+          "total_return": 0.22404687166183512,
+          "win_rate": 0.4444444444444444,
+          "total_trades": 9,
+          "avg_trade": 0.024894096851315013,
+          "sharpe_ratio": 0.3366333627204167
+        }
+      },
+      {
+        "value": 1.8,
+        "metrics": {
+          "total_return": 0.29253266842262926,
+          "win_rate": 0.46153846153846156,
+          "total_trades": 13,
+          "avg_trade": 0.022502512955586865,
+          "sharpe_ratio": 0.40075426588850316
+        }
+      },
+      {
+        "value": 2.0,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 2.2,
+        "metrics": {
+          "total_return": 0.33112084158126687,
+          "win_rate": 0.4375,
+          "total_trades": 16,
+          "avg_trade": 0.02069505259882918,
+          "sharpe_ratio": 0.389653253515443
+        }
+      },
+      {
+        "value": 2.5,
+        "metrics": {
+          "total_return": 0.312271190387858,
+          "win_rate": 0.4,
+          "total_trades": 20,
+          "avg_trade": 0.0156135595193929,
+          "sharpe_ratio": 0.3203016115769574
+        }
+      }
+    ],
+    "kc_length": [
+      {
+        "value": 10,
+        "metrics": {
+          "total_return": 0.19994559139301293,
+          "win_rate": 0.5714285714285714,
+          "total_trades": 7,
+          "avg_trade": 0.02856365591328756,
+          "sharpe_ratio": 0.33123636812649343
+        }
+      },
+      {
+        "value": 15,
+        "metrics": {
+          "total_return": 0.25734548313328887,
+          "win_rate": 0.38461538461538464,
+          "total_trades": 13,
+          "avg_trade": 0.019795806394868373,
+          "sharpe_ratio": 0.3375794840272129
+        }
+      },
+      {
+        "value": 20,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 25,
+        "metrics": {
+          "total_return": 0.285443000154297,
+          "win_rate": 0.5384615384615384,
+          "total_trades": 13,
+          "avg_trade": 0.021957153858022847,
+          "sharpe_ratio": 0.4162049396772941
+        }
+      },
+      {
+        "value": 30,
+        "metrics": {
+          "total_return": 0.2484336775366799,
+          "win_rate": 0.46153846153846156,
+          "total_trades": 13,
+          "avg_trade": 0.019110282887436915,
+          "sharpe_ratio": 0.3393543325235996
+        }
+      }
+    ],
+    "kc_mult": [
+      {
+        "value": 1.0,
+        "metrics": {
+          "total_return": 0.2686508375413284,
+          "win_rate": 0.4,
+          "total_trades": 25,
+          "avg_trade": 0.010746033501653136,
+          "sharpe_ratio": 0.24092053687240808
+        }
+      },
+      {
+        "value": 1.2,
+        "metrics": {
+          "total_return": 0.312271190387858,
+          "win_rate": 0.4,
+          "total_trades": 20,
+          "avg_trade": 0.0156135595193929,
+          "sharpe_ratio": 0.3203016115769574
+        }
+      },
+      {
+        "value": 1.5,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 1.8,
+        "metrics": {
+          "total_return": 0.2747875916817934,
+          "win_rate": 0.4166666666666667,
+          "total_trades": 12,
+          "avg_trade": 0.022898965973482784,
+          "sharpe_ratio": 0.40375042959804136
+        }
+      },
+      {
+        "value": 2.0,
+        "metrics": {
+          "total_return": 0.22404687166183512,
+          "win_rate": 0.4444444444444444,
+          "total_trades": 9,
+          "avg_trade": 0.024894096851315013,
+          "sharpe_ratio": 0.3366333627204167
+        }
+      }
+    ],
+    "adx_length": [
+      {
+        "value": 7,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 14,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 21,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 28,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      }
+    ],
+    "key_level": [
+      {
+        "value": 15,
+        "metrics": {
+          "total_return": 0.32210501228441685,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.024777308637262834,
+          "sharpe_ratio": 0.4501555760483796
+        }
+      },
+      {
+        "value": 20,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 23,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 25,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 30,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      }
+    ],
+    "squeeze_threshold": [
+      {
+        "value": 0.1,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.3,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.5,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.7,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.9,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      }
+    ],
+    "adx_threshold": [
+      {
+        "value": 15,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 20,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 25,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 30,
+        "metrics": {
+          "total_return": 0.37999515021975755,
+          "win_rate": 0.5384615384615384,
+          "total_trades": 13,
+          "avg_trade": 0.02923039617075058,
+          "sharpe_ratio": 0.5581951925793733
+        }
+      }
+    ],
+    "momentum_threshold": [
+      {
+        "value": 0.05,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.1,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.15,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.2,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      },
+      {
+        "value": 0.25,
+        "metrics": {
+          "total_return": 0.33612238616745027,
+          "win_rate": 0.6153846153846154,
+          "total_trades": 13,
+          "avg_trade": 0.025855568166726944,
+          "sharpe_ratio": 0.4787935626643791
+        }
+      }
+    ]
+  },
+  "multi_tf_impact": {
+    "without_multi_tf": {
+      "total_return": 0.33612238616745027,
+      "win_rate": 0.6153846153846154,
+      "total_trades": 13,
+      "avg_trade": 0.025855568166726944,
+      "sharpe_ratio": 0.4787935626643791
+    },
+    "with_multi_tf": {
+      "total_return": 0.33612238616745027,
+      "win_rate": 0.6153846153846154,
+      "total_trades": 13,
+      "avg_trade": 0.025855568166726944,
+      "sharpe_ratio": 0.4787935626643791
+    },
+    "improvement": {
+      "total_return": 0.0,
+      "win_rate": 0.0,
+      "total_trades": 0
+    }
+  }
+}

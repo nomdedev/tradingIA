@@ -1,0 +1,199 @@
+"""
+Tests para StopLossManager
+"""
+
+import unittest
+from agents.stop_loss_manager import StopLossManager
+
+class TestStopLossManager(unittest.TestCase):
+    """Tests para StopLossManager"""
+
+    def setUp(self):
+        """Configurar datos de prueba"""
+        self.manager = StopLossManager(method='atr', fixed_pct=0.03)
+
+        # Datos de mercado de prueba
+        self.market_data = {
+            'Close': 100.0,
+            'High': 105.0,
+            'Low': 95.0,
+            'Volume': 10000,
+            'ATR': 2.5,
+            'SMA_20': 98.0,
+            'RSI_14': 55.0
+        }
+
+    def test_initialization(self):
+        """Test inicialización del manager"""
+        self.assertIsInstance(self.manager, StopLossManager)
+        self.assertEqual(self.manager.method, 'atr')
+        self.assertEqual(self.manager.fixed_pct, 0.03)
+        self.assertIsInstance(self.manager.active_stops, dict)
+
+    def test_fixed_percentage_stop_loss(self):
+        """Test stop loss de porcentaje fijo"""
+        manager = StopLossManager(method='fixed', fixed_pct=0.05)
+        entry_price = 100.0
+
+        stop_price = manager.calculate_stop_loss('BTC/USD', entry_price, self.market_data)
+        expected_stop = entry_price * (1 - 0.05)  # 95.0
+
+        self.assertAlmostEqual(stop_price, expected_stop, places=2)
+
+    def test_atr_based_stop_loss(self):
+        """Test stop loss basado en ATR"""
+        entry_price = 100.0
+        # atr_value = 2.5
+
+        stop_price = self.manager.calculate_stop_loss('BTC/USD', entry_price, self.market_data)
+        # expected_stop = entry_price - (atr_value * 1.5)  # ATR multiplier típico
+
+        self.assertIsNotNone(stop_price)
+        self.assertLess(stop_price, entry_price)  # Stop debe estar por debajo del precio de entrada
+
+    def test_trailing_stop_loss(self):
+        """Test stop loss trailing"""
+        manager = StopLossManager(method='trailing', fixed_pct=0.03)
+        symbol = 'BTC/USD'
+        entry_price = 100.0
+
+        # Establecer stop inicial
+        initial_stop = manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+        self.assertIsNotNone(initial_stop)
+
+        # Simular precio subiendo
+        higher_price = 110.0
+        manager.update_trailing_stop(symbol, higher_price)
+
+        # Verificar que el stop se haya ajustado hacia arriba
+        stop_info = manager.get_stop_info(symbol)
+        self.assertIsNotNone(stop_info)
+        self.assertGreater(stop_info['stop_price'], initial_stop)
+
+    def test_stop_loss_trigger(self):
+        """Test activación de stop loss"""
+        symbol = 'BTC/USD'
+        entry_price = 100.0
+
+        # Establecer stop
+        stop_price = self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+
+        # Precio por encima del stop - no debería activar
+        above_stop = stop_price + 1.0
+        should_trigger = self.manager.check_stop_loss(symbol, above_stop)
+        self.assertFalse(should_trigger)
+
+        # Precio por debajo del stop - debería activar
+        below_stop = stop_price - 1.0
+        should_trigger = self.manager.check_stop_loss(symbol, below_stop)
+        self.assertTrue(should_trigger)
+
+    def test_stop_removal(self):
+        """Test eliminación de stops"""
+        symbol = 'BTC/USD'
+        entry_price = 100.0
+
+        # Establecer stop
+        self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+        self.assertIsNotNone(self.manager.get_stop_info(symbol))
+
+        # Remover stop
+        self.manager.remove_stop(symbol)
+        self.assertIsNone(self.manager.get_stop_info(symbol))
+
+    def test_multiple_stops(self):
+        """Test gestión de múltiples stops"""
+        symbols = ['BTC/USD', 'ETH/USD', 'ADA/USD']
+
+        for symbol in symbols:
+            entry_price = 100.0
+            self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+
+        # Verificar que todos los stops estén activos
+        all_stops = self.manager.get_all_stops()
+        self.assertEqual(len(all_stops), 3)
+
+        for symbol in symbols:
+            self.assertIn(symbol, all_stops)
+
+    def test_risk_metrics(self):
+        """Test cálculo de métricas de riesgo"""
+        symbol = 'BTC/USD'
+        entry_price = 100.0
+
+        # Establecer stop
+        self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+
+        # Obtener métricas
+        metrics = self.manager.get_risk_metrics(symbol)
+
+        self.assertIsInstance(metrics, dict)
+        self.assertIn('stop_distance_pct', metrics)
+        self.assertIn('risk_amount', metrics)
+        self.assertIn('reward_risk_ratio', metrics)
+
+        # Distancia del stop debería ser positiva
+        self.assertGreater(metrics['stop_distance_pct'], 0)
+
+    def test_method_switching(self):
+        """Test cambio de método de stop loss"""
+        symbol = 'BTC/USD'
+        entry_price = 100.0
+
+        # Método ATR
+        atr_stop = self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+
+        # Cambiar a método fixed
+        self.manager.set_method('fixed', fixed_pct=0.05)
+        fixed_stop = self.manager.calculate_stop_loss(symbol, entry_price, self.market_data)
+
+        # Los stops deberían ser diferentes
+        self.assertNotAlmostEqual(atr_stop, fixed_stop, places=2)
+
+    def test_reset_all_stops(self):
+        """Test reinicio de todos los stops"""
+        symbols = ['BTC/USD', 'ETH/USD']
+
+        # Establecer stops
+        for symbol in symbols:
+            self.manager.calculate_stop_loss(symbol, 100.0, self.market_data)
+
+        self.assertEqual(len(self.manager.get_all_stops()), 2)
+
+        # Reiniciar
+        self.manager.reset_all_stops()
+        self.assertEqual(len(self.manager.get_all_stops()), 0)
+
+    def test_edge_cases(self):
+        """Test casos límite"""
+        symbol = 'BTC/USD'
+
+        # Precio de entrada cero
+        try:
+            self.manager.calculate_stop_loss(symbol, 0, self.market_data)
+            # Si no lanza excepción, verificar que maneje correctamente
+        except Exception:
+            # Es aceptable que lance excepción
+            pass
+
+        # Datos de mercado incompletos
+        incomplete_data = {'Close': 100.0}  # Sin ATR
+        stop = self.manager.calculate_stop_loss(symbol, 100.0, incomplete_data)
+        # Debería manejar datos faltantes gracefully
+
+    def test_atr_calculation_fallback(self):
+        """Test cálculo de ATR con datos limitados"""
+        # Datos sin ATR precalculado
+        data_without_atr = {
+            'Close': 100.0,
+            'High': 105.0,
+            'Low': 95.0
+        }
+
+        # El manager debería calcular ATR o usar fallback
+        # Si no lanza excepción, el test pasa
+        self.manager.calculate_stop_loss('BTC/USD', 100.0, data_without_atr)
+        self.assertTrue(True)  # Si llega aquí, no lanzó excepción
+
+if __name__ == '__main__':
+    unittest.main()

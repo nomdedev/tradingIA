@@ -1,0 +1,28 @@
+======================================================================
+🏆 REPORTE DE COMPETICIÓN DE AGENTES DE TRADING
+======================================================================
+
+Fecha: 2025-10-21 22:26:49
+Periodo de test: 2025-06-13 00:00:00-04:00 a 2025-10-21 00:00:00-04:00
+Días de test: 90
+
+🤖 AGENTE RL
+------------------------------
+Retorno Total: 0.00%
+Sharpe Ratio: 0.00
+Max Drawdown: 0.00%
+Win Rate: 0.0%
+Profit Factor: inf
+Total Trades: 0
+
+🤖 AGENTE GA
+------------------------------
+Retorno Total: 12.22%
+Sharpe Ratio: 3.45
+Max Drawdown: 2.85%
+Win Rate: 0.0%
+Profit Factor: inf
+Total Trades: 1
+
+🏆 GANADOR: GA
+======================================================================

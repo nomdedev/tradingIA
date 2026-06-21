@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-11-14T16:38:15.813440",
+  "errors": [
+    "Error collecting tests"
+  ],
+  "warnings": [
+    "No virtual environment detected",
+    "Missing directory: dashboard",
+    "Missing directory: backtesting",
+    "Missing file: requirements_dashboard.txt",
+    "Missing file: run_paper_trading.py",
+    "Disabled test files: 9"
+  ],
+  "info": [
+    "Python version: 3.11.9",
+    "Installed packages: 225",
+    "Directory exists: src",
+    "Directory exists: tests",
+    "Directory exists: data",
+    "Directory exists: logs",
+    "Directory exists: config",
+    "Directory exists: strategies",
+    "File exists: README.md",
+    "Active test files: 28",
+    "Python files: 114",
+    "Raw data files: 1",
+    "Processed data files: 1"
+  ]
+}

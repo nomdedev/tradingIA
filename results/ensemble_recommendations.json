@@ -1,0 +1,39 @@
+{
+  "ensemble": [
+    {
+      "strategy": "Lstm",
+      "avg_sharpe": 2.6763149627947285,
+      "consistency": 0.2625015820216212,
+      "assets": 4,
+      "recommendation": "High confidence - consistent performer"
+    },
+    {
+      "strategy": "Hft",
+      "avg_sharpe": 2.5216409891167446,
+      "consistency": 0.30168041896184383,
+      "assets": 4,
+      "recommendation": "Medium confidence - good average performance"
+    },
+    {
+      "strategy": "Pairs Trading",
+      "avg_sharpe": 2.37337005348755,
+      "consistency": 0.27190828358613306,
+      "assets": 4,
+      "recommendation": "High confidence - consistent performer"
+    },
+    {
+      "strategy": "Momentum",
+      "avg_sharpe": 1.9035736540637944,
+      "consistency": 0.21785687318922642,
+      "assets": 4,
+      "recommendation": "High confidence - consistent performer"
+    },
+    {
+      "strategy": "Mean Reversion",
+      "avg_sharpe": 1.551398431348918,
+      "consistency": 0.1940269115115914,
+      "assets": 4,
+      "recommendation": "High confidence - consistent performer"
+    }
+  ]
+}

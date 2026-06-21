@@ -1,0 +1,4 @@
+timestamp,type,sharpe_before,sharpe_after,win_rate_before,win_rate_after,status,duration_minutes,reason
+2025-10-22 00:00:00,DAILY,2.15,2.18,0.765,0.772,SUCCESS,0.5,-
+2025-10-15 00:00:00,WEEKLY_GA,2.18,2.31,0.772,0.785,SUCCESS,18.5,-
+2025-10-01 00:00:00,MONTHLY_RL,2.31,2.45,0.785,0.798,SUCCESS,145.2,-

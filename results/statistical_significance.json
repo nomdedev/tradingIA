@@ -1,0 +1,72 @@
+{
+  "Mean Reversion vs Momentum": {
+    "t_statistic": -2.414367904174915,
+    "p_value": 0.052806729844432555,
+    "significant": "False",
+    "strat1_mean": 1.551398431348918,
+    "strat2_mean": 1.9035736540637944
+  },
+  "Mean Reversion vs Pairs Trading": {
+    "t_statistic": -4.92144410682972,
+    "p_value": 0.003510912322611392,
+    "significant": "True",
+    "strat1_mean": 1.551398431348918,
+    "strat2_mean": 2.37337005348755
+  },
+  "Mean Reversion vs Hft": {
+    "t_statistic": -5.409943532503621,
+    "p_value": 0.002714897989440244,
+    "significant": "True",
+    "strat1_mean": 1.551398431348918,
+    "strat2_mean": 2.5216409891167446
+  },
+  "Mean Reversion vs Lstm": {
+    "t_statistic": -6.8923351598263105,
+    "p_value": 0.0006538434176251649,
+    "significant": "True",
+    "strat1_mean": 1.551398431348918,
+    "strat2_mean": 2.6763149627947285
+  },
+  "Momentum vs Pairs Trading": {
+    "t_statistic": -2.696733131016812,
+    "p_value": 0.03741894140419178,
+    "significant": "True",
+    "strat1_mean": 1.9035736540637944,
+    "strat2_mean": 2.37337005348755
+  },
+  "Momentum vs Hft": {
+    "t_statistic": -3.3218783112752237,
+    "p_value": 0.01837454154793865,
+    "significant": "True",
+    "strat1_mean": 1.9035736540637944,
+    "strat2_mean": 2.5216409891167446
+  },
+  "Momentum vs Lstm": {
+    "t_statistic": -4.530498986859658,
+    "p_value": 0.004317029256682829,
+    "significant": "True",
+    "strat1_mean": 1.9035736540637944,
+    "strat2_mean": 2.6763149627947285
+  },
+  "Pairs Trading vs Hft": {
+    "t_statistic": -0.7301569042093887,
+    "p_value": 0.4930891815409394,
+    "significant": "False",
+    "strat1_mean": 2.37337005348755,
+    "strat2_mean": 2.5216409891167446
+  },
+  "Pairs Trading vs Lstm": {
+    "t_statistic": -1.6031232654061744,
+    "p_value": 0.16008921208712293,
+    "significant": "False",
+    "strat1_mean": 2.37337005348755,
+    "strat2_mean": 2.6763149627947285
+  },
+  "Hft vs Lstm": {
+    "t_statistic": -0.7735677439250459,
+    "p_value": 0.46909745934621694,
+    "significant": "False",
+    "strat1_mean": 2.5216409891167446,
+    "strat2_mean": 2.6763149627947285
+  }
+}

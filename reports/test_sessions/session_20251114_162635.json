@@ -1,0 +1,75 @@
+{
+  "session_id": "20251114_162635",
+  "start_time": "2025-11-14T16:26:35.441297",
+  "end_time": "2025-11-14T16:26:35.443299",
+  "user_actions": [
+    {
+      "timestamp": "2025-11-14T16:26:35.441297",
+      "type": "test_action",
+      "details": {
+        "test_param": "test_value"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-14T16:26:35.441297",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-14T16:26:35.442301",
+      "type": "backtest",
+      "details": {
+        "strategy": "RSI Mean Reversion",
+        "ticker": "BTC/USD",
+        "timeframe": "5min",
+        "results": {
+          "total_trades": 10,
+          "win_rate": 65.5,
+          "total_pnl": 1250.0
+        }
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [
+    {
+      "timestamp": "2025-11-14T16:26:35.441297",
+      "type": "test_error",
+      "message": "Este es un error de prueba",
+      "context": {
+        "context": "testing"
+      },
+      "stack_trace": null
+    }
+  ],
+  "results": {
+    "backtests_run": 1,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": [
+      "RSI Mean Reversion"
+    ]
+  },
+  "configuration_changes": [],
+  "tab_visits": {
+    "\ud83c\udfe0 Dashboard": 2,
+    "\ud83d\udcca Data": 1,
+    "\ud83d\udd34 Live": 1
+  },
+  "duration_seconds": 0.002002,
+  "duration_human": "0s",
+  "summary": {
+    "total_actions": 3,
+    "total_errors": 1,
+    "most_visited_tab": "\ud83c\udfe0 Dashboard",
+    "most_tested_strategy": "RSI Mean Reversion",
+    "error_rate": 0.3333333333333333,
+    "backtests_completed": 1,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

@@ -1,0 +1,304 @@
+"""
+Tests para EnsembleAgent
+"""
+
+import unittest
+from unittest.mock import Mock
+from agents.ensemble_agent import EnsembleAgent, AgentVote, EnsembleDecision
+
+class TestEnsembleAgent(unittest.TestCase):
+    """Tests para EnsembleAgent"""
+
+    def setUp(self):
+        """Configurar datos de prueba"""
+        self.ensemble = EnsembleAgent()
+
+        # Datos de mercado de prueba
+        self.market_data = {
+            'symbol': 'BTC/USD',
+            'Close': 100.0,
+            'High': 105.0,
+            'Low': 95.0,
+            'Volume': 10000,
+            'RSI_14': 55.0,
+            'SMA_20': 98.0
+        }
+
+        # Estado de portfolio de prueba
+        self.portfolio_state = {
+            'cash': 5000.0,
+            'position_size': 0,
+            'total_value': 5000.0
+        }
+
+    def test_initialization(self):
+        """Test inicialización del ensemble"""
+        self.assertIsInstance(self.ensemble, EnsembleAgent)
+        self.assertEqual(self.ensemble.decision_type.name, 'WEIGHTED_VOTE')
+        self.assertIsInstance(self.ensemble.agents, dict)
+        self.assertIsInstance(self.ensemble.decision_history, list)
+
+    def test_add_agent(self):
+        """Test agregar agentes al ensemble"""
+        # Crear agente mock
+        mock_agent = Mock()
+        mock_agent.make_decision.return_value = {
+            'action': 1,
+            'confidence': 0.8,
+            'reasoning': 'Mock decision'
+        }
+
+        # Agregar agente
+        self.ensemble.add_agent('mock_agent', mock_agent, weight=1.5)
+
+        self.assertIn('mock_agent', self.ensemble.agents)
+        self.assertEqual(self.ensemble.agent_weights['mock_agent'], 1.5)
+
+    def test_collect_agent_votes(self):
+        """Test recopilación de votos de agentes"""
+        # Crear agentes mock
+        agents = {}
+        for i in range(3):
+            mock_agent = Mock()
+            mock_agent.make_decision.return_value = {
+                'action': i % 3,  # 0, 1, 2
+                'confidence': 0.7 + i * 0.1,
+                'reasoning': f'Agent {i} decision'
+            }
+            agents[f'agent_{i}'] = mock_agent
+            self.ensemble.add_agent(f'agent_{i}', mock_agent)
+
+        # Recopilar votos
+        votes = self.ensemble._collect_agent_votes(self.market_data, self.portfolio_state)
+
+        self.assertEqual(len(votes), 3)
+        for vote in votes:
+            self.assertIsInstance(vote, AgentVote)
+            self.assertIn(vote.agent_name, ['agent_0', 'agent_1', 'agent_2'])
+            self.assertIn(vote.action, [0, 1, 2])
+
+    def test_weighted_vote_decision(self):
+        """Test decisión por votación ponderada"""
+        # Crear votos de prueba
+        votes = [
+            AgentVote('agent1', 1, 0.8, 'Buy signal', 1.0),  # BUY
+            AgentVote('agent2', 2, 0.6, 'Sell signal', 1.5),  # SELL
+            AgentVote('agent3', 0, 0.9, 'Hold signal', 1.0),  # HOLD
+        ]
+
+        # Mock reversion y régimen
+        mock_regime = Mock()
+        mock_reversion = None
+        risk_metrics = {'volatility': 0.5}
+
+        # Tomar decisión
+        decision = self.ensemble._weighted_vote_decision(
+            votes, mock_regime, mock_reversion, risk_metrics
+        )
+
+        self.assertIn('action', decision)
+        self.assertIn('confidence', decision)
+        self.assertIn('reasoning', decision)
+        self.assertIn(decision['action'], [0, 1, 2])
+
+    def test_regime_modifier(self):
+        """Test modificador de régimen de mercado"""
+        from strategies.regime_detector import MarketRegime
+
+        # Test mercado alcista
+        bull_modifier = self.ensemble._get_regime_modifier(MarketRegime.BULL)
+        self.assertIn(0, bull_modifier)
+        self.assertIn(1, bull_modifier)
+        self.assertIn(2, bull_modifier)
+        self.assertGreater(bull_modifier[1], bull_modifier[2])  # BUY > SELL en bull
+
+        # Test mercado bajista
+        bear_modifier = self.ensemble._get_regime_modifier(MarketRegime.BEAR)
+        self.assertGreater(bear_modifier[2], bear_modifier[1])  # SELL > BUY en bear
+
+    def test_reversion_modifier(self):
+        """Test modificador de reversión"""
+        from strategies.mean_reversion import ReversionSignal
+
+        # Crear oportunidad de reversión mock
+        mock_reversion = Mock()
+        mock_reversion.signal = ReversionSignal.BUY
+
+        reversion_modifier = self.ensemble._get_reversion_modifier(mock_reversion)
+
+        self.assertIn(0, reversion_modifier)
+        self.assertIn(1, reversion_modifier)
+        self.assertIn(2, reversion_modifier)
+        self.assertGreater(reversion_modifier[1], reversion_modifier[2])  # BUY > SELL
+
+    def test_risk_modifier(self):
+        """Test modificador de riesgo"""
+        # Baja volatilidad
+        low_vol_risk = {'volatility': 0.1}
+        low_vol_modifier = self.ensemble._get_risk_modifier(low_vol_risk)
+
+        # Alta volatilidad
+        high_vol_risk = {'volatility': 0.8}
+        high_vol_modifier = self.ensemble._get_risk_modifier(high_vol_risk)
+
+        # En alta volatilidad debería favorecer HOLD
+        self.assertGreater(low_vol_modifier[1], high_vol_modifier[1])
+
+    def test_risk_metrics_calculation(self):
+        """Test cálculo de métricas de riesgo"""
+        risk_metrics = self.ensemble._calculate_risk_metrics(
+            self.market_data, self.portfolio_state
+        )
+
+        self.assertIn('volatility', risk_metrics)
+        self.assertIn('sharpe_ratio', risk_metrics)
+        self.assertIn('current_price', risk_metrics)
+        self.assertIn('position_size', risk_metrics)
+
+    def test_consensus_decision(self):
+        """Test decisión por consenso"""
+        votes = [
+            AgentVote('agent1', 1, 0.8, 'Buy', 1.0),
+            AgentVote('agent2', 1, 0.7, 'Buy', 1.0),
+            AgentVote('agent3', 2, 0.6, 'Sell', 1.0),
+        ]
+
+        mock_regime = Mock()
+        decision = self.ensemble._consensus_decision(votes, mock_regime, None, {})
+
+        # Debería elegir BUY (2 votos vs 1)
+        self.assertEqual(decision['action'], 1)
+
+    def test_regime_based_decision(self):
+        """Test decisión basada en régimen"""
+        from strategies.regime_detector import MarketRegime
+
+        votes = [AgentVote('agent1', 0, 0.5, 'Hold', 1.0)]
+
+        # Mercado alcista
+        bull_decision = self.ensemble._regime_based_decision(
+            votes, MarketRegime.BULL, None, {}
+        )
+        self.assertEqual(bull_decision['action'], 1)  # BUY
+
+        # Mercado bajista
+        bear_decision = self.ensemble._regime_based_decision(
+            votes, MarketRegime.BEAR, None, {}
+        )
+        self.assertEqual(bear_decision['action'], 2)  # SELL
+
+    def test_risk_adjusted_decision(self):
+        """Test decisión ajustada por riesgo"""
+        votes = [AgentVote('agent1', 1, 0.8, 'Buy', 1.0)]
+        mock_regime = Mock()
+
+        # Alta volatilidad
+        high_vol_risk = {'volatility': 0.9}
+        risk_decision = self.ensemble._risk_adjusted_decision(
+            votes, mock_regime, None, high_vol_risk
+        )
+
+        # Confianza debería reducirse por alto riesgo
+        self.assertLess(risk_decision['confidence'], 0.8)
+
+    def test_make_decision_integration(self):
+        """Test integración completa de make_decision"""
+        # Agregar un agente mock
+        mock_agent = Mock()
+        mock_agent.make_decision.return_value = {
+            'action': 1,
+            'confidence': 0.7,
+            'reasoning': 'Test buy signal'
+        }
+        self.ensemble.add_agent('test_agent', mock_agent)
+
+        # Tomar decisión
+        decision = self.ensemble.make_decision(self.market_data, self.portfolio_state)
+
+        self.assertIn('action', decision)
+        self.assertIn('confidence', decision)
+        self.assertIn('reasoning', decision)
+
+        # Verificar que se agregó al historial
+        self.assertEqual(len(self.ensemble.decision_history), 1)
+
+    def test_performance_metrics(self):
+        """Test métricas de rendimiento"""
+        # Agregar algunas decisiones al historial
+        for i in range(5):
+            mock_decision = EnsembleDecision(
+                action=i % 3,
+                confidence=0.6 + i * 0.1,
+                reasoning=f'Decision {i}',
+                votes=[],
+                regime=Mock(),
+                reversion_signal=None,
+                risk_metrics={}
+            )
+
+            self.ensemble.decision_history.append({
+                'timestamp': Mock(),
+                'symbol': 'BTC/USD',
+                'decision': mock_decision,
+                'market_data': self.market_data.copy()
+            })
+
+        metrics = self.ensemble.get_performance_metrics()
+
+        self.assertIn('total_decisions', metrics)
+        self.assertIn('avg_confidence', metrics)
+        self.assertIn('action_distribution', metrics)
+        self.assertEqual(metrics['total_decisions'], 5)
+
+    def test_agent_weights_update(self):
+        """Test actualización de pesos de agentes"""
+        # Agregar agentes
+        self.ensemble.add_agent('agent1', Mock(), 1.0)
+        self.ensemble.add_agent('agent2', Mock(), 1.0)
+
+        # Performance data
+        performance = {
+            'agent1': 0.1,  # Buen rendimiento
+            'agent2': -0.1  # Mal rendimiento
+        }
+
+        self.ensemble.update_agent_weights(performance)
+
+        # Peso de agent1 debería aumentar, agent2 disminuir
+        self.assertGreater(self.ensemble.agent_weights['agent1'], 1.0)
+        self.assertLess(self.ensemble.agent_weights['agent2'], 1.0)
+
+    def test_reset_functionality(self):
+        """Test funcionalidad de reinicio"""
+        # Agregar datos
+        self.ensemble.add_agent('test_agent', Mock(), 1.0)
+        self.ensemble.decision_history.append({'test': 'data'})
+
+        # Verificar que hay datos
+        self.assertGreater(len(self.ensemble.agents), 0)
+        self.assertGreater(len(self.ensemble.decision_history), 0)
+
+        # Reiniciar
+        self.ensemble.reset()
+
+        # Verificar que está limpio
+        self.assertEqual(len(self.ensemble.agents), 0)
+        self.assertEqual(len(self.ensemble.decision_history), 0)
+
+    def test_error_handling(self):
+        """Test manejo de errores"""
+        # Agente que lanza excepción
+        failing_agent = Mock()
+        failing_agent.make_decision.side_effect = Exception("Test error")
+
+        self.ensemble.add_agent('failing_agent', failing_agent)
+
+        # Debería manejar el error gracefully
+        decision = self.ensemble.make_decision(self.market_data, self.portfolio_state)
+
+        # Todavía debería retornar una decisión válida
+        self.assertIn('action', decision)
+        self.assertIn('confidence', decision)
+
+if __name__ == '__main__':
+    unittest.main()

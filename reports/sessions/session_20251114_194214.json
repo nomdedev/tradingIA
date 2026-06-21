@@ -1,0 +1,66 @@
+{
+  "session_id": "20251114_194214",
+  "start_time": "2025-11-14T19:42:14.466805",
+  "end_time": "2025-11-14T19:42:59.026748",
+  "user_actions": [
+    {
+      "timestamp": "2025-11-14T19:42:14.466805",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-14T19:42:15.667109",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-14T19:32:35.214738"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-14T19:42:15.669109",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-14T19:32:35.214738"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-14T19:42:59.026748",
+      "type": "config_saved",
+      "details": {
+        "success": true
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {
+    "\ud83d\udcca Data": 1
+  },
+  "duration_seconds": 44.559943,
+  "duration_human": "44s",
+  "summary": {
+    "total_actions": 4,
+    "total_errors": 0,
+    "most_visited_tab": "\ud83d\udcca Data",
+    "most_tested_strategy": "None",
+    "error_rate": 0.0,
+    "backtests_completed": 0,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

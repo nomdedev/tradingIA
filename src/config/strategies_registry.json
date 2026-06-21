@@ -1,0 +1,109 @@
+{
+  "IBS_BB": {
+    "module": "mean_reversion_ibs_bb_crypto",
+    "class": "IBSBBStrategy",
+    "params": {
+      "bb_length": {
+        "default": 20,
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "description": "Bollinger Bands length"
+      },
+      "vol_mult": {
+        "default": 1.2,
+        "min": 0.8,
+        "max": 2.0,
+        "step": 0.1,
+        "description": "Volume multiplier for IBS filter"
+      }
+    }
+  },
+  "MACD_ADX": {
+    "module": "momentum_macd_adx_stocks",
+    "class": "MACDADXStrategy",
+    "params": {
+      "macd_fast": {
+        "default": 12,
+        "min": 8,
+        "max": 20,
+        "step": 1,
+        "description": "MACD fast period"
+      },
+      "macd_slow": {
+        "default": 26,
+        "min": 20,
+        "max": 40,
+        "step": 1,
+        "description": "MACD slow period"
+      },
+      "adx_period": {
+        "default": 14,
+        "min": 10,
+        "max": 25,
+        "step": 1,
+        "description": "ADX period"
+      }
+    }
+  },
+  "Pairs": {
+    "module": "pairs_trading_crypto",
+    "class": "PairsTradingStrategy",
+    "params": {
+      "lookback": {
+        "default": 100,
+        "min": 50,
+        "max": 200,
+        "step": 10,
+        "description": "Lookback period for spread calculation"
+      },
+      "entry_threshold": {
+        "default": 2.0,
+        "min": 1.0,
+        "max": 3.0,
+        "step": 0.1,
+        "description": "Entry threshold in standard deviations"
+      }
+    }
+  },
+  "HFT_VMA": {
+    "module": "hft_momentum_vma_forex",
+    "class": "HFTVMAForexStrategy",
+    "params": {
+      "vma_period": {
+        "default": 20,
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "description": "Volume Moving Average period"
+      },
+      "momentum_period": {
+        "default": 5,
+        "min": 3,
+        "max": 15,
+        "step": 1,
+        "description": "Momentum calculation period"
+      }
+    }
+  },
+  "LSTM_ML": {
+    "module": "lstm_ml_reversion_commodities",
+    "class": "LSTMMLReversionStrategy",
+    "params": {
+      "sequence_length": {
+        "default": 60,
+        "min": 30,
+        "max": 120,
+        "step": 10,
+        "description": "LSTM sequence length"
+      },
+      "prediction_horizon": {
+        "default": 5,
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "description": "Prediction horizon in bars"
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+"""
+Test completo del Moon Dev Risk Agent.
+"""
+
+from agents.moondev_risk_agent import MoonDevRiskAgent
+import numpy as np
+
+def test_risk_agent():
+    print("="*70)
+    print("TESTING MOON DEV RISK AGENT")
+    print("="*70)
+    
+    # Crear agent
+    risk_agent = MoonDevRiskAgent(
+        max_risk_per_trade=0.02,
+        max_portfolio_heat=0.10,
+        max_drawdown=0.15,
+        kelly_fraction=0.5
+    )
+    
+    # Simular varios trades
+    portfolio_value = 100000
+    
+    for i in range(5):
+        print(f"\n{'='*70}")
+        print(f"TRADE {i+1}")
+        print(f"{'='*70}")
+        
+        # Proposed trade
+        proposed_trade = {
+            'symbol': 'BTC/USD',
+            'action': 1,
+            'confidence': 0.75,
+            'entry_price': 67000 + np.random.randint(-1000, 1000)
+        }
+        
+        # Market data
+        market_data = {
+            'Close': proposed_trade['entry_price'],
+            'High': proposed_trade['entry_price'] * 1.02,
+            'Low': proposed_trade['entry_price'] * 0.98,
+            'Volume': 1000000,
+            'ATR_14': 2000
+        }
+        
+        # Portfolio state
+        portfolio_state = {
+            'balance': portfolio_value * 0.5,
+            'net_worth': portfolio_value,
+            'positions': []
+        }
+        
+        # Evaluate
+        result = risk_agent.evaluate_trade(
+            proposed_trade,
+            market_data,
+            portfolio_state
+        )
+        
+        if result['approved']:
+            # Simular resultado del trade
+            exit_price = proposed_trade['entry_price'] * np.random.choice(
+                [1.05, 0.98],  # 50% win, 50% loss
+                p=[0.6, 0.4]    # 60% win rate
+            )
+            
+            profit = (exit_price - proposed_trade['entry_price']) * result['units']
+            
+            # Close trade
+            risk_agent.on_trade_closed(
+                proposed_trade['symbol'],
+                exit_price,
+                profit
+            )
+            
+            # Update portfolio
+            portfolio_value += profit
+    
+    # Summary
+    risk_agent.get_summary()
+
+if __name__ == "__main__":
+    test_risk_agent()

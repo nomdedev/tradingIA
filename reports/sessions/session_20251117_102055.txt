@@ -1,0 +1,106 @@
+================================================================================
+TRADING PLATFORM - SESSION REPORT
+================================================================================
+
+Session ID: 20251117_102055
+Start Time: 2025-11-17T10:20:55.170377
+End Time: 2025-11-17T10:24:40.298115
+Duration: 3m 45s
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+Total Actions: 12
+Total Errors: 0
+Error Rate: 0.00%
+Backtests Run: 0
+Live Trading Sessions: 0
+Data Downloads: 0
+Most Visited Tab: 📊 Data
+
+--------------------------------------------------------------------------------
+TAB VISITS
+--------------------------------------------------------------------------------
+  📊 Data: 2 visits
+  ⚙️ Strategy: 1 visits
+  ▶️ Backtest: 1 visits
+  📈 Results: 1 visits
+  ⚖️ A/B Test: 1 visits
+  🏠 Dashboard: 1 visits
+
+--------------------------------------------------------------------------------
+DATA OPERATIONS SUMMARY
+--------------------------------------------------------------------------------
+Data Downloads Attempted: 0
+Successful Downloads: 0
+
+--------------------------------------------------------------------------------
+RECENT ACTIONS (Last 20)
+--------------------------------------------------------------------------------
+
+[2025-11-17T10:20:55.170377] PLATFORM_START
+  Result: success
+  version: 2.0.0
+
+[2025-11-17T10:20:57.909038] CONFIG_LOADED
+  Result: success
+  ticker: BTC/USD
+  strategy: RSI Mean Reversion
+  last_session: 2025-11-16T17:38:30.223739
+
+[2025-11-17T10:20:57.911033] CONFIG_LOADED
+  Result: success
+  ticker: BTC/USD
+  strategy: RSI Mean Reversion
+  last_session: 2025-11-16T17:38:30.223739
+
+[2025-11-17T10:21:00.897292] DATA_LOADING
+  Result: success
+  event_type: auto_load_success
+  data_info: {'symbol': 'BTC-USD', 'timeframe': '15Min', 'records': 100417, 'date_range': '2023-01-01 00:00:00 to 2025-11-12 00:00:00', 'file_path': 'data\\btc_15Min.csv'}
+
+[2025-11-17T10:21:01.043834] DATA_LOADING
+  Result: success
+  event_type: manual_load_success
+  data_info: {'timeframes': ['BTC-USD_15Min'], 'total_bars': 100417, 'timeframes_count': 1}
+
+[2025-11-17T10:21:01.043834] UI_DATA_LOADED_NOTIFICATION
+  Result: success
+  tab: Tab1_DataManagement
+  data_keys: ['BTC-USD_15Min']
+
+[2025-11-17T10:22:00.439882] WINDOW_EVENT
+  Result: success
+  event_type: resize
+  window_info: {'old_size': '1800x1362', 'new_size': '1920x1009', 'difference': '120x353'}
+
+[2025-11-17T10:22:55.596186] UI_LOAD_DATA_BUTTON_CLICKED
+  Result: success
+  symbol: BTC/USD
+  timeframe: 15Min
+  start_date: 2020-01-01
+  end_date: 2025-11-17
+  multi_timeframe: True
+
+[2025-11-17T10:24:10.320244] WINDOW_EVENT
+  Result: success
+  event_type: resize
+  window_info: {'old_size': '1920x1009', 'new_size': '1920x1362', 'difference': '0x353'}
+
+[2025-11-17T10:24:24.599084] WINDOW_EVENT
+  Result: success
+  event_type: resize
+  window_info: {'old_size': '1920x1009', 'new_size': '1800x1362', 'difference': '120x353'}
+
+[2025-11-17T10:24:29.005844] WINDOW_EVENT
+  Result: success
+  event_type: resize
+  window_info: {'old_size': '1800x1362', 'new_size': '1920x1009', 'difference': '120x353'}
+
+[2025-11-17T10:24:40.298115] CONFIG_SAVED
+  Result: success
+  success: True
+
+================================================================================
+END OF REPORT
+================================================================================

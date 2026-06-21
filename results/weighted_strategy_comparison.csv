@@ -1,0 +1,2 @@
+config,weights,total_return,sharpe_ratio,max_drawdown,win_rate,total_trades,avg_trade,profit_factor,avg_duration,median_duration,min_duration,max_duration,avg_winning_duration,avg_losing_duration
+3,"{'squeeze': 0.25, 'vp_ifvg': 0.5, 'mtf': 0.15, 'volume': 0.1}",4705137.753440399,1.1924598924662404,-inf,0.26370757180156656,766,61.42477484909138,2.2459535529750276,336.3144323290557,56.50018755333333,3.0000099566666667,8269.027449233334,1071.434249719307,73.02683815736998

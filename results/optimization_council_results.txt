@@ -1,0 +1,12 @@
+Optimization Results (Guided by Council)
+========================================
+Avg Test Calmar: 0.000
+Robustness Score: 1.000
+
+Best Parameters Overall:
+  atr_multi: 0.4186171947440932
+  va_percent: 0.6683434789866164
+  vp_rows: 139
+  vol_thresh: 1.217795110562541
+  tp_rr: 2.112082926997514
+  min_confidence: 0.5299924747454009

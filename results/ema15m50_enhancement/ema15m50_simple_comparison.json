@@ -1,0 +1,86 @@
+{
+  "squeeze_original": {
+    "strategy_name": "Squeeze+ADX+TTM (Original)",
+    "total_trades": 181,
+    "win_rate": 56.9060773480663,
+    "profit_factor": 1.0318041242721787,
+    "total_return": -7.10300386332854,
+    "max_drawdown": -54.97680961428038,
+    "expectancy": 0.018453026983114518,
+    "sharpe_ratio": 0.9201957991830728,
+    "ema_filter_applied": false,
+    "timestamp": "2025-11-16T15:28:50.467931"
+  },
+  "squeeze_enhanced": {
+    "strategy_name": "Squeeze+ADX+TTM+EMA15m50",
+    "total_trades": 0,
+    "win_rate": 0,
+    "profit_factor": 0,
+    "total_return": 0,
+    "max_drawdown": 0,
+    "expectancy": 0,
+    "sharpe_ratio": 0,
+    "ema_filter_applied": true,
+    "timestamp": "2025-11-16T15:28:51.114606"
+  },
+  "squeeze_comparison": {
+    "original": "Squeeze+ADX+TTM (Original)",
+    "enhanced": "Squeeze+ADX+TTM+EMA15m50",
+    "improvements": {
+      "total_trades": {
+        "original": 181,
+        "enhanced": 0,
+        "change": -181,
+        "change_pct": -100.0,
+        "improved": false
+      },
+      "win_rate": {
+        "original": 56.9060773480663,
+        "enhanced": 0,
+        "change": -56.9060773480663,
+        "change_pct": -100.0,
+        "improved": false
+      },
+      "profit_factor": {
+        "original": 1.0318041242721787,
+        "enhanced": 0,
+        "change": -1.0318041242721787,
+        "change_pct": -100.0,
+        "improved": "False"
+      },
+      "total_return": {
+        "original": -7.10300386332854,
+        "enhanced": 0,
+        "change": 7.10300386332854,
+        "change_pct": 100.0,
+        "improved": "True"
+      },
+      "max_drawdown": {
+        "original": -54.97680961428038,
+        "enhanced": 0,
+        "change": 54.97680961428038,
+        "change_pct": 100.0,
+        "improved": "False"
+      },
+      "expectancy": {
+        "original": 0.018453026983114518,
+        "enhanced": 0,
+        "change": -0.018453026983114518,
+        "change_pct": -100.0,
+        "improved": "False"
+      },
+      "sharpe_ratio": {
+        "original": 0.9201957991830728,
+        "enhanced": 0,
+        "change": -0.9201957991830728,
+        "change_pct": -100.0,
+        "improved": "False"
+      }
+    },
+    "summary": {
+      "improved_metrics": 1,
+      "total_metrics": 7,
+      "improvement_percentage": 14.285714285714285
+    }
+  }
+}

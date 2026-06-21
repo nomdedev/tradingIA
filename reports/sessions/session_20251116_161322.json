@@ -1,0 +1,44 @@
+{
+  "session_id": "20251116_161322",
+  "start_time": "2025-11-16T16:13:22.007103",
+  "end_time": "2025-11-16T16:14:40.682591",
+  "user_actions": [
+    {
+      "timestamp": "2025-11-16T16:13:22.007103",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-11-16T16:14:40.682591",
+      "type": "config_saved",
+      "details": {
+        "success": true
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {},
+  "duration_seconds": 78.675488,
+  "duration_human": "1m 18s",
+  "summary": {
+    "total_actions": 2,
+    "total_errors": 0,
+    "most_visited_tab": "None",
+    "most_tested_strategy": "None",
+    "error_rate": 0.0,
+    "backtests_completed": 0,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

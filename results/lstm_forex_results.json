@@ -1,0 +1,53 @@
+{
+    "lstm_strategy": {
+        "sharpe_ratio": 2.487404761767789,
+        "win_rate": NaN,
+        "total_return": 2.2010400263987506,
+        "max_drawdown": -2.63413958626586,
+        "total_trades": 0
+    },
+    "baseline_strategy": {
+        "sharpe_ratio": -7.3077870173706865,
+        "win_rate": 34.48275862068966,
+        "total_return": -5.188551372408747,
+        "max_drawdown": -5.612091181811518,
+        "total_trades": 29
+    },
+    "walk_forward_results": [
+        {
+            "period": 1,
+            "sharpe": -0.9355899571192676,
+            "win_rate": NaN,
+            "return": -0.0966873287961971,
+            "trades": 0
+        },
+        {
+            "period": 2,
+            "sharpe": -9.734310859080903,
+            "win_rate": NaN,
+            "return": -1.144459693293993,
+            "trades": 0
+        },
+        {
+            "period": 3,
+            "sharpe": 2.909536883517734,
+            "win_rate": NaN,
+            "return": 0.6889959552725304,
+            "trades": 0
+        },
+        {
+            "period": 4,
+            "sharpe": 3.362328085572043,
+            "win_rate": NaN,
+            "return": 0.29577092447931136,
+            "trades": 0
+        },
+        {
+            "period": 5,
+            "sharpe": 6.055141726729661,
+            "win_rate": NaN,
+            "return": 1.5739240607406828,
+            "trades": 0
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+"""
+Test del Multi-Timeframe Analyzer.
+"""
+
+from strategies.multi_timeframe_analyzer import MultiTimeframeAnalyzer
+from trading_live.alpaca_client import AlpacaClient
+from dotenv import load_dotenv
+
+def test_mtf_analyzer():
+    """Test completo del Multi-Timeframe Analyzer"""
+    load_dotenv()
+
+    print("="*70)
+    print("TESTING MULTI-TIMEFRAME ANALYZER")
+    print("="*70)
+
+    # Setup
+    symbol = 'BTC/USD'
+    client = AlpacaClient()
+    mtf_analyzer = MultiTimeframeAnalyzer()
+
+    # Test 1: Análisis completo
+    print("\n" + "="*70)
+    print("TEST 1: COMPLETE MULTI-TIMEFRAME ANALYSIS")
+    print("="*70)
+
+    try:
+        mtf_analysis = mtf_analyzer.analyze_all_timeframes(symbol, client)
+
+        print("\n✅ MTF Analysis Complete")
+        print(f"   Confluence: {mtf_analysis['confluence']:.0%}")
+        print(f"   Dominant Trend: {mtf_analysis['dominant_trend']}")
+        print(f"   Recommendation: {mtf_analysis['recommendation']}")
+
+        should_enter = mtf_analyzer.should_enter(mtf_analysis)
+        print(f"   Should Enter: {'YES ✅' if should_enter else 'NO ❌'}")
+
+        # Test 2: Detalles por timeframe
+        print("\n" + "="*70)
+        print("TEST 2: TIMEFRAME DETAILS")
+        print("="*70)
+
+        if mtf_analysis and 'timeframes' in mtf_analysis:
+            print("Timeframe Analysis Details:")
+            for tf_name, tf_data in mtf_analysis['timeframes'].items():
+                trend = tf_data.get('trend', 'N/A')
+                strength = tf_data.get('strength', 0)
+                rsi = tf_data.get('rsi', 0)
+                print("10"
+                      "8"
+                      ".0f}/100 | "
+                      "5.1f}")
+
+        # Test 3: Confluencia threshold
+        print("\n" + "="*70)
+        print("TEST 3: CONFLUENCE THRESHOLDS")
+        print("="*70)
+
+        thresholds = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        for threshold in thresholds:
+            should_enter = mtf_analyzer.should_enter(mtf_analysis, threshold)
+            print(".0f}")
+
+        print("\n" + "="*70)
+        print("TEST COMPLETED SUCCESSFULLY")
+        print("="*70)
+
+    except Exception as e:
+        print(f"\n❌ ERROR in MTF Analysis: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    test_mtf_analyzer()

@@ -1,0 +1,105 @@
+{
+  "session_id": "20251216_110411",
+  "start_time": "2025-12-16T11:04:11.970172",
+  "end_time": "2025-12-16T11:06:36.824414",
+  "user_actions": [
+    {
+      "timestamp": "2025-12-16T11:04:11.970172",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:04:13.731036",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-17T14:40:40.787236"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:04:13.733192",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-11-17T14:40:40.787236"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:06:36.088057",
+      "type": "data_loading",
+      "details": {
+        "event_type": "auto_load_success",
+        "data_info": {
+          "symbol": "BTC-USD",
+          "timeframe": "15Min",
+          "records": 100417,
+          "date_range": "2023-01-01 00:00:00 to 2025-11-12 00:00:00",
+          "file_path": "data\\btc_15Min.csv"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:06:36.190357",
+      "type": "data_loading",
+      "details": {
+        "event_type": "manual_load_success",
+        "data_info": {
+          "timeframes": [
+            "BTC-USD_15Min"
+          ],
+          "total_bars": 100417,
+          "timeframes_count": 1
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:06:36.190357",
+      "type": "ui_data_loaded_notification",
+      "details": {
+        "tab": "Tab1_DataManagement",
+        "data_keys": [
+          "BTC-USD_15Min"
+        ]
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T11:06:36.824414",
+      "type": "config_saved",
+      "details": {
+        "success": true
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {},
+  "duration_seconds": 144.854242,
+  "duration_human": "2m 24s",
+  "summary": {
+    "total_actions": 7,
+    "total_errors": 0,
+    "most_visited_tab": "None",
+    "most_tested_strategy": "None",
+    "error_rate": 0.0,
+    "backtests_completed": 0,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

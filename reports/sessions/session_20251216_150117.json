@@ -1,0 +1,143 @@
+{
+  "session_id": "20251216_150117",
+  "start_time": "2025-12-16T15:01:17.196765",
+  "end_time": "2025-12-16T15:02:22.476427",
+  "user_actions": [
+    {
+      "timestamp": "2025-12-16T15:01:17.196765",
+      "type": "platform_start",
+      "details": {
+        "version": "2.0.0"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:19.013941",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-12-16T13:15:19.755118"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:19.018457",
+      "type": "config_loaded",
+      "details": {
+        "ticker": "BTC/USD",
+        "strategy": "RSI Mean Reversion",
+        "last_session": "2025-12-16T13:15:19.755118"
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:21.822199",
+      "type": "data_loading",
+      "details": {
+        "event_type": "auto_load_success",
+        "data_info": {
+          "symbol": "BTC-USD",
+          "timeframe": "15Min",
+          "records": 100417,
+          "date_range": "2023-01-01 00:00:00 to 2025-11-12 00:00:00",
+          "file_path": "data\\btc_15Min.csv"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:21.923269",
+      "type": "data_loading",
+      "details": {
+        "event_type": "manual_load_success",
+        "data_info": {
+          "timeframes": [
+            "BTC-USD_15Min"
+          ],
+          "total_bars": 100417,
+          "timeframes_count": 1
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:21.923269",
+      "type": "ui_data_loaded_notification",
+      "details": {
+        "tab": "Tab1_DataManagement",
+        "data_keys": [
+          "BTC-USD_15Min"
+        ]
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:01:28.338415",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1800x1213",
+          "new_size": "1920x1009",
+          "difference": "120x204"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:02:13.356204",
+      "type": "window_event",
+      "details": {
+        "event_type": "resize",
+        "window_info": {
+          "old_size": "1920x1009",
+          "new_size": "1920x1216",
+          "difference": "0x207"
+        }
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2025-12-16T15:02:22.476427",
+      "type": "config_saved",
+      "details": {
+        "success": true
+      },
+      "result": "success"
+    }
+  ],
+  "errors": [],
+  "results": {
+    "backtests_run": 0,
+    "live_trading_sessions": 0,
+    "data_downloads": 0,
+    "strategies_tested": []
+  },
+  "configuration_changes": [],
+  "tab_visits": {
+    "\ud83d\udcca Data": 1,
+    "\u2699\ufe0f Strategy": 1,
+    "\u25b6\ufe0f Backtest": 1,
+    "\ud83d\udcc8 Results": 1,
+    "\u2696\ufe0f A/B Test": 1,
+    "\ud83d\udd34 Live": 1,
+    "\ud83c\udf10 API": 1,
+    "\ud83d\udd27 Research": 1,
+    "\ud83d\udce5 Data Download": 1,
+    "\u2753 Help": 2,
+    "\ud83d\udcca Risk Metrics": 1
+  },
+  "duration_seconds": 65.279662,
+  "duration_human": "1m 5s",
+  "summary": {
+    "total_actions": 9,
+    "total_errors": 0,
+    "most_visited_tab": "\u2753 Help",
+    "most_tested_strategy": "None",
+    "error_rate": 0.0,
+    "backtests_completed": 0,
+    "live_sessions": 0,
+    "data_downloads": 0
+  }
+}

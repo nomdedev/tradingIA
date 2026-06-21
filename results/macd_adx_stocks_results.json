@@ -1,0 +1,53 @@
+{
+    "macd_adx_strategy": {
+        "sharpe_ratio": -1.9118736447871123,
+        "win_rate": 26.229508196721312,
+        "total_return": -9.623234437087849,
+        "max_drawdown": -9.806260614073746,
+        "total_trades": 61
+    },
+    "baseline_strategy": {
+        "sharpe_ratio": -1.4341523119957362,
+        "win_rate": 34.146341463414636,
+        "total_return": -8.63919790887303,
+        "max_drawdown": -8.866734110151263,
+        "total_trades": 82
+    },
+    "walk_forward_results": [
+        {
+            "period": 1,
+            "sharpe": -1.2397492157854149,
+            "win_rate": 25.0,
+            "return": -1.5970576752419585,
+            "trades": 8
+        },
+        {
+            "period": 2,
+            "sharpe": -1.6360665425033472,
+            "win_rate": 16.666666666666664,
+            "return": -1.4475580071562217,
+            "trades": 6
+        },
+        {
+            "period": 3,
+            "sharpe": -0.7287044648985871,
+            "win_rate": 25.0,
+            "return": -0.624386537402097,
+            "trades": 8
+        },
+        {
+            "period": 4,
+            "sharpe": -3.428704452829544,
+            "win_rate": 18.75,
+            "return": -3.3584966250494834,
+            "trades": 16
+        },
+        {
+            "period": 5,
+            "sharpe": -2.063877113512553,
+            "win_rate": 25.0,
+            "return": -2.9765910796563912,
+            "trades": 16
+        }
+    ]
+}

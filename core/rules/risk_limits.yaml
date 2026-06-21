@@ -1,0 +1,33 @@
+# Reglas de Límites de Riesgo
+# El Risk Manager (parte del Council) verifica esto antes de aprobar una orden.
+
+rules:
+  - id: "max_drawdown_limit"
+    type: "threshold"
+    description: "Detiene trading si el drawdown excede el límite"
+    metric: "current_drawdown_pct"
+    operator: "<"
+    value: 0.15  # 15%
+    severity: "critical"
+    action: "reject_and_halt"
+    expert: "Risk Warden"
+
+  - id: "max_leverage"
+    type: "threshold"
+    description: "Límite máximo de apalancamiento permitido"
+    metric: "leverage"
+    operator: "<="
+    value: 2.0
+    severity: "critical"
+    action: "reject"
+    expert: "Risk Warden"
+
+  - id: "min_confidence_score"
+    type: "threshold"
+    description: "Requiere un score de confianza mínimo del modelo"
+    metric: "signal_confidence"
+    operator: ">="
+    value: 0.65
+    severity: "info"
+    action: "reject"
+    expert: "Trend Master"
